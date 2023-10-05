@@ -1,9 +1,17 @@
 <script lang="ts" setup>
-const t = ref("");
+const { auth } = useSupabaseClient();
+
+async function signOut() {
+  const { error } = await auth.signOut();
+  if (!error)
+    return navigateTo("/login");
+}
 </script>
 
 <template>
-  coucou
+  <button @click="signOut()">
+    Sign out
+  </button>
 </template>
 
 <style>

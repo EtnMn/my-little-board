@@ -1,5 +1,10 @@
 <script setup lang="ts">
+definePageMeta({
+  middleware: ["sign-in"],
+});
+
 const user = useSupabaseUser();
+
 watch(user, () => {
   if (user.value)
     return navigateTo("/");
@@ -7,5 +12,7 @@ watch(user, () => {
 </script>
 
 <template>
-  <div>Waiting for login...</div>
+  <div class="text-info-content">
+    Waiting for login...
+  </div>
 </template>
