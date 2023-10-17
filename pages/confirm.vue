@@ -1,5 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
+  layout: "simple",
   middleware: ["sign-in"],
 });
 

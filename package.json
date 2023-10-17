@@ -11,6 +11,8 @@
     "lint": "eslint .",
     "lint:fix": "eslint . --fix"
   },
+  "dependencies": {
+  },
   "devDependencies": {
     "@antfu/eslint-config": "1.0.0-beta.18",
     "@nuxt/devtools": "latest",
@@ -19,10 +21,8 @@
     "daisyui": "^3.8.3",
     "eslint": "^8.50.0",
     "nuxt": "^3.7.4",
+    "nuxt-svgo": "^3.5.4",
     "vue": "^3.3.4",
     "vue-router": "^4.2.5"
-  },
-  "dependencies": {
-    "nuxt-svgo": "^3.5.4"
   }
 }
