@@ -5,7 +5,7 @@ useSetMe(useSupabaseUser().value);
 
 <template>
   <div>
-    <top-navbar />
+    <mlb-navbar />
     <div class="2xl:container 2xl:mx-auto p-4">
       <slot />
     </div>

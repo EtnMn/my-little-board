@@ -13,7 +13,7 @@ watch(user, () => {
 </script>
 
 <template>
-  <div class="text-info-content">
+  <div class="text-info-content p-4">
     Waiting for login...
   </div>
 </template>
