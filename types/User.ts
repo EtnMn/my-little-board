@@ -4,4 +4,5 @@ export type User = {
   avatarUrl: string;
   name: string;
   role: UserRole;
+  userId: string;
 };

@@ -1,9 +1,11 @@
 <script lang="ts" setup>
-
+definePageMeta({
+  middleware: "no-organization",
+});
 </script>
 
 <template>
   <div>
-    New Organisation
+    New Organization
   </div>
 </template>

@@ -11,6 +11,7 @@ export function useSetMe(value: SupabaseUser) {
     avatarUrl: value?.user_metadata?.avatar_url ?? "",
     name: value?.user_metadata?.user_name ?? "",
     role: useIsUserRole(value?.app_metadata?.user_role) ? value.app_metadata.user_role : "user",
+    userId: value?.id,
   };
 }
 
@@ -19,5 +20,6 @@ export function useMe() {
     avatarUrl: "",
     name: "",
     role: "user",
+    userId: "",
   }));
 }

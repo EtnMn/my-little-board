@@ -1,3 +1,3 @@
 <template>
-  <div>Your projects</div>
+  INDEX
 </template>
