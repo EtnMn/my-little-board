@@ -1,3 +1,3 @@
 -- users.
-select  set_claim('xxx', 'user_role', '"manager"')
+select  set_claim('{user.id}', 'user_role', '"manager"')
 

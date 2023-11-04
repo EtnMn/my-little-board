@@ -1,37 +1,112 @@
+import type { UserRole } from "~/types";
+
 export type Json =
   | string
   | number
   | boolean
   | null
-  | { [key: string]: Json }
+  | { [key: string]: Json | undefined }
   | Json[];
 
 export type Database = {
   public: {
     Tables: {
-      organization: {
+      profile: {
         Row: {
-          organizationId: string;
+          avatar: string;
+          createdAt: string;
+          email: string;
           name: string;
-          ownerId: string | null;
+          profileId: string;
         };
         Insert: {
-          organizationId: string;
-          name: string;
-          ownerId: string | null;
+          avatar?: string;
+          createdAt?: string;
+          email?: string;
+          name?: string;
+          profileId: string;
         };
         Update: {
-          organization_id: string;
-          name: string;
-          ownerId: string | null;
+          avatar?: string;
+          createdAt?: string;
+          email?: string;
+          name?: string;
+          profileId?: string;
         };
+        Relationships: [
+          {
+            foreignKeyName: "profile_profileId_fkey";
+            columns: ["profileId"];
+            isOneToOne: true;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
       };
     };
     Views: {
-      [_ in never]: never
+      getProfiles: {
+        Row: {
+          avatar: string;
+          email: string;
+          name: string;
+          profileId: string;
+          role?: UserRole;
+        };
+        Relationships: [
+          {
+            foreignKeyName: "profile_profileId_fkey";
+            columns: ["profileId"];
+            isOneToOne: true;
+            referencedRelation: "users";
+            referencedColumns: ["id"];
+          },
+        ];
+      };
     };
     Functions: {
-      [_ in never]: never
+      delete_claim: {
+        Args: {
+          uid: string;
+          claim: string;
+        };
+        Returns: string;
+      };
+      get_claim: {
+        Args: {
+          uid: string;
+          claim: string;
+        };
+        Returns: Json;
+      };
+      get_claims: {
+        Args: {
+          uid: string;
+        };
+        Returns: Json;
+      };
+      get_my_claim: {
+        Args: {
+          claim: string;
+        };
+        Returns: Json;
+      };
+      get_my_claims: {
+        Args: Record<PropertyKey, never>;
+        Returns: Json;
+      };
+      is_claims_admin: {
+        Args: Record<PropertyKey, never>;
+        Returns: boolean;
+      };
+      set_claim: {
+        Args: {
+          uid: string;
+          claim: string;
+          value: Json;
+        };
+        Returns: string;
+      };
     };
     Enums: {
       [_ in never]: never

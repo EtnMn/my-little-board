@@ -4,7 +4,7 @@ create table public.organization (
     "ownerId" uuid null,
     constraint "organizationsPkey" primary key ("organizationId"),
     constraint "organizationOwnerIdFkey" foreign key ("ownerId") references profile ("profileId") on delete set null
-) tablespace pg_default;
+);
 
 alter table organization enable row level security;
 

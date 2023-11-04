@@ -25,11 +25,11 @@ async function signOut() {
     </div>
 
     <div class="navbar-end">
-      <div v-if="user" class="flex items-stretch">
+      <div v-if="me" class="flex items-stretch">
         <mlb-drawer v-model="open">
           <label for="mlb-drawer" tabindex="0" class="btn btn-circle btn-link avatar">
             <div class="w-8 rounded-xl">
-              <img :src="me.avatarUrl">
+              <img :src="me.avatar">
             </div>
           </label>
           <template #drawer>
@@ -51,7 +51,7 @@ async function signOut() {
           </template>
         </mlb-drawer>
       </div>
-      <NuxtLink v-else class="btn btn-accent" to="/login">
+      <NuxtLink v-else-if="!user" class="btn btn-accent" to="/login">
         Sign In
       </NuxtLink>
     </div>
