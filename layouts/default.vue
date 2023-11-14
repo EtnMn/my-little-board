@@ -11,14 +11,19 @@ me.value = data;
       <slot />
     </div>
     <div v-else-if="!pending">
-      <mlb-hero image="~/assets/img/my-little-board.png" title="An error occurred">
+      <mlb-message title="An error occurred">
+        <template #image>
+          <SvgoDesert class="text-8xl text-primary" />
+        </template>
+
         {{ error }}
+
         <template #actions>
           <button class="btn btn-primary" @click="() => { refresh() }">
             Retry
           </button>
         </template>
-      </mlb-hero>
+      </mlb-message>
     </div>
   </div>
 </template>

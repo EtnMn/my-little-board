@@ -15,7 +15,7 @@ async function signOut() {
 <template>
   <div class="navbar sticky top-0 border-b bg-base-200 border-base-300">
     <div class="flex-1">
-      <NuxtLink class="btn btn-ghost normal-case text-xl" to="/">
+      <NuxtLink class="btn btn-ghost text-xl" to="/">
         <div class="font-title inline-flex text-lg md:text-2xl">
           <span class="text-primary mr-1">My</span>
           <span class="text-secondary mr-1">Little</span>

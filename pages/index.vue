@@ -1,3 +1,5 @@
 <template>
-  INDEX
+  <button class="btn">
+    Neutral
+  </button>
 </template>
