@@ -1,36 +1,15 @@
 <script lang="ts" setup>
-// import { fromZodError } from "zod-validation-error";
-import { useField, useForm } from "vee-validate";
-import { toTypedSchema } from "@vee-validate/zod";
-import type { Organization } from "~/types";
-
-// import * as zod from "zod";
-
 definePageMeta({
   middleware: "no-organization",
 });
-// const message = ref("");
-// const org = { name: "" };
-// const organizationSchema = useOrganizationSchema();
-// const parsed = organizationSchema.safeParse(org);
-// if (!parsed.success)
-// if (isValidationErrorLike(err)) {
-//     return 400; // Bad Data (this is a client error)
-//   }
-// message.value = fromZodError(parsed.error).message;
 
-const validationSchema = toTypedSchema(useOrganizationSchema());
+function someErrorLogger(err) {
+  console.log("got an error", err);
+}
 
-const { handleSubmit, errors, defineInputBinds } = useForm<Organization>({
-  validationSchema,
-  initialValues: { name: "coucou" },
-});
-
-const name = defineInputBinds("name", { validateOnInput: true });
-
-const onSubmit = handleSubmit((values) => {
-  alert(JSON.stringify(values, null, 2));
-});
+function onCreate(value: string) {
+  console.log("new", value);
+}
 </script>
 
 <template>
@@ -40,25 +19,33 @@ const onSubmit = handleSubmit((values) => {
         Create a new organization
       </h2>
       <p class="text-sm opacity-60 leading-6">
-        An organization contains all your projects, including the sprints history.
+        An organization contains all your projects, including the sprint history.
       </p>
     </div>
     <p class="text-sm opacity-60 mb-2">
       <em>Required fields are marked with an asterisk (*)</em>
     </p>
-    <form class="form-control w-full" @submit="onSubmit">
-      <label class="label">
-        <span class="label-text">Organization name *</span>
-      </label>
-      <input v-bind="name" name="name" type="text" class="input input-bordered input-primary" data-1p-ignore>
-      <label class="label">
-        <span class="label-text-alt text-error">{{ errors.name }}</span>
-      </label>
-      <div class="flex justify-end">
-        <button class="btn btn-primary">
-          Create organization
-        </button>
-      </div>
-    </form>
+    <NuxtErrorBoundary @error="someErrorLogger($event)">
+      <mlb-organization-create @create="(x) => onCreate(x)" />
+
+      <template #error="{ clearError }">
+        <div role="alert" class="alert alert-error">
+          <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+          <div>
+            <h3 class="font-bold">
+              An error occurred!
+            </h3>
+            <div class="text-xs">
+              Please retry later.
+            </div>
+          </div>
+          <div>
+            <button class="btn btn-sm btn-ghost" @click="clearError()">
+              Retry
+            </button>
+          </div>
+        </div>
+      </template>
+    </NuxtErrorBoundary>
   </div>
 </template>
