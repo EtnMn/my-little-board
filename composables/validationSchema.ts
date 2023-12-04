@@ -5,3 +5,7 @@ export function useOrganizationSchema() {
     name: z.string().min(3).max(25),
   });
 }
+
+export function useUuidSchema() {
+  return z.string().uuid({ message: "Invalid UUID" });
+}

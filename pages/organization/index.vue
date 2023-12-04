@@ -1,19 +1,17 @@
 <script lang="ts" setup>
-const me = useMe();
 const { pending, data: organizations } = useLazyFetch("/api/organizations");
-const myOrganizations = computed(() => organizations.value?.filter(o => o.ownerId === me.value?.profileId) ?? []);
 </script>
 
 <template>
   <div v-if="pending">
     <mlb-loader />
   </div>
-  <div v-else-if="myOrganizations.length > 0">
+  <div v-else-if="organizations && organizations.length > 0">
     <div v-for="item in organizations" :key="item.organizationId">
-      <div class="text-xl font-bold mb-6 flex items-center gap-x-2">
-        <SvgoBuilding />
-        <h2>{{ item.name }}</h2>
-      </div>
+      <h1 class="inline-block text-2xl sm:text-3xl font-semibold mb-3 text-primary capitalize">
+        Organization: {{ item.name }}
+      </h1>
+      <mlb-organization-members :organization-id="item.organizationId" />
     </div>
   </div>
   <div v-else>

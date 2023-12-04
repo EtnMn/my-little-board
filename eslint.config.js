@@ -6,6 +6,6 @@ export default antfu({
     "style/quotes": ["error", "double", { allowTemplateLiterals: true, avoidEscape: true }],
     "style/member-delimiter-style": ["error", { multiline: { delimiter: "semi" } }],
     "ts/consistent-type-definitions": ["error", "type"],
+    "style/indent": ["error", "tab"],
   },
-},
-);
+});

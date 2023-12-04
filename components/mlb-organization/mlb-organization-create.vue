@@ -13,6 +13,7 @@ const { handleSubmit, errors, defineInputBinds } = useForm<Organization>({
 });
 
 const name = defineInputBinds("name", { validateOnInput: true });
+
 const onSubmit = handleSubmit(async (values) => {
   const { data, error } = await useFetch<Organization>("/api/organizations", {
     method: "post",
@@ -24,10 +25,22 @@ const onSubmit = handleSubmit(async (values) => {
 
   emit("create", data.value?.name ?? "");
 });
+
+// const onSubmit = handleSubmit(async (values) => {
+//   const { data, error } = await useFetch<Organization>("/api/organizations", {
+//     method: "post",
+//     body: values,
+//   });
+
+//   if (error.value)
+//     throw error.value;
+
+//   emit("create", data.value?.name ?? "");
+// });
 </script>
 
 <template>
-  <form class="form-control w-full" @submit="onSubmit($event)">
+  <form class="form-control w-full" @submit="onSubmit">
     <label class="label">
       <span class="label-text">Organization name *</span>
     </label>

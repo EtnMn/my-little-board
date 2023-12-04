@@ -1,15 +1,5 @@
 <script setup>
-const { auth } = useSupabaseClient();
-const user = useSupabaseUser();
-const open = ref(false);
 const me = useMe();
-
-async function signOut() {
-  const { error } = await auth.signOut();
-
-  if (!error)
-    return navigateTo("/login");
-};
 </script>
 
 <template>
@@ -26,32 +16,14 @@ async function signOut() {
 
     <div class="navbar-end">
       <div v-if="me" class="flex items-stretch">
-        <mlb-drawer v-model="open">
-          <label for="mlb-drawer" tabindex="0" class="btn btn-circle btn-link avatar">
-            <div class="w-8 rounded-xl">
-              <img :src="me.avatar">
-            </div>
-          </label>
-          <template #drawer>
-            <ul>
-              <template v-if="me.role === 'administrator' || me.role === 'manager'">
-                <li>
-                  <NuxtLink to="/organization" @click="open = false">
-                    Your organization
-                  </NuxtLink>
-                </li>
-                <li class="h-px bg-neutral-300" />
-              </template>
-              <li>
-                <button @click="signOut">
-                  Sign out
-                </button>
-              </li>
-            </ul>
-          </template>
-        </mlb-drawer>
+        <!-- <mlb-drawer v-model="open"> -->
+        <label for="mlb-drawer" tabindex="0" class="btn btn-circle btn-link avatar">
+          <div class="w-8 rounded-xl">
+            <img :src="me.avatar">
+          </div>
+        </label>
       </div>
-      <NuxtLink v-else-if="!user" class="btn btn-accent" to="/login">
+      <NuxtLink v-else-if="!user" class="btn btn-primary" to="/login">
         Sign In
       </NuxtLink>
     </div>

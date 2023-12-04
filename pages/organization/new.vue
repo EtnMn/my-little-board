@@ -3,10 +3,6 @@ definePageMeta({
   middleware: "no-organization",
 });
 
-function someErrorLogger(err) {
-  console.log("got an error", err);
-}
-
 function onCreate(value: string) {
   console.log("new", value);
 }
@@ -25,7 +21,7 @@ function onCreate(value: string) {
     <p class="text-sm opacity-60 mb-2">
       <em>Required fields are marked with an asterisk (*)</em>
     </p>
-    <NuxtErrorBoundary @error="someErrorLogger($event)">
+    <NuxtErrorBoundary>
       <mlb-organization-create @create="(x) => onCreate(x)" />
 
       <template #error="{ clearError }">

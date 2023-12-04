@@ -1,9 +1,10 @@
 create table public.profile (
-    "profileId" uuid not null references auth.users on delete cascade,
+    "profileId" uuid not null,
     avatar text not null default ''::text,
     email text not null default ''::text,
     name text not null default ''::text,
-    constraint "profilePkey" primary key ("profileId")
+    constraint "profilePkey" primary key ("profileId"),
+    constraint "profileProfileIdFkey" foreign key ("profileId") references auth.users (id) on delete cascade
 );
 
 alter table public.profile enable row level security;

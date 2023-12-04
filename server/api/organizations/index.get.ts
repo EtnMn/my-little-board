@@ -6,7 +6,11 @@ export default defineEventHandler(async (event) => {
   const user = await serverSupabaseUser(event);
   const client = await serverSupabaseClient<Database>(event);
 
-  const { data: organizations, error } = await client.from("organization").select("*").eq("ownerId", user?.id ?? "");
+  const { data: organizations, error } = await client
+    .from("organization")
+    .select("*")
+    .eq("ownerId", user?.id ?? "");
+
   if (error)
     throw createError({ statusMessage: error.message });
 
