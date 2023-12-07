@@ -1,5 +1,6 @@
 <script setup lang="ts">
 definePageMeta({
+  layout: "simple",
   middleware: ["sign-in"],
 });
 
@@ -24,27 +25,23 @@ watchEffect(() => {
 </script>
 
 <template>
-  <div class="bg-gray-100 flex justify-center items-center h-screen">
-    <div class="w-1/2 h-screen hidden lg:block">
-      <img src="~/assets/img/my-little-board.png" alt="My little board placeholder" class="object-cover w-full h-full">
-    </div>
-    <div class="lg:p-36 md:p-52 sm:20 p-8 w-full lg:w-1/2 flex flex-col items-center">
-      <h1 class="text-2xl text-primary font-semibold mb-4">
-        My Little Board
-      </h1>
-      <div class="card bg-base-100 w-96">
-        <div class="card-body">
-          <p class="mb-2 text-info-content">
-            Sign in with
-          </p>
-          <div class="card-actions">
-            <button class="btn btn-block" @click="signIn()">
-              <SvgoGithub class="text-xl" />
-              Github
-            </button>
-            <div v-if="errorMessage" class="error">
-              errorMessage
-            </div>
+  <div class="bg-base-200 flex justify-center items-center h-screen">
+    <div class="card w-96 bg-base-100 shadow-sm">
+      <figure><img src="~/assets/img/my-little-board.png" alt="logo"></figure>
+      <div class="card-body">
+        <h2 class="card-title">
+          My Little Board!
+        </h2>
+        <p class="text-sm">
+          Sign in with
+        </p>
+        <div class="card-actions">
+          <button class="btn btn-block bg-base-200" @click="signIn()">
+            <SvgoGithub class="text-xl" />
+            Github
+          </button>
+          <div v-if="errorMessage" class="error">
+            errorMessage
           </div>
         </div>
       </div>
