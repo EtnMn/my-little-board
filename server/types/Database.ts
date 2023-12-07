@@ -115,10 +115,10 @@ export type Database = {
 		Views: {
 			getProfiles: {
 				Row: {
-					avatar: string;
-					email: string;
-					name: string;
-					profileId: string;
+					avatar: string | null;
+					email: string | null;
+					name: string | null;
+					profileId: string | null;
 					role: string | null;
 				};
 				Relationships: [

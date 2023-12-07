@@ -8,35 +8,23 @@ const emit = defineEmits<{ "create": [organizationName: string] }>();
 const validationSchema = toTypedSchema(useOrganizationSchema());
 
 const { handleSubmit, errors, defineInputBinds } = useForm<Organization>({
-  validationSchema,
-  initialValues: { name: "" },
+	validationSchema,
+	initialValues: { name: "" },
 });
 
 const name = defineInputBinds("name", { validateOnInput: true });
 
 const onSubmit = handleSubmit(async (values) => {
-  const { data, error } = await useFetch<Organization>("/api/organizations", {
-    method: "post",
-    body: values,
-  });
+	const { data, error } = await useFetch<Organization>("/api/organizations", {
+		method: "post",
+		body: values,
+	});
 
-  if (error.value)
-    throw error.value;
+	if (error.value)
+		throw error.value;
 
-  emit("create", data.value?.name ?? "");
+	emit("create", data.value?.name ?? "");
 });
-
-// const onSubmit = handleSubmit(async (values) => {
-//   const { data, error } = await useFetch<Organization>("/api/organizations", {
-//     method: "post",
-//     body: values,
-//   });
-
-//   if (error.value)
-//     throw error.value;
-
-//   emit("create", data.value?.name ?? "");
-// });
 </script>
 
 <template>

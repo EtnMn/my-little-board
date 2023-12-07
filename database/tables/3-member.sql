@@ -28,3 +28,13 @@ with check (
     from public.organization
     where "ownerId" = auth.uid())
 );
+
+create policy "Owner can remove profile from his organization"
+on public.member for delete
+to authenticated
+using (
+    "organizationId" in (
+    select "organizationId"
+    from public.organization
+    where "ownerId" = auth.uid())
+);

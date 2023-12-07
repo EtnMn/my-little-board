@@ -1,7 +1,21 @@
 <script lang="ts" setup>
 const { organizationId } = defineProps<{ organizationId: string }>();
 
-const { pending, data: members } = useLazyFetch(`/api/organizations/${organizationId}/members`);
+const deleteError = ref(false);
+const { pending, data: members, refresh } = await useLazyFetch(`/api/organizations/${organizationId}/members`);
+
+async function onRemoveMember(organizationId?: string, memberId?: string) {
+	const { error } = await useFetch<boolean>(`/api/organizations/${organizationId}/members/${memberId}`, {
+		method: "delete",
+	});
+
+	if (error.value && error.value.statusCode !== 404)
+		deleteError.value = !!error.value;
+	else
+		deleteError.value = false;
+
+	refresh();
+};
 </script>
 
 <template>
@@ -14,7 +28,7 @@ const { pending, data: members } = useLazyFetch(`/api/organizations/${organizati
       <thead>
         <tr class="bg-base-200">
           <th>Name</th>
-          <th class="hidden sm:block">
+          <th class="hidden sm:table-cell">
             Role
           </th>
           <th>
@@ -23,37 +37,26 @@ const { pending, data: members } = useLazyFetch(`/api/organizations/${organizati
         </tr>
       </thead>
       <tbody>
-        <template v-if="!pending && members">
-          <!-- row 1 -->
+        <template v-if="!pending && members && members?.length > 0">
           <tr v-for="m in members" :key="m.memberId">
             <td>
-              <div class="flex items-center gap-3">
-                <div class="avatar">
-                  <div class="mask mask-squircle w-8 h-8">
-                    <img :src="m.profile?.avatar" :alt="`${m.profile?.name} avatar`">
-                  </div>
-                </div>
-                <div>
-                  <div class="font-bold">
-                    {{ m.profile?.name }}
-                  </div>
-                  <div class="text-sm opacity-50">
-                    {{ m.profile?.email }}
-                  </div>
-                </div>
-              </div>
+              <mlb-profile v-if="m.profile" :profile="m.profile" />
             </td>
-            <td class="hidden sm:block">
+            <td class="hidden sm:table-cell">
               User
             </td>
             <td>
-              <button v-if="m.profile?.profileId !== m.organization?.ownerId" class="btn btn-ghost btn-xs">
+              <button
+                v-if="m.profile?.profileId !== m.organization?.ownerId"
+                class="btn btn-ghost btn-xs"
+                @click="onRemoveMember(m.organization?.organizationId, m.memberId)"
+              >
                 Remove
               </button>
             </td>
           </tr>
         </template>
-        <template v-else>
+        <template v-else-if="pending">
           <tr v-for="i in 3" :key="i">
             <td>
               <div class="flex items-center gap-3">
@@ -69,7 +72,23 @@ const { pending, data: members } = useLazyFetch(`/api/organizations/${organizati
             </td>
           </tr>
         </template>
+        <tr v-else>
+          <td colspan="3">
+            <div class="flex justify-center">
+              <svgo-user-question class="text-6xl opacity-60" filled />
+            </div>
+          </td>
+        </tr>
       </tbody>
     </table>
+    <div v-if="deleteError" role="alert" class="alert alert-error mt-3">
+      <svg xmlns="http://www.w3.org/2000/svg" class="stroke-current shrink-0 h-6 w-6" fill="none" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2m7-2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg>
+      <span>Could not remove user.</span>
+      <div>
+        <button class="btn btn-sm btn-ghost" @click="deleteError = false">
+          Deny
+        </button>
+      </div>
+    </div>
   </div>
 </template>

@@ -5,7 +5,6 @@ import type { Database } from "~/server/types";
 
 export default defineEventHandler(async (event) => {
 	const organizationId = getRouterParam(event, "organizationId");
-	// const { organization: organizationId } = getQuery(event);
 	const uuidSchema = useUuidSchema();
 	uuidSchema.safeParse(organizationId);
 
