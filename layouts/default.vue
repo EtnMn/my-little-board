@@ -7,6 +7,7 @@ me.value = data;
 
 <template>
   <div>
+    <nuxt-loading-indicator :height="4" />
     <mlb-navbar />
     <div class="drawer drawer-end">
       <input id="mlb-drawer" v-model="open" type="checkbox" class="drawer-toggle">
@@ -15,19 +16,22 @@ me.value = data;
         <slot v-if="!error && !pending" />
 
         <div v-else-if="error">
-          <mlb-message title="An error occurred">
+          <mlb-message-box :border="false">
             <template #image>
-              <SvgoDesert class="text-8xl text-primary" />
+              <svgo-desert class="text-8xl text-primary" />
             </template>
 
-            {{ error }}
+            An error occurred
 
-            <template #actions>
-              <button class="btn btn-accent" @click="() => { refresh() }">
+            <template #text>
+              {{ error }}
+            </template>
+            <template #action>
+              <button class="btn btn-accent" @click="refresh()">
                 Retry
               </button>
             </template>
-          </mlb-message>
+          </mlb-message-box>
         </div>
         <div v-else>
           <mlb-loader />

@@ -2,7 +2,10 @@
 const { organizationId } = defineProps<{ organizationId: string }>();
 
 const deleteError = ref(false);
-const { pending, data: members, refresh } = await useLazyFetch(`/api/organizations/${organizationId}/members`);
+const { pending, data: members, refresh, error } = await useFetch(`/api/organizations/${organizationId}/members`);
+
+if (error.value)
+	throw error.value;
 
 async function onRemoveMember(organizationId?: string, memberId?: string) {
 	const { error } = await useFetch<boolean>(`/api/organizations/${organizationId}/members/${memberId}`, {
@@ -22,7 +25,7 @@ async function onRemoveMember(organizationId?: string, memberId?: string) {
   <h2 class="text-xl mb-3 capitalize">
     Manage access
   </h2>
-  <div class="overflow-x-auto">
+  <div v-if="pending || members && members.length > 0" class="overflow-x-auto">
     <table class="table border sm:table-fixed">
       <!-- head -->
       <thead>
@@ -37,7 +40,7 @@ async function onRemoveMember(organizationId?: string, memberId?: string) {
         </tr>
       </thead>
       <tbody>
-        <template v-if="!pending && members && members?.length > 0">
+        <template v-if="members && members.length > 0">
           <tr v-for="m in members" :key="m.memberId">
             <td>
               <mlb-profile v-if="m.profile" :profile="m.profile" />
@@ -56,7 +59,7 @@ async function onRemoveMember(organizationId?: string, memberId?: string) {
             </td>
           </tr>
         </template>
-        <template v-else-if="pending">
+        <template v-else>
           <tr v-for="i in 3" :key="i">
             <td>
               <div class="flex items-center gap-3">
@@ -72,13 +75,6 @@ async function onRemoveMember(organizationId?: string, memberId?: string) {
             </td>
           </tr>
         </template>
-        <tr v-else>
-          <td colspan="3">
-            <div class="flex justify-center">
-              <svgo-user-question class="text-6xl opacity-60" filled />
-            </div>
-          </td>
-        </tr>
       </tbody>
     </table>
     <div v-if="deleteError" role="alert" class="alert alert-error mt-3">
@@ -91,4 +87,15 @@ async function onRemoveMember(organizationId?: string, memberId?: string) {
       </div>
     </div>
   </div>
+  <mlb-message-box v-else>
+    <template #image>
+      <svgo-user class="text-6xl text-primary" filled />
+    </template>
+    You haven't invited any member yet
+    <template #action>
+      <button class="btn btn-primary btn-sm" @click="refresh()">
+        Add member
+      </button>
+    </template>
+  </mlb-message-box>
 </template>

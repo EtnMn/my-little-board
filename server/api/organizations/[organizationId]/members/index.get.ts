@@ -16,7 +16,7 @@ export default defineEventHandler(async (event) => {
 		.eq("organizationId", organizationId ?? "");
 
 	if (error)
-		throw createError({ statusMessage: error.message });
+		throw createError({ statusCode: 500, statusMessage: error.message });
 
 	return members;
 });
