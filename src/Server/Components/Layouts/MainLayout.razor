@@ -1,0 +1,74 @@
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+<MudThemeProvider @bind-IsDarkMode="@this.darkMode" Theme="myLittleTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<CascadingAuthenticationState>
+<MudLayout>
+    <MudMainContent>
+        <AuthorizeView>
+            <Authorized>
+                <NavBar DarkMode="darkMode" OnToggleDarkMode="@(() => this.ToggleDarkMode())" />
+                <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-4">
+                    <a asp-controller="Home" asp-action="Index">Welcome @context.User.Identity?.Name!</a>
+                    <a href="MicrosoftIdentity/Account/SignOut">Logout</a>
+                    <button @onclick="GetClaimsPrincipalData">Get ClaimsPrincipal Data</button>
+
+                    @Body
+                    <Footer />
+                </MudContainer>
+            </Authorized>
+            <NotAuthorized>
+                <Login/>
+            </NotAuthorized>
+        </AuthorizeView>
+    </MudMainContent>
+</MudLayout>
+</CascadingAuthenticationState>
+
+@code {
+    private bool darkMode;
+
+
+    private string? authMessage;
+    private string? surname;
+    private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
+
+    private async Task GetClaimsPrincipalData()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            authMessage = $"{user.Identity.Name} is authenticated.";
+            claims = user.Claims;
+            surname = user.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value;
+        }
+        else
+        {
+            authMessage = "The user is NOT authenticated.";
+        }
+    }
+
+    private MudTheme myLittleTheme = new()
+    {
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthRight = "320px"
+        }
+    };
+
+    private void ToggleDarkMode()
+    {
+        this.darkMode = !this.darkMode;
+        StateHasChanged();
+    }
+}

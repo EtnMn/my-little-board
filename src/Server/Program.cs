@@ -1,7 +1,5 @@
 using Etn.MyLittleBoard.Server.Components;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Mvc.Authorization;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using MudBlazor.Services;
@@ -9,32 +7,24 @@ using MudBlazor.Services;
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddRazorComponents()
+builder.Services
+    .AddRazorComponents()
     .AddInteractiveServerComponents();
 
-builder.Services.AddControllers();
-
-builder.Services.AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
+builder.Services
+    .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
     .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection("AzureAd"))
     .EnableTokenAcquisitionToCallDownstreamApi()
     .AddMicrosoftGraph(builder.Configuration.GetSection("GraphApi"))
     .AddInMemoryTokenCaches();
 
-//.EnableTokenAcquisitionToCallDownstreamApi(["User.Read"])
-//.AddDownstreamApi("GraphApi", builder.Configuration.GetSection("GraphApi"))
+builder.Services.AddAuthorization();
 
-builder.Services.AddControllersWithViews(options =>
-{
-    AuthorizationPolicy policy = new AuthorizationPolicyBuilder()
-        .RequireAuthenticatedUser()
-        .Build();
-    options.Filters.Add(new AuthorizeFilter(policy));
-}).AddMicrosoftIdentityUI();
+builder.Services.
+    AddControllersWithViews()
+    .AddMicrosoftIdentityUI();
 
 builder.Services.AddMicrosoftIdentityConsentHandler();
-
-builder.Services.AddAuthorization();
-//builder.Services.AddAuthorization(o => o.FallbackPolicy = o.DefaultPolicy);
 
 builder.Services.AddMudServices();
 
@@ -57,6 +47,7 @@ app.MapControllers();
 
 app.UseAuthentication();
 app.UseAuthorization();
+
 app.MapRazorComponents<App>()
     .AddInteractiveServerRenderMode();
 
