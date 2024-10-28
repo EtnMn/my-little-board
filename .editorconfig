@@ -1,0 +1,64 @@
+root = true
+
+[*]
+charset                  = utf-8
+end_of_line              = crlf
+indent_style             = space
+indent_size              = 4
+insert_final_newline     = true
+trim_trailing_whitespace = true
+
+[*.cs]
+csharp_prefer_braces                                                = true : warning
+csharp_style_namespace_declarations                                 = file_scoped : suggestion
+
+dotnet_style_qualification_for_event                                = true : warning
+dotnet_style_qualification_for_field                                = true : warning
+dotnet_style_qualification_for_method                               = true : warning
+dotnet_style_qualification_for_property                             = true : warning
+
+dotnet_style_predefined_type_for_locals_parameters_members          = true : warning
+dotnet_style_predefined_type_for_member_access                      = true : warning
+
+dotnet_naming_symbols.methods.applicable_kinds                      = method
+
+dotnet_naming_symbols.parameter_symbols.applicable_kinds            = parameter
+
+dotnet_naming_symbols.public_symbols.applicable_kinds               = property,field,event,delegate
+dotnet_naming_symbols.public_symbols.applicable_accessibilities     = public,protected,internal,protected_internal
+
+dotnet_naming_symbols.private_symbols.applicable_kinds              = property,field
+dotnet_naming_symbols.private_symbols.applicable_accessibilities    = private
+
+dotnet_naming_style.uppercase_style.capitalization                  = pascal_case
+dotnet_naming_style.lowercase_style.capitalization                  = camel_case
+
+dotnet_naming_rule.methods_must_be_capitalized.symbols              = methods
+dotnet_naming_rule.methods_must_be_capitalized.style                = uppercase_style
+dotnet_naming_rule.methods_must_be_capitalized.severity             = warning
+
+dotnet_naming_rule.public_members_must_be_capitalized.symbols       = public_symbols
+dotnet_naming_rule.public_members_must_be_capitalized.style         = uppercase_style
+dotnet_naming_rule.public_members_must_be_capitalized.severity      = warning
+
+dotnet_naming_rule.private_members_must_not_be_capitalized.symbols  = private_symbols
+dotnet_naming_rule.private_members_must_not_be_capitalized.style    = lowercase_style
+dotnet_naming_rule.private_members_must_not_be_capitalized.severity = warning
+
+dotnet_naming_rule.parameters_must_not_be_capitalized.symbols       = parameter_symbols
+dotnet_naming_rule.parameters_must_not_be_capitalized.style         = lowercase_style
+dotnet_naming_rule.parameters_must_not_be_capitalized.severity      = warning
+
+[*.md]
+trim_trailing_whitespace = false
+
+[*.{yml,yaml}]
+indent_size = 2
+indent_style = space
+
+[*.{tf,tfvars}]
+indent_size = 2
+
+[*.py]
+indent_style = space
+indent_size = 4
