@@ -1,0 +1,130 @@
+@using Microsoft.AspNetCore.Authorization
+@using Microsoft.AspNetCore.Components.Authorization
+@using System.Security.Claims
+@using System.Text.Json
+@using Microsoft.Identity.Abstractions
+@using Microsoft.Identity.Web
+@using Microsoft.Graph
+@inherits LayoutComponentBase
+@inject AuthenticationStateProvider AuthenticationStateProvider
+
+@* @inject IDownstreamApi downstreamApi *@
+@inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
+
+@inject GraphServiceClient GraphClient
+
+<MudThemeProvider @bind-IsDarkMode="@this.darkMode" Theme="myLittleTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+
+<CascadingAuthenticationState>
+<MudLayout>
+    <NavMenu DarkMode="darkMode" OnToggleDarkMode="@(() => this.ToggleDarkMode())" />
+    <MudMainContent Class="mt-4">
+            <MudContainer MaxWidth="MaxWidth.ExtraLarge">
+           @*  <AuthorizeView>
+                <Authorized>
+                    <a asp-controller="Home" asp-action="Index">Welcome @context.User.Identity?.Name!</a>
+                    <a href="MicrosoftIdentity/Account/SignOut">Logout</a> *@
+                    <button @onclick="GetClaimsPrincipalData">Get ClaimsPrincipal Data</button>
+
+                    @Body
+            @*     </Authorized>
+                <NotAuthorized>
+                    <a href="MicrosoftIdentity/Account/SignIn">Login</a>
+                </NotAuthorized>
+            </AuthorizeView> *@
+            <Footer />
+        </MudContainer>
+    </MudMainContent>
+</MudLayout>
+</CascadingAuthenticationState>
+
+@code {
+    private bool darkMode;
+
+
+    private string? authMessage;
+    private string? surname;
+    private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
+
+    private async Task GetClaimsPrincipalData()
+    {
+        var authState = await AuthenticationStateProvider
+            .GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity is not null && user.Identity.IsAuthenticated)
+        {
+            authMessage = $"{user.Identity.Name} is authenticated.";
+            claims = user.Claims;
+            surname = user.FindFirst(c => c.Type == ClaimTypes.Surname)?.Value;
+        }
+        else
+        {
+            authMessage = "The user is NOT authenticated.";
+        }
+
+
+        try
+        {
+            // downstreamAPI.CallWebApiAsync calls ITokenAcquisition.GetAccessTokenForUserAsync
+            var users = await GraphClient.Me.GetAsync();
+            var photoStream = await GraphClient.Me.Photo.Content.GetAsync();
+            MemoryStream photoMemoryStream = new();
+            await photoStream!.CopyToAsync(photoMemoryStream);
+            var photo = Convert.ToBase64String(photoMemoryStream.ToArray());
+        }
+        catch (Exception ex)
+        {
+            ConsentHandler.HandleException(ex);
+        }
+
+
+        // try
+        // {
+        //     using var response = await downstreamApi.CallApiForUserAsync("GraphApi", o => { o.RelativePath = "me/photo/$value"; });
+        //     response.EnsureSuccessStatusCode();
+        //     var graphApiResponse = await response.Content.ReadAsStreamAsync();
+        // }
+        // catch (Exception ex)
+        // {
+        //     ConsentHandler.HandleException(ex);
+        // }
+    }
+
+    protected override async Task OnInitializedAsync()
+    {
+        try
+        {
+            var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
+            if (authState.User.Identity is not null && authState.User.Identity.IsAuthenticated)
+            {
+                //really function that eventually calls GetUserProfile.
+                await GraphClient.Me.GetAsync();
+            }
+        }
+        catch (Exception e)
+        {
+            ConsentHandler.HandleException(e);
+        }
+
+        //snip rest of this function
+    }
+
+    private MudTheme myLittleTheme = new()
+    {
+        LayoutProperties = new LayoutProperties()
+        {
+            DrawerWidthRight = "320px"
+        }
+    };
+
+    private void ToggleDarkMode()
+    {
+        this.darkMode = !this.darkMode;
+        StateHasChanged();
+    }
+}
