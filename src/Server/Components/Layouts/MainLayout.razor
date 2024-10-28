@@ -1,0 +1,42 @@
+@using Microsoft.AspNetCore.Components.Authorization
+
+@inherits LayoutComponentBase
+
+<MudThemeProvider @bind-IsDarkMode="@this.darkMode" Theme="myLittleTheme" />
+<MudDialogProvider />
+<MudSnackbarProvider />
+<MudPopoverProvider />
+
+<CascadingAuthenticationState>
+    <MudLayout>
+        <MudMainContent>
+            <AuthorizeView>
+                <Authorized>
+                    <NavBar DarkMode="darkMode" OnDarkModeToggled="@((x) => this.darkMode = x)" />
+                    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-4">
+                        @Body
+                        <Footer />
+                    </MudContainer>
+                </Authorized>
+                <NotAuthorized>
+                    <Login />
+                </NotAuthorized>
+                <Authorizing>
+                    Loading...
+                </Authorizing>
+            </AuthorizeView>
+        </MudMainContent>
+    </MudLayout>
+</CascadingAuthenticationState>
+
+@code {
+    private bool darkMode;
+
+    private MudTheme myLittleTheme = new()
+        {
+            LayoutProperties = new LayoutProperties()
+            {
+                DrawerWidthRight = "320px"
+            }
+        };
+}

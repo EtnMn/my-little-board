@@ -1,0 +1,20 @@
+@if (!string.IsNullOrEmpty(this.Source))
+{
+    <MudAvatar>
+        <MudImage Src="@this.Source"></MudImage>
+    </MudAvatar>
+}
+else
+{
+    <MudAvatar Color="Color.Secondary">
+        @ChildContent
+    </MudAvatar>
+}
+
+@code {
+    [Parameter, EditorRequired]
+    public string? Source { get; set; }
+
+    [Parameter]
+    public RenderFragment? ChildContent { get; set; }
+}

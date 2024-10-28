@@ -1,0 +1,27 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+
+  <PropertyGroup>
+    <TargetFramework>net8.0</TargetFramework>
+    <Nullable>enable</Nullable>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <UserSecretsId>24b05e1c-bcce-4db0-95cc-15eaaeda6f1f</UserSecretsId>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <None Remove="Components\Layouts\Login.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="Components\Layouts\Login.razor.css" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Graph" />
+    <PackageReference Include="Microsoft.Identity.Web" />
+    <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" />
+    <PackageReference Include="Microsoft.Identity.Web.GraphServiceClient" />
+    <PackageReference Include="Microsoft.Identity.Web.UI" />
+    <PackageReference Include="MudBlazor" />
+  </ItemGroup>
+
+</Project>
