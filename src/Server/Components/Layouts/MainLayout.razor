@@ -10,32 +10,33 @@
 <MudPopoverProvider />
 
 <CascadingAuthenticationState>
-<MudLayout>
-    <MudMainContent>
-        <AuthorizeView>
-            <Authorized>
-                <NavBar DarkMode="darkMode" OnToggleDarkMode="@(() => this.ToggleDarkMode())" />
-                <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-4">
-                    <a asp-controller="Home" asp-action="Index">Welcome @context.User.Identity?.Name!</a>
-                    <a href="MicrosoftIdentity/Account/SignOut">Logout</a>
-                    <button @onclick="GetClaimsPrincipalData">Get ClaimsPrincipal Data</button>
+    <MudLayout>
+        <MudMainContent>
+            <AuthorizeView>
+                <Authorized>
+                    <NavBar DarkMode="darkMode" OnDarkModeToggled="@((x) => this.darkMode = x)" />
+                    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-4">
+                        <a asp-controller="Home" asp-action="Index">Welcome @context.User.Identity?.Name!</a>
+                        <a href="MicrosoftIdentity/Account/SignOut">Logout</a>
+                        <button @onclick="GetClaimsPrincipalData">Get ClaimsPrincipal Data</button>
 
-                    @Body
-                    <Footer />
-                </MudContainer>
-            </Authorized>
-            <NotAuthorized>
-                <Login/>
-            </NotAuthorized>
-        </AuthorizeView>
-    </MudMainContent>
-</MudLayout>
+                        @Body
+                        <Footer />
+                    </MudContainer>
+                </Authorized>
+                <NotAuthorized>
+                    <Login />
+                </NotAuthorized>
+                <Authorizing>
+                    Loading...
+                </Authorizing>
+            </AuthorizeView>
+        </MudMainContent>
+    </MudLayout>
 </CascadingAuthenticationState>
 
 @code {
     private bool darkMode;
-
-
     private string? authMessage;
     private string? surname;
     private IEnumerable<Claim> claims = Enumerable.Empty<Claim>();
@@ -65,10 +66,4 @@
             DrawerWidthRight = "320px"
         }
     };
-
-    private void ToggleDarkMode()
-    {
-        this.darkMode = !this.darkMode;
-        StateHasChanged();
-    }
 }

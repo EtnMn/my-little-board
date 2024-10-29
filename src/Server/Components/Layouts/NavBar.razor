@@ -18,7 +18,7 @@
     <MudIconButton Icon="@(this.DarkMode ? Icons.Material.Outlined.WbSunny : Icons.Material.Outlined.Nightlight)"
                    Color="Color.Inherit"
                    Size="Size.Small"
-                   OnClick="@(()=>this.OnToggleDarkMode?.Invoke())"
+                   OnClick="@(async ()=>await this.OnDarkModeToggled.InvokeAsync(!this.DarkMode))"
                    aria-label="Toggle dark mode" />
 
     <MudButton OnClick="@(() => drawer = !drawer)">
@@ -54,7 +54,7 @@
     public bool DarkMode { get; set; }
 
     [Parameter]
-    public Action? OnToggleDarkMode { get; set; }
+    public EventCallback<bool> OnDarkModeToggled { get; set; }
 
     private string AvatarSource => this.photo64 is not null ? $"data:image/png;base64,{this.photo64}" : string.Empty;
 
