@@ -75,5 +75,5 @@ jobs:
         uses: azure/webapps-deploy@v3
         with:
           app-name: 'web-mlb-dev'
-          slot-name: 'Development'
+          slot-name: 'Production'
           package: ./blazor-server-app
