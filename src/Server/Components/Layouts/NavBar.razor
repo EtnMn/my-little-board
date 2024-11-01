@@ -15,32 +15,37 @@
 
     <MudSpacer />
 
-    <MudIconButton Icon="@(this.DarkMode ? Icons.Material.Outlined.WbSunny : Icons.Material.Outlined.Nightlight)"
-                   Color="Color.Inherit"
-                   Size="Size.Small"
-                   OnClick="@(async ()=>await this.OnDarkModeToggled.InvokeAsync(!this.DarkMode))"
-                   aria-label="Toggle dark mode" />
-
     <MudButton OnClick="@(() => drawer = !drawer)">
-        @if (!string.IsNullOrEmpty(this.AvatarSource))
-        {
-            <MudAvatar>
-                <MudImage Src="@this.AvatarSource"></MudImage>
-            </MudAvatar>
-        }
-        else
-        {
-            <MudAvatar Color="Color.Secondary">
-                @Initials
-            </MudAvatar>
-        }
+        <UserAvatar Source="@this.AvatarSource">@Initials</UserAvatar>
     </MudButton>
 
     <div>
         <MudDrawer Class="nav-drawer" @bind-Open="drawer" Elevation="2" Variant="@DrawerVariant.Temporary" Anchor="Anchor.Right">
-            <MudDrawerHeader>
-                <MudText Typo="Typo.h5" Class="mt-1">Application</MudText>
+            <MudDrawerHeader Class="px-3 pt-3 align-center " aria-label="User navigation" role="heading" aria-level="1">
+                <div class="d-flex flex-1 gap-x-1">
+                    <UserAvatar Source="@this.AvatarSource">@Initials</UserAvatar>
+                    <div class="d-flex flex-column px-2">
+                        <MudText Typo="Typo.body1">@user?.DisplayName</MudText>
+                        @if (@user?.Mail is not null)
+                        {
+                            <MudText Typo="Typo.body2" Class="mud-text-secondary">@user?.Mail</MudText>
+                        }
+                    </div>
+                </div>
+                <MudIconButton Icon="@Icons.Material.Filled.Close" aria-label="Close drawer" Size="Size.Small" OnClick="@(() => drawer = !drawer)" />
             </MudDrawerHeader>
+            <MudNavMenu>
+                <MudDivider Class="my-2" DividerType="DividerType.Middle" />
+                <MudNavLink Href="/" Icon="@Icons.Material.Outlined.Home">Home</MudNavLink>
+
+                <MudDivider Class="my-2" DividerType="DividerType.Middle" />
+                <MudNavLink OnClick="@(async ()=>await this.OnDarkModeToggled.InvokeAsync(!this.DarkMode))" Icon="@(this.DarkMode ? Icons.Material.Outlined.WbSunny : Icons.Material.Outlined.Nightlight)">
+                    @(this.DarkMode ? "Light mode" : "Dark mode")
+                </MudNavLink>
+
+                <MudDivider Class="my-2" DividerType="DividerType.Middle" />
+                <MudNavLink Href="/MicrosoftIdentity/Account/SignOut" Icon="@Icons.Material.Filled.Logout">Sign out</MudNavLink>
+            </MudNavMenu>
         </MudDrawer>
     </div>
 </MudAppBar>

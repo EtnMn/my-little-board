@@ -16,8 +16,6 @@
                 <Authorized>
                     <NavBar DarkMode="darkMode" OnDarkModeToggled="@((x) => this.darkMode = x)" />
                     <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-4">
-                        <a asp-controller="Home" asp-action="Index">Welcome @context.User.Identity?.Name!</a>
-                        <a href="MicrosoftIdentity/Account/SignOut">Logout</a>
                         <button @onclick="GetClaimsPrincipalData">Get ClaimsPrincipal Data</button>
 
                         @Body
@@ -43,8 +41,7 @@
 
     private async Task GetClaimsPrincipalData()
     {
-        var authState = await AuthenticationStateProvider
-            .GetAuthenticationStateAsync();
+        var authState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
         var user = authState.User;
 
         if (user.Identity is not null && user.Identity.IsAuthenticated)
