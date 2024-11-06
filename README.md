@@ -43,6 +43,7 @@ To get started with the My Little Board application, follow these steps:
 | Logging:LogLevel:Default                 | Information                                                                                 |
 | Logging:LogLevel:Microsoft.AspNetCore    | Warning                                                                                     |
 | AllowedHosts                             | *                                                                                           |
+| ConnectionStrings:Default                | Connection string to database                                                               |
 
 ### Application roles
 

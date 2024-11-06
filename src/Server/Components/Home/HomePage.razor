@@ -1,5 +1,8 @@
 @page "/"
+@inject ISender sender
 
+@using Etn.MyLittleBoard.Application.Projects.Create
+@using Etn.MyLittleBoard.Domain.Aggregates.Projects
 @using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>My Little Board</PageTitle>
@@ -14,4 +17,16 @@
                 <p>You're an @(innerContext.User.Claims.FirstOrDefault(c => c.Type == Claim.Role)?.Value)!</p>
             </Authorized>
         </AuthorizeView>
+
+         <MudButton OnClick="@(() => CreateProject())">
+            Create project
+        </MudButton>
 </AuthorizeView>
+
+@code {
+    private async Task CreateProject()
+    {
+        Result<ProjectId> result = await sender.Send(new CreateProjectRequest("Test 1"));
+        Console.WriteLine(result.Value);
+    }
+}
