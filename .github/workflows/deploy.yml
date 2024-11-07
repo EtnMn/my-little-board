@@ -46,6 +46,25 @@ jobs:
           name: blazor-server-app
           path: ${{env.DOTNET_ROOT}}/myapp
 
+      - name: Restore Tools
+        run: dotnet tool restore
+
+      - name: Bundle EF bundle
+        run: |
+          dotnet ef migrations bundle \
+          --startup-project src/Server \
+          --project src/Infrastructure \
+          --configuration Release \
+          --self-contained \
+          --no-build \
+          --force
+
+      - name: Publish database bundle artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: efbundle
+          path: ./efbundle
+
   deploy:
     name: Deploy to Azure Web App
     runs-on: ubuntu-latest
@@ -69,6 +88,13 @@ jobs:
           client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
           tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
           subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
+
+      - name: Run Database migrations
+        env:
+          ConnectionStrings__Default: ${{ secrets.AZURE_SQL_CONNECTION_STRING }}
+        run: |
+          chmod +x ./efbundle/efbundle
+          ./efbundle/efbundle
 
       - name: Deploy to Azure Web App
         id: deploy-to-webapp
