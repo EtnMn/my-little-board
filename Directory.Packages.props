@@ -3,6 +3,14 @@
     <ManagePackageVersionsCentrally>true</ManagePackageVersionsCentrally>
   </PropertyGroup>
   <ItemGroup>
+    <PackageVersion Include="Ardalis.Result" Version="10.1.0" />
+    <PackageVersion Include="MediatR" Version="12.4.1" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore" Version="8.0.10" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.Design" Version="8.0.10" />
+    <PackageVersion Include="Microsoft.EntityFrameworkCore.SqlServer" Version="8.0.10" />
+    <PackageVersion Include="Microsoft.Extensions.Configuration.Abstractions" Version="8.0.0" />
+    <PackageVersion Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="8.0.2" />
+    <PackageVersion Include="Microsoft.Extensions.Logging.Abstractions" Version="8.0.2" />
     <PackageVersion Include="Microsoft.Graph" Version="5.61.0" />
     <PackageVersion Include="Microsoft.Identity.Client" Version="4.66.1" />
     <PackageVersion Include="Microsoft.Identity.Web" Version="3.2.2" />
@@ -11,5 +19,6 @@
     <PackageVersion Include="Microsoft.Identity.Web.MicrosoftGraph" Version="3.2.2" />
     <PackageVersion Include="Microsoft.Identity.Web.UI" Version="3.2.2" />
     <PackageVersion Include="MudBlazor" Version="7.14.0" />
+    <PackageVersion Include="Vogen" Version="5.0.3" />
   </ItemGroup>
 </Project>

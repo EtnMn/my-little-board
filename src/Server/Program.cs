@@ -1,13 +1,28 @@
+using Etn.MyLittleBoard.Application.Interfaces;
+using Etn.MyLittleBoard.Infrastructure;
 using Etn.MyLittleBoard.Server.Components;
 using Etn.MyLittleBoard.Server.Configuration.Authentication;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using MudBlazor.Services;
+using System.Reflection;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
+ILogger logger = LoggerFactory
+    .Create(logger => logger.AddConsole().AddDebug())
+    .CreateLogger<Program>();
+
 // Add services to the container.
+builder.Services.AddInfrastructureServices(builder.Configuration, logger);
+
+builder.Services.AddMediatR(config =>
+{
+    config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+    config.RegisterServicesFromAssemblyContaining<IAppDbContext>();
+});
+
 builder.Services
     .AddRazorComponents()
     .AddInteractiveServerComponents();
@@ -31,8 +46,8 @@ builder.Services
 
 builder.Services.AddAuthorization();
 
-builder.Services.
-    AddControllersWithViews()
+builder.Services
+    .AddControllersWithViews()
     .AddMicrosoftIdentityUI();
 
 builder.Services.AddMicrosoftIdentityConsentHandler();
@@ -59,7 +74,6 @@ app.MapControllers();
 app.UseAuthentication();
 app.UseAuthorization();
 
-app.MapRazorComponents<App>()
-    .AddInteractiveServerRenderMode();
+app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
 
 await app.RunAsync();
