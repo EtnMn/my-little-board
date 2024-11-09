@@ -70,6 +70,8 @@ jobs:
       matrix:
         target: [Development, Production]
     name: Deploy "My Little Board" to ${{ matrix.target }}
+    permissions:
+      id-token: write #This is required for requesting the JWT
     needs: build
     uses: ./.github/workflows/deploy.yml
     with:

@@ -1,4 +1,4 @@
-name: Deploy "My Little Board", Blazor Server App
+name: Deploy "My Little Board"
 
 on:
   workflow_call:
