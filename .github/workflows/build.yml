@@ -71,7 +71,7 @@ jobs:
         target: [Development, Production]
     name: Deploy "My Little Board" to ${{ matrix.target }}
     needs: build
-    uses: ./my-little-board/blob/main/.github/workflows/deploy.yml@main
+    uses: ./.github/workflows/deploy.yml@main
     with:
       environment: ${{ matrix.target }}
     secrets: inherit
