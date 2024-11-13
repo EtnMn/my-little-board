@@ -1,7 +1,6 @@
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Metadata.Builders;
-using Vogen;
 
 namespace Etn.MyLittleBoard.Infrastructure.Data.Configurations;
 
@@ -17,7 +16,7 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         builder.Property(p => p.Name)
             .HasVogenConversion()
-            .HasMaxLength(DataSchemaConstants.DefaultNameLength)
+            .HasMaxLength(ValidationConstants.DefaultNameLength)
             .IsRequired();
     }
 }

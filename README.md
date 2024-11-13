@@ -1,5 +1,7 @@
 # My Little Board
 
+[![Build & test "My Little Board"](https://github.com/EtnMn/my-little-board/actions/workflows/test.yml/badge.svg)](https://github.com/EtnMn/my-little-board/actions/workflows/test.yml)
+
 This is a solution for managing projects.
 
 ## Description

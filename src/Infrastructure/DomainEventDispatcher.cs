@@ -5,16 +5,10 @@ using Microsoft.Extensions.Logging;
 
 namespace Etn.MyLittleBoard.Infrastructure;
 
-public class DomainEventDispatcher : IDomainEventDispatcher
+public sealed class DomainEventDispatcher(IMediator mediator, ILogger<DomainEventDispatcher> logger) : IDomainEventDispatcher
 {
-    private readonly IMediator mediator;
-    private readonly ILogger<DomainEventDispatcher> logger;
-
-    public DomainEventDispatcher(IMediator mediator, ILogger<DomainEventDispatcher> logger)
-    {
-        this.mediator = mediator;
-        this.logger = logger;
-    }
+    private readonly IMediator mediator = mediator;
+    private readonly ILogger<DomainEventDispatcher> logger = logger;
 
     public async Task DispatchAndClearEvents(IEnumerable<IHasDomainEvents> entitiesWithEvents)
     {
