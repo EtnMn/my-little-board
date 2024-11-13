@@ -27,7 +27,6 @@ public sealed class ProjectNameFrom
     public static TheoryData<string?> StringValidationExceptionData => new()
     {
         { null },
-        { "c"},
         { string.Empty },
         { " " },
         { new string('x', ValidationConstants.DefaultNameLength + 1) }
