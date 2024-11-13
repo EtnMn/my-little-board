@@ -1,4 +1,4 @@
-name: Build & test "My Little Board"
+name: Test
 
 on:
   pull_request:
