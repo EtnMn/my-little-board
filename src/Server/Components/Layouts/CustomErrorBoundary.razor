@@ -1,0 +1,42 @@
+@inherits ErrorBoundary
+
+@inject ILogger<CustomErrorBoundary> Logger
+@inject IHostEnvironment HostEnvironment
+
+@if (CurrentException is null)
+{
+    @ChildContent
+}
+else if (ErrorContent is not null)
+{
+    @ErrorContent(CurrentException)
+}
+else
+{
+    <div class="d-flex flex-column align-center" role="alert">
+        <h4 class="alert-heading">An error occurred</h4>
+        <p>Sorry, an error occurred while processing your request.</p>
+
+        @if (HostEnvironment.IsDevelopment())
+        {
+            <p> @CurrentException.Message</p>
+            <p>@CurrentException.StackTrace</p>
+        }
+
+        <hr>
+
+        <p class="mb-0">Please try again later.</p>
+
+        <MudButton OnClick="@(() => Recover())" Color="Color.Primary">
+            Reset
+        </MudButton>
+    </div>
+}
+
+@code {
+    protected override Task OnErrorAsync(Exception ex)
+    {
+        Logger.LogError(ex, "Unhandled exceptions");
+        return Task.CompletedTask;
+    }
+}

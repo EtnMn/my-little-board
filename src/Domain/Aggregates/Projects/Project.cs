@@ -1,9 +1,10 @@
 using Etn.MyLittleBoard.Domain.Constants;
+using Etn.MyLittleBoard.Domain.Interfaces;
 using Vogen;
 
 namespace Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
-public sealed class Project(ProjectName name) : EntityBase<Project, ProjectId>
+public sealed class Project(ProjectName name) : EntityBase<Project, ProjectId>, IAggregateRoot
 {
     public ProjectName Name { get; private set; } = name;
 }

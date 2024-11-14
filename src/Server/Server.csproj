@@ -8,10 +8,12 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <None Remove="Components\Layouts\CustomErrorBoundary.razor.css" />
     <None Remove="Components\Layouts\Login.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="Components\Layouts\CustomErrorBoundary.razor.css" />
     <Content Include="Components\Layouts\Login.razor.css" />
   </ItemGroup>
 

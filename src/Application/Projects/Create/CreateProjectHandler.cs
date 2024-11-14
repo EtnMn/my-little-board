@@ -5,15 +5,14 @@ using MediatR;
 
 namespace Etn.MyLittleBoard.Application.Projects.Create;
 
-internal sealed class CreateProjectHandler(
-    IAppDbContext dbContext) :
+public sealed class CreateProjectHandler(
+    IRepository<Project> repository) :
     IRequestHandler<CreateProjectRequest, Result<ProjectId>>
 {
     public async Task<Result<ProjectId>> Handle(CreateProjectRequest request, CancellationToken cancellationToken)
     {
         Project project = new(ProjectName.From(request.Name));
-        dbContext.Projects.Add(project);
-        await dbContext.SaveChangesAsync(cancellationToken);
+        await repository.AddAsync(project, cancellationToken);
 
         return project.Id;
     }

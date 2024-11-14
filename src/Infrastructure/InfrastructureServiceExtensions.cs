@@ -16,9 +16,10 @@ public static class InfrastructureServiceExtensions
         ILogger logger)
     {
         string? connectionString = configuration.GetConnectionString("Default");
-        services.AddDbContext<IAppDbContext, AppDbContext>(options => options.UseSqlServer(connectionString));
+        services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+        services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
 
         logger.LogInformation("Infrastructure services registered");
         return services;

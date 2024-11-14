@@ -8,25 +8,59 @@
 <PageTitle>My Little Board</PageTitle>
 
 <AuthorizeView>
-        <h1>Hello @context.User.Identity?.Name!</h1>
+    <MudToolBar Class="align-content-center ">
+        <MudTextField @bind-Value="textValue" Label="Outlined" Variant="Variant.Outlined"></MudTextField>
 
-        <p>Welcome to your new app.</p>
+        <MudSelect @bind-Value="value"
+                   Label="Value"
+                   Placeholder="Placeholder"
+                   HelperText="Helper Text"
+                   HelperTextOnFocus="true"
+                   Clearable="true">
+            @foreach (var state in states)
+            {
+                <MudSelectItem Value="state">@state</MudSelectItem>
+            }
+        </MudSelect>
 
-        <AuthorizeView Roles="@Role.Administrator" Context="innerContext">
-            <Authorized>
-                <p>You're an @(innerContext.User.Claims.FirstOrDefault(c => c.Type == Claim.Role)?.Value)!</p>
-            </Authorized>
-        </AuthorizeView>
+        <MudButton Variant="Variant.Filled">Default</MudButton>
+    </MudToolBar>
 
-         <MudButton OnClick="@(() => CreateProject())">
-            Create project
-        </MudButton>
+    <h1>Hello @context.User.Identity?.Name!</h1>
+
+    <p>Welcome to your new app.</p>
+
+    <AuthorizeView Roles="@Role.Administrator" Context="innerContext">
+        <Authorized>
+            <p>You're an @(innerContext.User.Claims.FirstOrDefault(c => c.Type == Claim.Role)?.Value)!</p>
+        </Authorized>
+    </AuthorizeView>
+
+    <MudButton OnClick="@(() => CreateProject())">
+        Create project
+    </MudButton>
 </AuthorizeView>
 
 @code {
+    private string textValue { get; set; } = "";
+    private string value { get; set; } = "";
+    private string[] states =
+    {
+        "Alabama", "Alaska", "Arizona", "Arkansas", "California",
+        "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
+        "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas",
+        "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
+        "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana",
+        "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
+        "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma",
+        "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
+        "Tennessee", "Texas", "Utah", "Vermont", "Virginia",
+        "Washington", "West Virginia", "Wisconsin", "Wyoming"
+    };
+
     private async Task CreateProject()
     {
-        Result<ProjectId> result = await sender.Send(new CreateProjectRequest("Test 1"));
+        Result<ProjectId> result = await sender.Send(new CreateProjectRequest(""));
         Console.WriteLine(result.Value);
     }
 }

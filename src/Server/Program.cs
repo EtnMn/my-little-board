@@ -1,4 +1,4 @@
-using Etn.MyLittleBoard.Application.Interfaces;
+using Etn.MyLittleBoard.Application;
 using Etn.MyLittleBoard.Infrastructure;
 using Etn.MyLittleBoard.Server.Components;
 using Etn.MyLittleBoard.Server.Configuration.Authentication;
@@ -6,7 +6,6 @@ using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.Identity.Web;
 using Microsoft.Identity.Web.UI;
 using MudBlazor.Services;
-using System.Reflection;
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
@@ -15,13 +14,8 @@ ILogger logger = LoggerFactory
     .CreateLogger<Program>();
 
 // Add services to the container.
+builder.Services.AddApplicationServices(logger);
 builder.Services.AddInfrastructureServices(builder.Configuration, logger);
-
-builder.Services.AddMediatR(config =>
-{
-    config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-    config.RegisterServicesFromAssemblyContaining<IAppDbContext>();
-});
 
 builder.Services
     .AddRazorComponents()

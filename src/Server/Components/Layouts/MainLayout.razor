@@ -14,9 +14,11 @@
                 <Authorized>
                     <NavBar DarkMode="darkMode" OnDarkModeToggled="@((x) => this.darkMode = x)" />
                     <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-4">
-                        @Body
-                        <Footer />
+                        <CustomErrorBoundary>
+                            @Body
+                        </CustomErrorBoundary>
                     </MudContainer>
+                    <Footer />
                 </Authorized>
                 <NotAuthorized>
                     <Login />
