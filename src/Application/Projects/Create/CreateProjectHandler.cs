@@ -1,7 +1,6 @@
 using Ardalis.Result;
 using Etn.MyLittleBoard.Application.Interfaces;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
-using MediatR;
 
 namespace Etn.MyLittleBoard.Application.Projects.Create;
 

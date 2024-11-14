@@ -1,6 +1,6 @@
-using FluentValidation;
+using Ardalis.Result;
+using Ardalis.Result.FluentValidation;
 using FluentValidation.Results;
-using MediatR;
 
 namespace Etn.MyLittleBoard.Application.Configurations;
 internal sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
@@ -14,17 +14,18 @@ internal sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValid
     {
         ValidationContext<TRequest> context = new(request);
 
-        ValidationResult[] validationFailures = await Task.WhenAll(
+        ValidationResult[] validationResults = await Task.WhenAll(
             validators.Select(validator => validator.ValidateAsync(context)));
 
-        ValidationFailure[] errors = validationFailures
+        ValidationResult[] errors = validationResults
             .Where(validationResult => !validationResult.IsValid)
-            .SelectMany(validationResult => validationResult.Errors)
             .ToArray();
 
         if (errors.Length != 0)
         {
-            throw new ValidationException(errors);
+            return (TResponse)typeof(Result<>).MakeGenericType(typeof(TResponse).GetGenericArguments())
+                .GetMethod(nameof(Result.Invalid), [typeof(ValidationError[])])!
+                .Invoke(null, errors.Select(e => e.AsErrors().ToArray()).ToArray())!;
         }
 
         TResponse? response = await next();
