@@ -1,0 +1,20 @@
+@using Etn.MyLittleBoard.Application.Projects.Create
+
+<MudDialog>
+    <DialogContent>
+        A project refers to a specific undertaking or task in software development. It involves creating, modifying, or maintaining a piece of software. Projects have requirements, goals, and a defined scope.
+    </DialogContent>
+    <DialogActions>
+        <MudButton @onclick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="Submit">Create project</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+
+    private void Submit() => MudDialog.Close(DialogResult.Ok(new CreateProjectRequest("")));
+
+    private void Cancel() => MudDialog.Cancel();
+}

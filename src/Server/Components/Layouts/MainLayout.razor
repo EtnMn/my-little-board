@@ -12,12 +12,14 @@
         <MudMainContent>
             <AuthorizeView>
                 <Authorized>
-                    <NavBar DarkMode="darkMode" OnDarkModeToggled="@((x) => this.darkMode = x)" />
-                    <MudContainer MaxWidth="MaxWidth.ExtraLarge" Class="py-4">
-                        <CustomErrorBoundary>
-                            @Body
-                        </CustomErrorBoundary>
-                    </MudContainer>
+                    <div> @* Apply scoped style *@
+                        <NavBar DarkMode="darkMode" OnDarkModeToggled="@((x) => this.darkMode = x)" />
+                        <MudContainer MaxWidth="MaxWidth.Large" Class="py-4 main-content">
+                            <CustomErrorBoundary>
+                                @Body
+                            </CustomErrorBoundary>
+                        </MudContainer>
+                    </div>
                     <Footer />
                 </Authorized>
                 <NotAuthorized>

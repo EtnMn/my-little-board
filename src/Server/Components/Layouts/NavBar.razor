@@ -16,7 +16,8 @@
 
     <MudSpacer />
 
-    <MudButton OnClick="@(() => drawer = !drawer)">
+    @* Todo: OnClick issue. https://github.com/dotnet/razor/issues/10896 *@
+    <MudButton @onclick="@(() => drawer = !drawer)">
         <UserAvatar Source="@this.AvatarSource">@Initials</UserAvatar>
     </MudButton>
 
@@ -33,14 +34,14 @@
                         }
                     </div>
                 </div>
-                <MudIconButton Icon="@Icons.Material.Filled.Close" aria-label="Close drawer" Size="Size.Small" OnClick="@(() => drawer = !drawer)" />
+                <MudIconButton Icon="@Icons.Material.Filled.Close" aria-label="Close drawer" Size="Size.Small" @onclick="@(() => drawer = !drawer)" />
             </MudDrawerHeader>
             <MudNavMenu>
                 <MudDivider Class="my-2" DividerType="DividerType.Middle" />
                 <MudNavLink Href="/" Icon="@Icons.Material.Outlined.Home">Home</MudNavLink>
 
                 <MudDivider Class="my-2" DividerType="DividerType.Middle" />
-                <MudNavLink OnClick="@(async ()=>await this.OnDarkModeToggled.InvokeAsync(!this.DarkMode))" Icon="@(this.DarkMode ? Icons.Material.Outlined.WbSunny : Icons.Material.Outlined.Nightlight)">
+                <MudNavLink @onclick="@(async ()=>await this.OnDarkModeToggled.InvokeAsync(!this.DarkMode))" Icon="@(this.DarkMode ? Icons.Material.Outlined.WbSunny : Icons.Material.Outlined.Nightlight)">
                     @(this.DarkMode ? "Light mode" : "Dark mode")
                 </MudNavLink>
 

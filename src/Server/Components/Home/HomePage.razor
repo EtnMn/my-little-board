@@ -1,5 +1,6 @@
 @page "/"
 @inject ISender sender
+@inject IDialogService Dialog
 
 @using Etn.MyLittleBoard.Application.Projects.Create
 @using Etn.MyLittleBoard.Domain.Aggregates.Projects
@@ -8,59 +9,26 @@
 <PageTitle>My Little Board</PageTitle>
 
 <AuthorizeView>
-    <MudToolBar Class="align-content-center ">
-        <MudTextField @bind-Value="textValue" Label="Outlined" Variant="Variant.Outlined"></MudTextField>
-
-        <MudSelect @bind-Value="value"
-                   Label="Value"
-                   Placeholder="Placeholder"
-                   HelperText="Helper Text"
-                   HelperTextOnFocus="true"
-                   Clearable="true">
-            @foreach (var state in states)
-            {
-                <MudSelectItem Value="state">@state</MudSelectItem>
-            }
-        </MudSelect>
-
-        <MudButton Variant="Variant.Filled">Default</MudButton>
-    </MudToolBar>
-
-    <h1>Hello @context.User.Identity?.Name!</h1>
-
-    <p>Welcome to your new app.</p>
-
-    <AuthorizeView Roles="@Role.Administrator" Context="innerContext">
-        <Authorized>
-            <p>You're an @(innerContext.User.Claims.FirstOrDefault(c => c.Type == Claim.Role)?.Value)!</p>
-        </Authorized>
-    </AuthorizeView>
-
-    <MudButton OnClick="@(() => CreateProject())">
-        Create project
-    </MudButton>
+    @* <h1>Hello @context.User.Identity?.Name!</h1> *@
+    <MudToolBar Class="justify-end" WrapContent="true" Gutters="false">
+        <AuthorizeView Roles="@Role.Administrator" Context="innerContext">
+            <Authorized>
+                @* <p>You're an @(innerContext.User.Claims.FirstOrDefault(c => c.Type == Claim.Role)?.Value)!</p> *@
+                <MudButton StartIcon="@Icons.Material.Filled.CreateNewFolder" Color="Color.Primary" Variant="Variant.Filled" @onclick="@(() => CreateProject())">New</MudButton>
+            </Authorized>
+        </AuthorizeView>
+    </MudToolBar>   
 </AuthorizeView>
 
 @code {
-    private string textValue { get; set; } = "";
-    private string value { get; set; } = "";
-    private string[] states =
-    {
-        "Alabama", "Alaska", "Arizona", "Arkansas", "California",
-        "Colorado", "Connecticut", "Delaware", "Florida", "Georgia",
-        "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", "Kansas",
-        "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts",
-        "Michigan", "Minnesota", "Mississippi", "Missouri", "Montana",
-        "Nebraska", "Nevada", "New Hampshire", "New Jersey", "New Mexico",
-        "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma",
-        "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota",
-        "Tennessee", "Texas", "Utah", "Vermont", "Virginia",
-        "Washington", "West Virginia", "Wisconsin", "Wyoming"
-    };
-
     private async Task CreateProject()
     {
-        Result<ProjectId> result = await sender.Send(new CreateProjectRequest(""));
-        Console.WriteLine(result.Value);
+        IDialogReference dialog = await Dialog.ShowAsync<CreateProjectDialog>("Create a new project", new DialogOptions() { MaxWidth = MaxWidth.Medium, CloseButton = true });
+        DialogResult? dialogResult = await dialog.Result;
+        if (dialogResult is not null && !dialogResult.Canceled)
+        {
+            Result<ProjectId> result = await sender.Send(dialogResult.Data as CreateProjectRequest);
+            Console.WriteLine(result.Value);
+        }        
     }
 }
