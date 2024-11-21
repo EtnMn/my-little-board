@@ -24,9 +24,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Graph" />
     <PackageReference Include="Microsoft.Identity.Web" />
-    <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" />
     <PackageReference Include="Microsoft.Identity.Web.GraphServiceClient" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" />
     <PackageReference Include="MudBlazor" />
   </ItemGroup>
 

@@ -1,6 +1,6 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace Etn.MyLittleBoard.Server.Configuration.Authentication;
+namespace Etn.MyLittleBoard.Infrastructure.Configurations.Authentication;
 
 public sealed class AzureEntraOptions
 {
@@ -11,6 +11,12 @@ public sealed class AzureEntraOptions
 
     [Required(AllowEmptyStrings = false)]
     public required string TenantId { get; set; }
+
+    [Required(AllowEmptyStrings = false)]
+    public required string Domain { get; set; }
+
+    [Required(AllowEmptyStrings = false)]
+    public required string ResponseType { get; set; }
 
     [Required(AllowEmptyStrings = false)]
     public required string ClientId { get; set; }

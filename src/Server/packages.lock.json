@@ -42,16 +42,6 @@
           "System.Text.Json": "8.0.4"
         }
       },
-      "Microsoft.Identity.Web.DownstreamApi": {
-        "type": "Direct",
-        "requested": "[3.2.2, )",
-        "resolved": "3.2.2",
-        "contentHash": "89cjCS+98mBjQOO8tfQ+RKr8b7vWxYr/GJmZ9zZjPhZ7WrKX4kWqaG958oF3M1fDs4qW2CgK+Md8b6rJOfrEIA==",
-        "dependencies": {
-          "Microsoft.Extensions.Options.ConfigurationExtensions": "8.0.0",
-          "Microsoft.Identity.Web.TokenAcquisition": "3.2.2"
-        }
-      },
       "Microsoft.Identity.Web.GraphServiceClient": {
         "type": "Direct",
         "requested": "[3.2.2, )",
@@ -60,15 +50,6 @@
         "dependencies": {
           "Microsoft.Graph": "5.40.0",
           "Microsoft.Identity.Web.TokenAcquisition": "3.2.2"
-        }
-      },
-      "Microsoft.Identity.Web.UI": {
-        "type": "Direct",
-        "requested": "[3.2.2, )",
-        "resolved": "3.2.2",
-        "contentHash": "wLcjNaPou1/A5YIXUsoeC4zCDz7u1HyusokcWnm5ahw6oqnbyxsmNaMnzGnBQwXd5AeZu47bHjgOpDaYTAK0XA==",
-        "dependencies": {
-          "Microsoft.Identity.Web": "3.2.2"
         }
       },
       "MudBlazor": {
@@ -983,7 +964,9 @@
           "Microsoft.EntityFrameworkCore": "[8.0.10, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[8.0.10, )",
           "Microsoft.Extensions.Configuration.Abstractions": "[8.0.0, )",
-          "Microsoft.Extensions.DependencyInjection.Abstractions": "[8.0.2, )"
+          "Microsoft.Extensions.DependencyInjection.Abstractions": "[8.0.2, )",
+          "Microsoft.Graph": "[5.61.0, )",
+          "Microsoft.Identity.Web": "[3.2.2, )"
         }
       },
       "Ardalis.Result": {

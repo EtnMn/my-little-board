@@ -23,11 +23,18 @@
 @code {
     private async Task CreateProject()
     {
-        IDialogReference dialog = await Dialog.ShowAsync<CreateProjectDialog>("Create a new project", new DialogOptions() { MaxWidth = MaxWidth.Medium, CloseButton = true });
+        IDialogReference dialog = await Dialog.ShowAsync<CreateProjectDialog>(
+            "Create a new project",
+            new DialogOptions() {
+                MaxWidth = MaxWidth.Medium,
+                CloseButton = true
+            }
+        );
+
         DialogResult? dialogResult = await dialog.Result;
-        if (dialogResult is not null && !dialogResult.Canceled)
+        if (dialogResult is not null && !dialogResult.Canceled && dialogResult.Data is CreateProjectRequest createProjectRequest)
         {
-            Result<ProjectId> result = await sender.Send(dialogResult.Data as CreateProjectRequest);
+            Result<ProjectId> result = await sender.Send(createProjectRequest);
             Console.WriteLine(result.Value);
         }        
     }

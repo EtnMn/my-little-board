@@ -1,6 +1,7 @@
 using Etn.MyLittleBoard.Application.Interfaces;
 using Etn.MyLittleBoard.Domain.Interfaces;
 using Etn.MyLittleBoard.Infrastructure.Data;
+using Etn.MyLittleBoard.Infrastructure.Services;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
@@ -20,6 +21,7 @@ public static class InfrastructureServiceExtensions
 
         services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
         services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+        services.AddScoped<IUserService, UserService>();
 
         logger.LogInformation("Infrastructure services registered");
         return services;
