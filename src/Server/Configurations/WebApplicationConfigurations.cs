@@ -44,7 +44,7 @@ public static class WebApplicationConfigurations
 
         app.UseHttpsRedirection();
 
-        app.UseStaticFiles();
+        app.MapStaticAssets();
 
         app.UseAuthentication();
         app.UseAuthorization();
