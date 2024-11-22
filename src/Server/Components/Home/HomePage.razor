@@ -17,12 +17,29 @@
     </AuthorizeView>
 </MudToolBar>
 
-<ul>
+<div class="d-flex flex-wrap justify-center justify-lg-space-between flex-grow-1 gap-6">
 @foreach (var item in this.projects)
 {
-    <li>@item.Name</li>
+        <MudCard Style="overflow: hidden;">
+             <MudPaper Class="pa-8 d-flex justify-center" Elevation="0" Square="true" Style="background-color: var(--mud-palette-primary)">
+                <MudText Typo="Typo.h2" Style="color:white">@item.Name.Value[0]</MudText>
+             </MudPaper>
+            <MudCardContent>
+                <MudText Typo="Typo.h5">@item.Name</MudText>
+                <MudText Typo="Typo.body2">Old paint found on a stone house door.</MudText>
+                <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+            </MudCardContent>
+            <MudCardActions>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
+                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+            </MudCardActions>
+        </MudCard>
 }
-</ul>
+</div>
+
+<div class="mt-6 d-flex justify-center">
+    <MudPagination Rectangular="true" Count="6" BoundaryCount="1" MiddleCount="3" />
+</div>
 
 @code {
     private Project[] projects = [];

@@ -13,7 +13,7 @@ public sealed class ListPaginatedProjectsHandler(
         ListPaginatedProjectsRequest request,
         CancellationToken cancellationToken)
     {
-        ProjectsPaginated specification = new(0, 10);
+        ProjectsPaginated specification = new(request.Skip, request.Take);
         return await repository.GetAllAsync(specification, cancellationToken);
     }
 }
