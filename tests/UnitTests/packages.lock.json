@@ -1178,6 +1178,7 @@
       "domain": {
         "type": "Project",
         "dependencies": {
+          "Ardalis.Specification": "[8.0.0, )",
           "MediatR": "[12.4.1, )",
           "Microsoft.Extensions.Logging.Abstractions": "[8.0.2, )",
           "Vogen": "[5.0.3, )"
@@ -1198,6 +1199,12 @@
           "Ardalis.Result": "10.1.0",
           "FluentValidation": "11.9.2"
         }
+      },
+      "Ardalis.Specification": {
+        "type": "CentralTransitive",
+        "requested": "[8.0.0, )",
+        "resolved": "8.0.0",
+        "contentHash": "1/YP932oZJtaDlm85rWfqvgOjALbk2+VDZaj36sM2TdsJMNkVqMbF5UzY6f7OfzA8eymv3hnCXIgYmEBEiUOhQ=="
       },
       "FluentValidation": {
         "type": "CentralTransitive",

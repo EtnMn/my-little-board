@@ -11,8 +11,7 @@ internal sealed class UserCircuitHandler(
     CircuitHandler,
     IDisposable
 {
-    public override Task OnCircuitOpenedAsync(Circuit circuit,
-        CancellationToken cancellationToken)
+    public override Task OnCircuitOpenedAsync(Circuit circuit, CancellationToken cancellationToken)
     {
         authenticationStateProvider.AuthenticationStateChanged += this.AuthenticationChanged;
 
@@ -32,7 +31,7 @@ internal sealed class UserCircuitHandler(
             }
             catch
             {
-                // Todo: EM: Log.
+                // No action.
             }
         }
     }

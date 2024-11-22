@@ -1,5 +1,8 @@
+using Ardalis.Specification;
+using Ardalis.Specification.EntityFrameworkCore;
 using Etn.MyLittleBoard.Application.Interfaces;
 using Etn.MyLittleBoard.Domain.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace Etn.MyLittleBoard.Infrastructure.Data;
 
@@ -24,6 +27,11 @@ internal sealed class Repository<T>(AppDbContext dbContext) : IRepository<T> whe
     public ValueTask<T?> GetByIdAsync<TId>(TId entityId, CancellationToken cancellationToken) where TId : notnull
     {
         return this.dbContext.Set<T>().FindAsync([entityId], cancellationToken: cancellationToken);
+    }
+
+    public Task<T[]> GetAllAsync(ISpecification<T> specification, CancellationToken cancellationToken)
+    {
+        return this.dbContext.Set<T>().WithSpecification(specification).ToArrayAsync(cancellationToken);
     }
 
     public Task<int> UpdateAsync(T entity, CancellationToken cancellationToken)

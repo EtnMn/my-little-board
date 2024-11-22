@@ -1,3 +1,3 @@
 ::deep .main-content {
-    min-height: calc(90vh - var(--mud-appbar-height));
+    min-height: calc(85vh - var(--mud-appbar-height));
 }

@@ -26,14 +26,16 @@
         <MudDrawer Class="nav-drawer" @bind-Open="drawer" Elevation="2" Variant="@DrawerVariant.Temporary" Anchor="Anchor.Right">
             <MudDrawerHeader Class="px-3 pt-3 align-center " aria-label="User navigation" role="heading" aria-level="1">
                 <div class="d-flex flex-1 gap-x-1">
-                    <UserAvatar Source="@this.AvatarSource">@Initials</UserAvatar>
-                    <div class="d-flex flex-column px-2">
-                        <MudText Typo="Typo.body1">@Name</MudText>
-                        @if (!string.IsNullOrEmpty(this.Email))
-                        {
-                            <MudText Typo="Typo.body2" Class="mud-text-secondary">@Email</MudText>
-                        }
-                    </div>
+                    <AuthorizeView>
+                        <UserAvatar Source="@this.AvatarSource">@Initials</UserAvatar>
+                        <div class="d-flex flex-column px-2">
+                            <MudText Typo="Typo.body1">@this.Name</MudText>
+                            @if (!string.IsNullOrEmpty(@context.User.Identity?.Name))
+                            {
+                                <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.User.Identity?.Name</MudText>
+                            }
+                        </div>
+                    </AuthorizeView>
                 </div>
                 <MudIconButton Icon="@Icons.Material.Filled.Close" aria-label="Close drawer" Size="Size.Small" @onclick="@(() => drawer = !drawer)" />
             </MudDrawerHeader>
@@ -81,8 +83,6 @@
     private string AvatarSource => this.photo64 is not null ? $"data:image/png;base64,{this.photo64}" : string.Empty;
 
     private string Initials => this.Name?[0].ToString() ?? string.Empty;
-
-    private string Email => this.claimsPrincipal?.GetDisplayName() ?? string.Empty;
 
     private string Name => this.claimsPrincipal?.Claims.FirstOrDefault(c => c.Type == CustomClaims.Name)?.Value ?? string.Empty;
 

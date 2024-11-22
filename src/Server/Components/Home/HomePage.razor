@@ -3,24 +3,40 @@
 @inject IDialogService Dialog
 
 @using Etn.MyLittleBoard.Application.Projects.Create
+@using Etn.MyLittleBoard.Application.Projects.ListPaginated
 @using Etn.MyLittleBoard.Domain.Aggregates.Projects
 @using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>My Little Board</PageTitle>
 
-<AuthorizeView>
-    @* <h1>Hello @context.User.Identity?.Name!</h1> *@
-    <MudToolBar Class="justify-end" WrapContent="true" Gutters="false">
-        <AuthorizeView Roles="@Role.Administrator" Context="innerContext">
-            <Authorized>
-                @* <p>You're an @(innerContext.User.Claims.FirstOrDefault(c => c.Type == Claim.Role)?.Value)!</p> *@
-                <MudButton StartIcon="@Icons.Material.Filled.CreateNewFolder" Color="Color.Primary" Variant="Variant.Filled" @onclick="@(() => CreateProject())">New</MudButton>
-            </Authorized>
-        </AuthorizeView>
-    </MudToolBar>   
-</AuthorizeView>
+<MudToolBar Class="justify-end" WrapContent="true" Gutters="false">
+    <AuthorizeView Roles="@Role.Administrator">
+        <Authorized>
+            <MudButton StartIcon="@Icons.Material.Filled.CreateNewFolder" Color="Color.Primary" Variant="Variant.Filled" @onclick="@(() => CreateProject())">New</MudButton>
+        </Authorized>
+    </AuthorizeView>
+</MudToolBar>
+
+<ul>
+@foreach (var item in this.projects)
+{
+    <li>@item.Name</li>
+}
+</ul>
 
 @code {
+    private Project[] projects = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListPaginatedProjectsRequest listProjects = new(0, 10);
+        Result<Project[]> result = await sender.Send(listProjects);
+        if (result.IsSuccess)
+        {
+            this.projects = result.Value;
+        }
+    }
+
     private async Task CreateProject()
     {
         IDialogReference dialog = await Dialog.ShowAsync<CreateProjectDialog>(
