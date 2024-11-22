@@ -8,11 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <None Remove="Components\Layouts\Login.razor.css" />
+      <None Remove="Components\Layouts\Login.razor.css" />
+      <None Remove="Components\Layouts\MainLayout.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
-    <Content Include="Components\Layouts\Login.razor.css" />
+      <Content Include="Components\Layouts\Login.razor.css" />
+      <Content Include="Components\Layouts\MainLayout.razor.css" />
   </ItemGroup>
 
   <ItemGroup>
@@ -22,9 +24,7 @@
     </PackageReference>
     <PackageReference Include="Microsoft.Graph" />
     <PackageReference Include="Microsoft.Identity.Web" />
-    <PackageReference Include="Microsoft.Identity.Web.DownstreamApi" />
     <PackageReference Include="Microsoft.Identity.Web.GraphServiceClient" />
-    <PackageReference Include="Microsoft.Identity.Web.UI" />
     <PackageReference Include="MudBlazor" />
   </ItemGroup>
 

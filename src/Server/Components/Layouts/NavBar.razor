@@ -1,12 +1,13 @@
+@using Etn.MyLittleBoard.Application.Interfaces
 @using Microsoft.AspNetCore.Components.Authorization
-@using Microsoft.Graph
-@using Microsoft.Graph.Models
-@using Microsoft.Graph.Models.ODataErrors
 @using Microsoft.Identity.Web
+@using System.Security.Claims
+
+@implements IDisposable
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
 @inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
-@inject GraphServiceClient GraphClient
+@inject IUserService UserService
 
 <MudAppBar Elevation="1">
     <MudLink Href="/" Class="d-inline-flex align-center">
@@ -16,7 +17,8 @@
 
     <MudSpacer />
 
-    <MudButton OnClick="@(() => drawer = !drawer)">
+    @* Todo: OnClick issue. https://github.com/dotnet/razor/issues/10896 *@
+    <MudButton @onclick="@(() => drawer = !drawer)">
         <UserAvatar Source="@this.AvatarSource">@Initials</UserAvatar>
     </MudButton>
 
@@ -24,23 +26,25 @@
         <MudDrawer Class="nav-drawer" @bind-Open="drawer" Elevation="2" Variant="@DrawerVariant.Temporary" Anchor="Anchor.Right">
             <MudDrawerHeader Class="px-3 pt-3 align-center " aria-label="User navigation" role="heading" aria-level="1">
                 <div class="d-flex flex-1 gap-x-1">
-                    <UserAvatar Source="@this.AvatarSource">@Initials</UserAvatar>
-                    <div class="d-flex flex-column px-2">
-                        <MudText Typo="Typo.body1">@user?.DisplayName</MudText>
-                        @if (@user?.Mail is not null)
-                        {
-                            <MudText Typo="Typo.body2" Class="mud-text-secondary">@user?.Mail</MudText>
-                        }
-                    </div>
+                    <AuthorizeView>
+                        <UserAvatar Source="@this.AvatarSource">@Initials</UserAvatar>
+                        <div class="d-flex flex-column px-2">
+                            <MudText Typo="Typo.body1">@this.Name</MudText>
+                            @if (!string.IsNullOrEmpty(@context.User.Identity?.Name))
+                            {
+                                <MudText Typo="Typo.body2" Class="mud-text-secondary">@context.User.Identity?.Name</MudText>
+                            }
+                        </div>
+                    </AuthorizeView>
                 </div>
-                <MudIconButton Icon="@Icons.Material.Filled.Close" aria-label="Close drawer" Size="Size.Small" OnClick="@(() => drawer = !drawer)" />
+                <MudIconButton Icon="@Icons.Material.Filled.Close" aria-label="Close drawer" Size="Size.Small" @onclick="@(() => drawer = !drawer)" />
             </MudDrawerHeader>
             <MudNavMenu>
                 <MudDivider Class="my-2" DividerType="DividerType.Middle" />
                 <MudNavLink Href="/" Icon="@Icons.Material.Outlined.Home">Home</MudNavLink>
 
                 <MudDivider Class="my-2" DividerType="DividerType.Middle" />
-                <MudNavLink OnClick="@(async ()=>await this.OnDarkModeToggled.InvokeAsync(!this.DarkMode))" Icon="@(this.DarkMode ? Icons.Material.Outlined.WbSunny : Icons.Material.Outlined.Nightlight)">
+                <MudNavLink @onclick="@(async ()=> await this.OnDarkModeToggled.InvokeAsync(!this.DarkMode))" Icon="@(this.DarkMode ? Icons.Material.Outlined.WbSunny : Icons.Material.Outlined.Nightlight)">
                     @(this.DarkMode ? "Light mode" : "Dark mode")
                 </MudNavLink>
 
@@ -49,7 +53,13 @@
                 </AuthorizeView>
 
                 <MudDivider Class="my-2" DividerType="DividerType.Middle" />
-                <MudNavLink Href="/MicrosoftIdentity/Account/SignOut" Icon="@Icons.Material.Filled.Logout">Sign out</MudNavLink>
+                <form action="authentication/logout" method="post">
+                    <AntiforgeryToken />
+                    <MudButton Variant="Variant.Text" ButtonType="@ButtonType.Submit" Class="mud-nav-link">
+                        <MudIcon Icon="@Icons.Material.Filled.Logout" Title="Log out" Class="mud-nav-link-icon mud-nav-link-icon-default"></MudIcon>
+                        <div class="mud-nav-link-text">Log out</div>
+                    </MudButton>
+                </form>
             </MudNavMenu>
         </MudDrawer>
     </div>
@@ -57,7 +67,8 @@
 
 @code {
     private bool drawer = false;
-    private User? user;
+    private readonly CancellationTokenSource cancellationTokenSource = new();
+    private ClaimsPrincipal? claimsPrincipal;
     private string? photo64;
 
     [Parameter]
@@ -66,24 +77,22 @@
     [Parameter]
     public EventCallback<bool> OnDarkModeToggled { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
+
     private string AvatarSource => this.photo64 is not null ? $"data:image/png;base64,{this.photo64}" : string.Empty;
 
-    private string Initials => user?.DisplayName?[0].ToString() ?? string.Empty;
+    private string Initials => this.Name?[0].ToString() ?? string.Empty;
+
+    private string Name => this.claimsPrincipal?.Claims.FirstOrDefault(c => c.Type == CustomClaims.Name)?.Value ?? string.Empty;
 
     protected override async Task OnInitializedAsync()
     {
-        try
+        if (this.AuthenticationState is not null)
         {
-            AuthenticationState authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
-            if (authenticationState.User.Identity?.IsAuthenticated == true)
-            {
-                this.user = await GraphClient.Me.GetAsync();
-            }
-        }
-        catch (Exception e)
-        {
-            ConsentHandler.HandleException(e);
-        }
+            var authState = await this.AuthenticationState;
+            this.claimsPrincipal = authState.User;
+        }        
     }
 
     protected override async Task OnAfterRenderAsync(bool firstRender)
@@ -93,32 +102,14 @@
             AuthenticationState authenticationState = await AuthenticationStateProvider.GetAuthenticationStateAsync();
             if (authenticationState.User.Identity?.IsAuthenticated == true)
             {
-                try
-                {
-                    Stream? photoStream = await GraphClient.Me.Photo.Content.GetAsync();
-                    if (photoStream is not null)
-                    {
-                        MemoryStream photoMemoryStream = new();
-                        await photoStream!.CopyToAsync(photoMemoryStream);
-                        this.photo64 = Convert.ToBase64String(photoMemoryStream.ToArray());
-                    }
-                    else
-                    {
-                        this.photo64 = null;
-                    }
-                }
-                catch (ODataError e) when (string.Equals(
-                    e.Error?.Code,
-                    Microsoft.Graph.GraphErrorCode.ImageNotFound.ToString(),
-                    StringComparison.OrdinalIgnoreCase))
-                {
-                    this.photo64 = null;
-                }
-                finally
-                {
-                    this.StateHasChanged();
-                }
+                this.photo64 = await UserService.GetUserPhoto64(this.cancellationTokenSource.Token);
+                this.StateHasChanged();
             }
         }
+    }
+
+    public void Dispose()
+    {
+        this.cancellationTokenSource.Dispose();
     }
 }

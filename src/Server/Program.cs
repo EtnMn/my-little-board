@@ -1,79 +1,20 @@
-using Etn.MyLittleBoard.Application.Interfaces;
-using Etn.MyLittleBoard.Infrastructure;
-using Etn.MyLittleBoard.Server.Components;
-using Etn.MyLittleBoard.Server.Configuration.Authentication;
-using Microsoft.AspNetCore.Authentication.OpenIdConnect;
-using Microsoft.Identity.Web;
-using Microsoft.Identity.Web.UI;
+using Etn.MyLittleBoard.Server.Configurations;
 using MudBlazor.Services;
-using System.Reflection;
-
-WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
 
 ILogger logger = LoggerFactory
     .Create(logger => logger.AddConsole().AddDebug())
     .CreateLogger<Program>();
 
-// Add services to the container.
-builder.Services.AddInfrastructureServices(builder.Configuration, logger);
-
-builder.Services.AddMediatR(config =>
-{
-    config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
-    config.RegisterServicesFromAssemblyContaining<IAppDbContext>();
-});
-
-builder.Services
-    .AddRazorComponents()
-    .AddInteractiveServerComponents();
-
-builder.Services
-    .AddOptionsWithValidateOnStart<AzureEntraOptions>()
-    .BindConfiguration(AzureEntraOptions.Key)
-    .ValidateDataAnnotations();
-
-builder.Services
-    .AddOptionsWithValidateOnStart<GraphApiOptions>()
-    .BindConfiguration(GraphApiOptions.Key)
-    .ValidateDataAnnotations();
-
-builder.Services
-    .AddAuthentication(OpenIdConnectDefaults.AuthenticationScheme)
-    .AddMicrosoftIdentityWebApp(builder.Configuration.GetSection(AzureEntraOptions.Key))
-    .EnableTokenAcquisitionToCallDownstreamApi()
-    .AddMicrosoftGraph(builder.Configuration.GetSection(GraphApiOptions.Key))
-    .AddInMemoryTokenCaches();
-
-builder.Services.AddAuthorization();
-
-builder.Services
-    .AddControllersWithViews()
-    .AddMicrosoftIdentityUI();
-
-builder.Services.AddMicrosoftIdentityConsentHandler();
-
+WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
+builder.Services.AddOptionConfigurations(logger);
+builder.Services.AddServiceConfigurations(logger, builder);
+builder.Services.AddWebApplicationServiceConfigurations(logger, builder);
 builder.Services.AddMudServices();
 
 WebApplication app = builder.Build();
 
-// Configure the HTTP request pipeline.
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Error", createScopeForErrors: true);
-    // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
-    app.UseHsts();
-}
-
-app.UseHttpsRedirection();
-
-app.UseStaticFiles();
-app.UseAntiforgery();
-
-app.MapControllers();
-
-app.UseAuthentication();
-app.UseAuthorization();
-
-app.MapRazorComponents<App>().AddInteractiveServerRenderMode();
+app.UseApplicationMiddleware();
+app.UseApplicationEndpoints();
 
 await app.RunAsync();
+

@@ -1,4 +1,3 @@
-using Etn.MyLittleBoard.Application.Interfaces;
 using Etn.MyLittleBoard.Domain.Aggregates;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 using Etn.MyLittleBoard.Domain.Interfaces;
@@ -10,8 +9,8 @@ namespace Etn.MyLittleBoard.Infrastructure.Data;
 internal sealed class AppDbContext(
     DbContextOptions<AppDbContext> options,
     IDomainEventDispatcher? dispatcher) :
-    DbContext(options),
-    IAppDbContext
+    DbContext(options)
+//IAppDbContext
 {
     private readonly IDomainEventDispatcher? dispatcher = dispatcher;
 

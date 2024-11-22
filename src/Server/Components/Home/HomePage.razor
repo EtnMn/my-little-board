@@ -1,32 +1,57 @@
 @page "/"
 @inject ISender sender
+@inject IDialogService Dialog
 
 @using Etn.MyLittleBoard.Application.Projects.Create
+@using Etn.MyLittleBoard.Application.Projects.ListPaginated
 @using Etn.MyLittleBoard.Domain.Aggregates.Projects
 @using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>My Little Board</PageTitle>
 
-<AuthorizeView>
-        <h1>Hello @context.User.Identity?.Name!</h1>
+<MudToolBar Class="justify-end" WrapContent="true" Gutters="false">
+    <AuthorizeView Roles="@Role.Administrator">
+        <Authorized>
+            <MudButton StartIcon="@Icons.Material.Filled.CreateNewFolder" Color="Color.Primary" Variant="Variant.Filled" @onclick="@(() => CreateProject())">New</MudButton>
+        </Authorized>
+    </AuthorizeView>
+</MudToolBar>
 
-        <p>Welcome to your new app.</p>
-
-        <AuthorizeView Roles="@Role.Administrator" Context="innerContext">
-            <Authorized>
-                <p>You're an @(innerContext.User.Claims.FirstOrDefault(c => c.Type == Claim.Role)?.Value)!</p>
-            </Authorized>
-        </AuthorizeView>
-
-         <MudButton OnClick="@(() => CreateProject())">
-            Create project
-        </MudButton>
-</AuthorizeView>
+<ul>
+@foreach (var item in this.projects)
+{
+    <li>@item.Name</li>
+}
+</ul>
 
 @code {
+    private Project[] projects = [];
+
+    protected override async Task OnInitializedAsync()
+    {
+        ListPaginatedProjectsRequest listProjects = new(0, 10);
+        Result<Project[]> result = await sender.Send(listProjects);
+        if (result.IsSuccess)
+        {
+            this.projects = result.Value;
+        }
+    }
+
     private async Task CreateProject()
     {
-        Result<ProjectId> result = await sender.Send(new CreateProjectRequest("Test 1"));
-        Console.WriteLine(result.Value);
+        IDialogReference dialog = await Dialog.ShowAsync<CreateProjectDialog>(
+            "Create a new project",
+            new DialogOptions() {
+                MaxWidth = MaxWidth.Medium,
+                CloseButton = true
+            }
+        );
+
+        DialogResult? dialogResult = await dialog.Result;
+        if (dialogResult is not null && !dialogResult.Canceled && dialogResult.Data is CreateProjectRequest createProjectRequest)
+        {
+            Result<ProjectId> result = await sender.Send(createProjectRequest);
+            Console.WriteLine(result.Value);
+        }        
     }
 }

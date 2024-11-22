@@ -1,4 +1,4 @@
-namespace Etn.MyLittleBoard.Server.Configuration.Authorization;
+namespace Etn.MyLittleBoard.Infrastructure.Configurations.Authorization;
 
 public static class Role
 {
