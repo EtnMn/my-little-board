@@ -9,6 +9,6 @@ public sealed class ProjectsPaginated : Specification<Project>
         ArgumentOutOfRangeException.ThrowIfLessThan(skip, 0);
         ArgumentOutOfRangeException.ThrowIfLessThan(take, 0);
 
-        this.Query.OrderBy(p => p.Name).Skip(skip).Take(take);
+        this.Query.AsNoTracking().OrderBy(p => p.Name).Skip(skip).Take(take);
     }
 }

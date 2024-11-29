@@ -1,5 +1,6 @@
 using Etn.MyLittleBoard.Application.Interfaces;
 using Etn.MyLittleBoard.Application.Projects.ListPaginated;
+using Etn.MyLittleBoard.Application.Shared;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects.Specifications;
 
@@ -16,15 +17,18 @@ public sealed class ListPaginatedProjectsHandlerHandle
     {
         IEnumerable<Project> projects = this.fixture.CreateMany<Project>(count);
         IRepository<Project> repository = Substitute.For<IRepository<Project>>();
-        repository.GetAllAsync(Arg.Any<ProjectsPaginated>(), Arg.Any<CancellationToken>()).Returns([.. projects]);
+        repository.ListAsync(Arg.Any<ProjectsPaginated>(), Arg.Any<CancellationToken>()).Returns([.. projects]);
 
         ListPaginatedProjectsHandler handler = new(repository);
         ListPaginatedProjectsRequest request = new(0, count);
-        Result<Project[]> result = await handler.Handle(request, CancellationToken.None);
+        Result<PageDto<Project>> result = await handler.Handle(request, CancellationToken.None);
 
+        // Todo: Refaire les tests.
         result.IsSuccess.Should().BeTrue();
-        result.Value.Should().NotBeNull();
-        result.Value.Should().BeOfType<Project[]>();
-        result.Value.Should().HaveCount(count);
+        result.Value.Skip.Should().Be(request.Skip);
+        result.Value.Take.Should().Be(request.Take);
+        result.Value.Items.Should().NotBeNull();
+        result.Value.Items.Should().BeOfType<Project[]>();
+        result.Value.Items.Should().HaveCount(count);
     }
 }
