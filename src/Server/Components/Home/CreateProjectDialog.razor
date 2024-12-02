@@ -1,6 +1,6 @@
 @using Etn.MyLittleBoard.Application.Projects.Create
 
-<MudDialog>
+<MudDialog DefaultFocus="DefaultFocus.FirstChild">
     <DialogContent>
         A project refers to a specific undertaking or task in software development. It involves creating, modifying, or maintaining a piece of software. Projects have requirements, goals, and a defined scope.
         <MudForm Model="@projectRequest" @ref="@form" Validation="@(orderValidator.Validation)">

@@ -3,6 +3,7 @@
 @inject ISender sender
 @inject IDialogService Dialog
 @inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 
 @using Etn.MyLittleBoard.Application.Projects.Create
 @using Etn.MyLittleBoard.Application.Projects.ListPaginated
@@ -11,7 +12,9 @@
 
 <PageTitle>My Little Board</PageTitle>
 
-<MudToolBar Class="justify-end" WrapContent="true" Gutters="false">
+<MudToolBar WrapContent="true" Gutters="false" Class="mb-3">
+    <MudText Typo="Typo.h1">Your projects</MudText>
+    <MudSpacer />
     <AuthorizeView Roles="@Role.Administrator">
         <Authorized>
             <MudButton StartIcon="@Icons.Material.Filled.CreateNewFolder" Color="Color.Primary" Variant="Variant.Filled" @onclick="@(() => CreateProject())">New</MudButton>
@@ -20,26 +23,29 @@
 </MudToolBar>
 
 <MudPaper Elevation="0" Outlined="this.count < 1" class="relative d-flex flex-wrap justify-center justify-lg-space-between flex-grow-1 gap-6">
-    <SpinnerOverlay Displayed="this.loading" />
+    <MudOverlay Visible="this.loading" LightBackground="true" Absolute="true">
+        <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate="true" />
+    </MudOverlay>
     @foreach (var item in this.projects)
     {
-        <MudCard Style="overflow: hidden;">
-            <MudPaper Class="pa-8 d-flex justify-center" Elevation="0" Square="true" Style="background-color: var(--mud-palette-primary)">
-                <MudText Typo="Typo.h2" Style="color:white">@item.Name.Value[0]</MudText>
-            </MudPaper>
-            <MudCardContent>
-                <MudText Typo="Typo.h5">@item.Name</MudText>
-                <MudText Typo="Typo.body2">Old paint found on a stone house door.</MudText>
-                <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
-            </MudCardContent>
-            <MudCardActions>
-                <MudButton Variant="Variant.Text" Color="Color.Primary">Share</MudButton>
-                <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-            </MudCardActions>
-        </MudCard>
+        <div>
+            <MudCard Class="cursor-pointer overflow-hidden highlight-hover" @onclick="@(() => NavigationManager.NavigateTo($"/project/{item.Id}"))">
+                <MudPaper Class="pa-6 d-flex justify-center" Elevation="0" Square="true" Style="background-color: var(--mud-palette-primary)">
+                    <MudText Typo="Typo.button" Style="font-size: 4rem; color:white">@item.Name.Value[0]</MudText>
+                </MudPaper>
+                <MudCardContent>
+                    <MudText Typo="Typo.h2">@item.Name</MudText>
+                    <MudText Typo="Typo.body2">Old paint found on a stone house door.</MudText>
+                    <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@($"/project/{item.Id}")">See More</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </div>
     }
 
-    @if (this.count < 1)
+    @if (this.count < 1 && this.initialized)
     {
         <div class="d-flex justify-center align-center flex-column gap-10 pa-16" style="width: 100%">
             <MudIcon Icon="@Icons.Material.Outlined.FolderOff" Style="font-size: 4rem;" />
@@ -61,12 +67,14 @@
     private int count = 0;
     private int currentPage = 1;
     private bool loading = false;
+    private bool initialized = false;
 
     private int Pages => (int)Math.Ceiling((double)this.count / itemsPerPage);
 
     protected override async Task OnInitializedAsync()
     {
         await this.LoadProject();
+        this.initialized = true;
     }
 
     private async Task LoadProject()
@@ -83,7 +91,7 @@
 
         this.loading = false;
         this.StateHasChanged();
-   }
+    }
 
     private async Task CreateProject()
     {
@@ -101,7 +109,17 @@
             Result<ProjectId> result = await sender.Send(createProjectRequest);
             if (result.IsSuccess)
             {
-                Snackbar.Add("Project created", Severity.Success);
+                Snackbar.Add("Project created", Severity.Success, config =>
+                {
+                    config.Action = "See";
+                    config.ActionVariant = Variant.Text;
+                    config.ActionColor = Color.Primary;
+                    config.Onclick = s =>
+                    {
+                        NavigationManager.NavigateTo($"/project/{result.Value}");
+                        return Task.CompletedTask;
+                    };
+                });
                 await this.LoadProject();
             }
             else{
