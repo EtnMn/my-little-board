@@ -14,6 +14,7 @@ public sealed class ListPaginatedProjectsHandler(
         CancellationToken cancellationToken)
     {
         ProjectsPaginated specification = new(request.Skip, request.Take);
+
         int count = await repository.CountAsync(specification, cancellationToken);
         List<Project> result = await repository.ListAsync(specification, cancellationToken);
 

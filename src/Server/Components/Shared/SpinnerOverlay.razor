@@ -1,0 +1,11 @@
+@if (this.Displayed)
+{
+    <div Class="spinner-overlay d-flex justify-center align-center absolute rounded">
+        <MudProgressCircular Color="Color.Default" Indeterminate="true" Size="Size.Large" />
+    </div>
+}
+
+@code {
+    [Parameter]
+    public bool Displayed { get; set; } = true;
+}

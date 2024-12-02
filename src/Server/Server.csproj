@@ -7,17 +7,7 @@
     <UserSecretsId>24b05e1c-bcce-4db0-95cc-15eaaeda6f1f</UserSecretsId>
   </PropertyGroup>
 
-  <ItemGroup>
-      <None Remove="Components\Layouts\Login.razor.css" />
-      <None Remove="Components\Layouts\MainLayout.razor.css" />
-  </ItemGroup>
-
-  <ItemGroup>
-      <Content Include="Components\Layouts\Login.razor.css" />
-      <Content Include="Components\Layouts\MainLayout.razor.css" />
-  </ItemGroup>
-
-  <ItemGroup>
+    <ItemGroup>
     <PackageReference Include="Microsoft.EntityFrameworkCore.Design">
       <PrivateAssets>all</PrivateAssets>
       <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
