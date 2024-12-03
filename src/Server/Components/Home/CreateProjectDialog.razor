@@ -1,20 +1,34 @@
 @using Etn.MyLittleBoard.Application.Projects.Create
 
-<MudDialog>
+<MudDialog DefaultFocus="DefaultFocus.FirstChild">
     <DialogContent>
         A project refers to a specific undertaking or task in software development. It involves creating, modifying, or maintaining a piece of software. Projects have requirements, goals, and a defined scope.
+        <MudForm Model="@projectRequest" @ref="@form" Validation="@(orderValidator.Validation)">
+            <MudTextField @bind-Value="this.projectRequest.Name" For="@(() => this.projectRequest.Name)" Label="Name" Variant="Variant.Text"></MudTextField>
+        </MudForm>
     </DialogContent>
     <DialogActions>
         <MudButton @onclick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="Submit">Create project</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="@(async () => await Submit())">Create project</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
+    private readonly FluentValueValidator<CreateProjectValidator, CreateProjectRequest> orderValidator = new (new ());
+    private readonly CreateProjectRequest projectRequest = new CreateProjectRequest(string.Empty);
+    private MudForm form = default!;
+
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; } = default!;
 
-    private void Submit() => MudDialog.Close(DialogResult.Ok(new CreateProjectRequest("")));
+    private async Task Submit() 
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(projectRequest));
+        }
+    }
 
     private void Cancel() => MudDialog.Cancel();
 }

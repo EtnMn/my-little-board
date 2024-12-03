@@ -3,7 +3,7 @@ using Etn.MyLittleBoard.Application.Interfaces;
 using Etn.MyLittleBoard.Application.Projects.Create;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
-namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects;
+namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.Create;
 
 public sealed class CreateProjectHandlerHandle
 {

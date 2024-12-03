@@ -4,10 +4,12 @@ using Etn.MyLittleBoard.Domain.Constants;
 
 namespace Etn.MyLittleBoard.Application.Projects.Create;
 
-public sealed record CreateProjectRequest(string Name) : IRequest<Result<ProjectId>>;
+public sealed class CreateProjectRequest(string name) : IRequest<Result<ProjectId>>
+{
+    public string Name { get; set; } = name;
+}
 
-public sealed class CreateProjectValidator
-    : AbstractValidator<CreateProjectRequest>
+public sealed class CreateProjectValidator : AbstractValidator<CreateProjectRequest>
 {
     public CreateProjectValidator()
     {

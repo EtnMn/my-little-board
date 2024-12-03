@@ -1,6 +1,9 @@
 @page "/"
+
 @inject ISender sender
 @inject IDialogService Dialog
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 
 @using Etn.MyLittleBoard.Application.Projects.Create
 @using Etn.MyLittleBoard.Application.Projects.ListPaginated
@@ -9,7 +12,9 @@
 
 <PageTitle>My Little Board</PageTitle>
 
-<MudToolBar Class="justify-end" WrapContent="true" Gutters="false">
+<MudToolBar WrapContent="true" Gutters="false" Class="mb-3">
+    <MudText Typo="Typo.h1">Your projects</MudText>
+    <MudSpacer />
     <AuthorizeView Roles="@Role.Administrator">
         <Authorized>
             <MudButton StartIcon="@Icons.Material.Filled.CreateNewFolder" Color="Color.Primary" Variant="Variant.Filled" @onclick="@(() => CreateProject())">New</MudButton>
@@ -17,24 +22,75 @@
     </AuthorizeView>
 </MudToolBar>
 
-<ul>
-@foreach (var item in this.projects)
+<MudPaper Elevation="0" Outlined="this.count < 1" class="relative d-flex flex-wrap justify-center justify-lg-space-between flex-grow-1 gap-6">
+    <MudOverlay Visible="this.loading" LightBackground="true" Absolute="true">
+        <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate="true" />
+    </MudOverlay>
+    @foreach (var item in this.projects)
+    {
+        <div>
+            <MudCard Class="cursor-pointer overflow-hidden highlight-hover" @onclick="@(() => NavigationManager.NavigateTo($"/project/{item.Id}"))">
+                <MudPaper Class="pa-6 d-flex justify-center" Elevation="0" Square="true" Style="background-color: var(--mud-palette-primary)">
+                    <MudText Typo="Typo.button" Style="font-size: 4rem; color:white">@item.Name.Value[0]</MudText>
+                </MudPaper>
+                <MudCardContent>
+                    <MudText Typo="Typo.h2">@item.Name</MudText>
+                    <MudText Typo="Typo.body2">Old paint found on a stone house door.</MudText>
+                    <MudText Typo="Typo.body2">This photo was taken in a small village in Istra Croatia.</MudText>
+                </MudCardContent>
+                <MudCardActions>
+                    <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@($"/project/{item.Id}")">See More</MudButton>
+                </MudCardActions>
+            </MudCard>
+        </div>
+    }
+
+    @if (this.count < 1 && this.initialized)
+    {
+        <div class="d-flex justify-center align-center flex-column gap-10 pa-16" style="width: 100%">
+            <MudIcon Icon="@Icons.Material.Outlined.FolderOff" Style="font-size: 4rem;" />
+            <MudText>No open projects</MudText>
+        </div>
+    }
+</MudPaper>
+
+@if (this.count > 0)
 {
-    <li>@item.Name</li>
+    <div class="mt-6 d-flex justify-center">
+        <MudPagination Rectangular="true" SelectedChanged="PageChanged" Disabled="this.loading" Count="@this.Pages" BoundaryCount="1" MiddleCount="3" />
+    </div>
 }
-</ul>
 
 @code {
+    private const int itemsPerPage = 6;
     private Project[] projects = [];
+    private int count = 0;
+    private int currentPage = 1;
+    private bool loading = false;
+    private bool initialized = false;
+
+    private int Pages => (int)Math.Ceiling((double)this.count / itemsPerPage);
 
     protected override async Task OnInitializedAsync()
     {
-        ListPaginatedProjectsRequest listProjects = new(0, 10);
-        Result<Project[]> result = await sender.Send(listProjects);
+        await this.LoadProject();
+        this.initialized = true;
+    }
+
+    private async Task LoadProject()
+    {
+        this.loading = true;
+        ListPaginatedProjectsRequest listProjects = new((this.currentPage - 1) * itemsPerPage, itemsPerPage);
+        Result<PageDto<Project>> result = await sender.Send(listProjects);
         if (result.IsSuccess)
         {
-            this.projects = result.Value;
+            this.count = result.Value.Count;
+            this.projects = result.Value.Items;
+            this.currentPage = result.Value.Skip / itemsPerPage + 1;
         }
+
+        this.loading = false;
+        this.StateHasChanged();
     }
 
     private async Task CreateProject()
@@ -51,7 +107,30 @@
         if (dialogResult is not null && !dialogResult.Canceled && dialogResult.Data is CreateProjectRequest createProjectRequest)
         {
             Result<ProjectId> result = await sender.Send(createProjectRequest);
-            Console.WriteLine(result.Value);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add("Project created", Severity.Success, config =>
+                {
+                    config.Action = "See";
+                    config.ActionVariant = Variant.Text;
+                    config.ActionColor = Color.Primary;
+                    config.Onclick = s =>
+                    {
+                        NavigationManager.NavigateTo($"/project/{result.Value}");
+                        return Task.CompletedTask;
+                    };
+                });
+                await this.LoadProject();
+            }
+            else{
+                Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
+            }
         }        
+    }
+
+    private async Task PageChanged(int i)
+    {
+        this.currentPage = i;
+        await this.LoadProject();
     }
 }

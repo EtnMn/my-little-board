@@ -42,15 +42,14 @@
             <MudNavMenu>
                 <MudDivider Class="my-2" DividerType="DividerType.Middle" />
                 <MudNavLink Href="/" Icon="@Icons.Material.Outlined.Home">Home</MudNavLink>
+                <AuthorizeView Roles="@Role.Administrator">
+                    <MudNavLink Href="/administration" Icon="@Icons.Material.Outlined.Settings">Administration</MudNavLink>
+                </AuthorizeView>
 
                 <MudDivider Class="my-2" DividerType="DividerType.Middle" />
                 <MudNavLink @onclick="@(async ()=> await this.OnDarkModeToggled.InvokeAsync(!this.DarkMode))" Icon="@(this.DarkMode ? Icons.Material.Outlined.WbSunny : Icons.Material.Outlined.Nightlight)">
                     @(this.DarkMode ? "Light mode" : "Dark mode")
                 </MudNavLink>
-
-                <AuthorizeView Roles="@Role.Administrator">
-                    <MudNavLink Href="/administration" Icon="@Icons.Material.Outlined.Settings">Administration</MudNavLink>
-                </AuthorizeView>
 
                 <MudDivider Class="my-2" DividerType="DividerType.Middle" />
                 <form action="authentication/logout" method="post">
