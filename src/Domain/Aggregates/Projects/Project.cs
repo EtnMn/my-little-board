@@ -4,9 +4,18 @@ using Vogen;
 
 namespace Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
-// Todo: EM: Add status, client, BU, tags
-public sealed class Project(ProjectName name, ProjectDescription description) : EntityBase<Project, ProjectId>, IAggregateRoot
+// Todo: EM: client, BU, tags
+public sealed class Project(
+    ProjectName name,
+    ProjectDescription description,
+    ProjectStatus projectStatus) :
+    EntityBase<Project, ProjectId>,
+    IAggregateRoot
 {
+    public Project(ProjectName name, ProjectDescription description) : this(name, description, ProjectStatus.Draft)
+    {
+    }
+
     public ProjectName Name { get; } = name;
 
     public ProjectDescription Description { get; } = description;
@@ -14,6 +23,8 @@ public sealed class Project(ProjectName name, ProjectDescription description) : 
     public ProjectStart Start { get; } = ProjectStart.Unspecified;
 
     public ProjectEnd End { get; } = ProjectEnd.Unspecified;
+
+    public ProjectStatus Status { get; } = projectStatus;
 }
 
 // Remarks: use struct causes OutOfMemoryException, when using Select in EF Core projection.

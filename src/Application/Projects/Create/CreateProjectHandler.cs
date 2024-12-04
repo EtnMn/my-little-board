@@ -18,10 +18,12 @@ public sealed class CreateProjectHandler(
 
         Project project = new(
             ProjectName.From(request.Name),
-            !string.IsNullOrWhiteSpace(request.Description) ? ProjectDescription.From(request.Description) : ProjectDescription.Unspecified);
+            !string.IsNullOrWhiteSpace(request.Description) ?
+                ProjectDescription.From(request.Description) :
+                ProjectDescription.Unspecified);
 
-        await repository.AddAsync(project, cancellationToken);
+        Project result = await repository.AddAsync(project, cancellationToken);
 
-        return project.Id;
+        return result.Id;
     }
 }

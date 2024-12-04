@@ -41,7 +41,7 @@ internal sealed class IdValueGenerator<TContext, TEntityBase, TId> : ValueGenera
 
         static int MaxFrom(IEnumerable<TEntityBase> es)
         {
-            return es.Any() ? es.Max(e => e.Id.Value) : 0;
+            return es.Any() ? es.Max(e => e.Id?.Value ?? 0) : 0;
         }
     }
 

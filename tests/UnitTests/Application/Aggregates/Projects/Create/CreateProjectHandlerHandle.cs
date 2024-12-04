@@ -8,17 +8,21 @@ public sealed class CreateProjectHandlerHandle
 {
     private readonly Fixture fixture = new();
     private readonly IRepository<Project> repository;
+    private readonly int projectId;
     private readonly string projectName;
     private readonly string projectDescription;
 
     public CreateProjectHandlerHandle()
     {
         this.repository = Substitute.For<IRepository<Project>>();
+        this.projectId = this.fixture.Create<int>();
         this.projectName = this.fixture.Create<string>();
         this.projectDescription = this.fixture.Create<string>();
-        this.repository.AddAsync(
-            Arg.Any<Project>(),
-            Arg.Any<CancellationToken>()).Returns(new Project(ProjectName.From(this.projectName), ProjectDescription.From(this.projectDescription)));
+        this.repository.AddAsync(Arg.Any<Project>(), Arg.Any<CancellationToken>()).Returns(
+            new Project(ProjectName.From(this.projectName), ProjectDescription.From(this.projectDescription))
+            {
+                Id = ProjectId.From(this.projectId)
+            });
     }
 
     [Fact]

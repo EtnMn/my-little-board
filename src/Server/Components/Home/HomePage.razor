@@ -23,7 +23,7 @@
 </MudToolBar>
 
 <div>
-    <MudPaper Elevation="0" Outlined="this.count < 1" Class="relative cards-grid gap-6" >
+    <MudPaper Elevation="0" Outlined="this.count < 1" Class="@($"{(this.count > 0 ? "cards-grid" : "")} gap-6 relative")" Style="min-height: 250px;">
         <MudOverlay Visible="this.loading" LightBackground="true" Absolute="true">
             <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate="true" />
         </MudOverlay>

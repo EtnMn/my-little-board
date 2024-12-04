@@ -2,10 +2,12 @@
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild">
     <DialogContent>
-        A project refers to a specific undertaking or task in software development. It involves creating, modifying, or maintaining a piece of software. Projects have requirements, goals, and a defined scope.
+        <MudText Class="mb-4">
+            A project refers to a specific undertaking or task in software development. It involves creating, modifying, or maintaining a piece of software. Projects have requirements, goals, and a defined scope.
+        </MudText>
         <MudForm Model="@projectRequest" @ref="@form" Validation="@(orderValidator.Validation)">
-            <MudTextField @bind-Value="this.projectRequest.Name" For="@(() => this.projectRequest.Name)" Label="Name" Variant="Variant.Text" MaxLength="25" Counter="25" />
-            <MudTextField @bind-Value="this.projectRequest.Description" For="@(() => this.projectRequest.Description)" Label="Description" Variant="Variant.Text" MaxLength="300" Counter="300" Lines="3" />
+            <MudTextField @bind-Value="this.projectRequest.Name" Required="true" Immediate="true" For="@(() => this.projectRequest.Name)" Label="Name" Variant="Variant.Text" MaxLength="25" Counter="25" />
+            <MudTextField @bind-Value="this.projectRequest.Description" Immediate="true" For="@(() => this.projectRequest.Description)" Label="Description" Variant="Variant.Text" MaxLength="300" Counter="300" AutoGrow />
         </MudForm>
     </DialogContent>
     <DialogActions>

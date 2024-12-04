@@ -10,7 +10,14 @@ public sealed class ProjectsPaginated : Specification<Project, Project>
         ArgumentOutOfRangeException.ThrowIfLessThan(take, 0);
 
         this.Query
-            .Select(p => new Project(p.Name, ProjectDescription.From(new string(p.Description.Value.Take(100).ToArray()))) { Id = p.Id })
+            .Select(p =>
+                new Project(
+                    p.Name,
+                    ProjectDescription.From(new string(p.Description.Value.Take(100).ToArray())),
+                    p.Status)
+                {
+                    Id = p.Id,
+                })
             .AsNoTracking()
             .OrderBy(p => p.Name)
             .Skip(skip)

@@ -15,10 +15,11 @@ public sealed class ProjectConstructor
         Assert.Equal(string.Empty, project.Description.Value);
         Assert.Equal(DateTimeOffset.MinValue, project.Start.Value);
         Assert.Equal(DateTimeOffset.MaxValue, project.End.Value);
+        Assert.Equal(ProjectStatus.Draft, project.Status);
     }
 
     [Fact]
-    public void Should_Initialize_Project_AllProperties()
+    public void Should_Initialize_Project_Properties()
     {
         string name = this.fixture.Create<string>();
         string description = this.fixture.Create<string>();
@@ -27,5 +28,6 @@ public sealed class ProjectConstructor
         Assert.Equal(description, project.Description.Value);
         Assert.Equal(DateTimeOffset.MinValue, project.Start.Value);
         Assert.Equal(DateTimeOffset.MaxValue, project.End.Value);
+        Assert.Equal(ProjectStatus.Draft, project.Status);
     }
 }

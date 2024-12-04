@@ -9,6 +9,7 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
     public void Configure(EntityTypeBuilder<Project> builder)
     {
         builder.HasKey(p => p.Id);
+
         builder.Property(p => p.Id)
             .HasValueGenerator<IdValueGenerator<AppDbContext, Project, ProjectId>>()
             .HasVogenConversion()
@@ -26,6 +27,10 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         builder.Property(p => p.Start)
             .HasVogenConversion()
+            .IsRequired();
+
+        builder.Property(p => p.Status)
+            .HasConversion(x => x.ToString().ToLowerInvariant(), x => Enum.Parse<ProjectStatus>(x, true))
             .IsRequired();
 
         builder.Property(p => p.End)
