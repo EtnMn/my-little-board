@@ -16,7 +16,10 @@ public sealed class CreateProjectHandler(
             return userService.AuthenticatedUser is null ? Result<ProjectId>.Unauthorized() : Result<ProjectId>.Forbidden();
         }
 
-        Project project = new(ProjectName.From(request.Name));
+        Project project = new(
+            ProjectName.From(request.Name),
+            !string.IsNullOrWhiteSpace(request.Description) ? ProjectDescription.From(request.Description) : ProjectDescription.Unspecified);
+
         await repository.AddAsync(project, cancellationToken);
 
         return project.Id;

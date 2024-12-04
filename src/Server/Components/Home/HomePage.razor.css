@@ -9,3 +9,8 @@
     border-bottom: 5px solid var(--mud-palette-primary);
     border-radius: var(--mud-default-borderradius);
 }
+
+::deep .cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(343px, 1fr));
+}

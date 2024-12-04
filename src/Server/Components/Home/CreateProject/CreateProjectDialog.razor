@@ -4,7 +4,8 @@
     <DialogContent>
         A project refers to a specific undertaking or task in software development. It involves creating, modifying, or maintaining a piece of software. Projects have requirements, goals, and a defined scope.
         <MudForm Model="@projectRequest" @ref="@form" Validation="@(orderValidator.Validation)">
-            <MudTextField @bind-Value="this.projectRequest.Name" For="@(() => this.projectRequest.Name)" Label="Name" Variant="Variant.Text"></MudTextField>
+            <MudTextField @bind-Value="this.projectRequest.Name" For="@(() => this.projectRequest.Name)" Label="Name" Variant="Variant.Text" MaxLength="25" Counter="25" />
+            <MudTextField @bind-Value="this.projectRequest.Description" For="@(() => this.projectRequest.Description)" Label="Description" Variant="Variant.Text" MaxLength="300" Counter="300" Lines="3" />
         </MudForm>
     </DialogContent>
     <DialogActions>
@@ -15,7 +16,7 @@
 
 @code {
     private readonly FluentValueValidator<CreateProjectValidator, CreateProjectRequest> orderValidator = new (new ());
-    private readonly CreateProjectRequest projectRequest = new CreateProjectRequest(string.Empty);
+    private readonly CreateProjectRequest projectRequest = new CreateProjectRequest(string.Empty, default);
     private MudForm form = default!;
 
     [CascadingParameter]

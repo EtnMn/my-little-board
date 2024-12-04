@@ -18,9 +18,25 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasVogenConversion()
             .HasMaxLength(ValidationConstants.DefaultNameLength)
             .IsRequired();
+
+        builder.Property(p => p.Description)
+            .HasVogenConversion()
+            .HasMaxLength(ValidationConstants.DefaultNameLength)
+            .IsRequired();
+
+        builder.Property(p => p.Start)
+            .HasVogenConversion()
+            .IsRequired();
+
+        builder.Property(p => p.End)
+            .HasVogenConversion()
+            .IsRequired();
     }
 }
 
-[EfCoreConverter<ProjectName>]
+[EfCoreConverter<ProjectDescription>]
+[EfCoreConverter<ProjectEnd>]
 [EfCoreConverter<ProjectId>]
+[EfCoreConverter<ProjectName>]
+[EfCoreConverter<ProjectStart>]
 internal sealed partial class ProjectEfCoreConverters;
