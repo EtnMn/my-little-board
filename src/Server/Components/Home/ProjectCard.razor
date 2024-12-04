@@ -1,0 +1,22 @@
+@using Etn.MyLittleBoard.Domain.Aggregates.Projects
+@inject NavigationManager NavigationManager
+
+<div>
+    <MudCard Class="cursor-pointer overflow-hidden highlight-hover" @onclick="@(() => NavigationManager.NavigateTo($"/project/{this.Project.Id}"))" Style="height: 100%;">
+        <MudPaper Class="pa-6 d-flex justify-center mud-theme-primary" Elevation="0" Square="true">
+            <MudText Typo="Typo.button" Style="font-size: 4rem; color:white">@this.Project.Name.Value[0]</MudText>
+        </MudPaper>
+        <MudCardContent>
+            <MudText Typo="Typo.h2">@this.Project.Name</MudText>
+            <MudText Typo="Typo.body2" Class="overflow-hidden" Style="text-overflow: ellipsis; white-space: nowrap;">@this.Project.Description</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@($"/project/{this.Project.Id}")">See More</MudButton>
+        </MudCardActions>
+    </MudCard>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Project Project { get; set; } = default!;
+}

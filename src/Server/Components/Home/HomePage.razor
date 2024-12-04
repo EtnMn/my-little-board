@@ -8,7 +8,6 @@
 @using Etn.MyLittleBoard.Application.Projects.Create
 @using Etn.MyLittleBoard.Application.Projects.ListPaginated
 @using Etn.MyLittleBoard.Domain.Aggregates.Projects
-@using Etn.MyLittleBoard.Server.Components.Home.CreateProject
 @using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>My Little Board</PageTitle>
@@ -30,20 +29,7 @@
         </MudOverlay>
         @foreach (var item in this.projects)
         {
-            <div>
-                <MudCard Class="cursor-pointer overflow-hidden highlight-hover" @onclick="@(() => NavigationManager.NavigateTo($"/project/{item.Id}"))">
-                    <MudPaper Class="pa-6 d-flex justify-center mud-theme-primary" Elevation="0" Square="true">
-                        <MudText Typo="Typo.button" Style="font-size: 4rem; color:white">@item.Name.Value[0]</MudText>
-                    </MudPaper>
-                    <MudCardContent>
-                        <MudText Typo="Typo.h2">@item.Name</MudText>
-                        <MudText Typo="Typo.body2">@item.Description</MudText>
-                    </MudCardContent>
-                    <MudCardActions>
-                        <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@($"/project/{item.Id}")">See More</MudButton>
-                    </MudCardActions>
-                </MudCard>
-            </div>
+            <ProjectCard Project="@item" />
         }
 
         @if (this.count < 1 && this.initialized)

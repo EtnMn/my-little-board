@@ -1,0 +1,11 @@
+::deep .highlight-hover {
+    transition: all 0.25s ease-in;
+    border-bottom: 5px solid transparent;
+}
+
+::deep .highlight-hover:hover {
+    transform: translateY(-5px);
+    border: none;
+    border-bottom: 5px solid var(--mud-palette-primary);
+    border-radius: var(--mud-default-borderradius);
+}
