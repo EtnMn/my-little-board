@@ -1,4 +1,6 @@
 @page "/project/{ProjectId:int}"
+@using Etn.MyLittleBoard.Server.Components.Shared
+@using MudBlazor.Utilities
 
 @attribute [Authorize]
 
@@ -14,6 +16,8 @@
     <MudAvatar Size="Size.Large" Color="Color.Primary" class="mr-2">A</MudAvatar>
     My Project
 </MudText>
+
+<ColorSelect @bind-Value="this.myColor" class="select-primary" id="color"></ColorSelect>
 
 <MudGrid Class="flex-row-reverse">
     <MudItem xs="12" sm="4">
@@ -31,6 +35,7 @@
 
 @code {
     private BreadcrumbItem[] items = [];
+    private string myColor = Colors.Red.Default;
 
     [Parameter]
     public int? ProjectId { get; set; }

@@ -4,7 +4,7 @@ using Vogen;
 
 namespace Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
-// Todo: EM: client, BU, tags
+// Todo: EM: color, client, BU, tags
 public sealed class Project(
     ProjectName name,
     ProjectDescription description,
