@@ -6,6 +6,7 @@
 ::deep .highlight-hover:hover {
     transform: translateY(-5px);
     border: none;
+    border-bottom: 5px solid;
     border-bottom: 5px solid var(--mud-palette-primary);
     border-radius: var(--mud-default-borderradius);
 }

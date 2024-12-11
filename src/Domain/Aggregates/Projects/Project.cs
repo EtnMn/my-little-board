@@ -1,22 +1,27 @@
 using Etn.MyLittleBoard.Domain.Constants;
 using Etn.MyLittleBoard.Domain.Interfaces;
+using System.Text.RegularExpressions;
 using Vogen;
 
 namespace Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
-// Todo: EM: color, client, BU, tags
+// Todo: EM: client, BU, tags
 public sealed class Project(
     ProjectName name,
     ProjectDescription description,
+    ProjectColor color,
     ProjectStatus projectStatus) :
     EntityBase<Project, ProjectId>,
     IAggregateRoot
 {
-    public Project(ProjectName name, ProjectDescription description) : this(name, description, ProjectStatus.Draft)
+    public Project(ProjectName name, ProjectDescription description) :
+        this(name, description, ProjectColor.Unspecified, ProjectStatus.Draft)
     {
     }
 
     public ProjectName Name { get; } = name;
+
+    public ProjectColor Color { get; } = color;
 
     public ProjectDescription Description { get; } = description;
 
@@ -34,15 +39,15 @@ public sealed partial class ProjectId;
 [ValueObject<string>]
 public readonly partial struct ProjectName
 {
-    internal static Validation Validate(string name)
+    internal static Validation Validate(string value)
     {
-        if (string.IsNullOrWhiteSpace(name))
+        if (string.IsNullOrWhiteSpace(value))
         {
-            return Validation.Invalid($"Project {nameof(name)} cannot be empty");
+            return Validation.Invalid($"Project {nameof(value)} cannot be empty");
         }
-        else if (name.Length > ValidationConstants.DefaultNameLength)
+        else if (value.Length > ValidationConstants.DefaultTextLength)
         {
-            return Validation.Invalid($"Project {nameof(name)} exceeds maximum length of {ValidationConstants.DefaultNameLength} characters");
+            return Validation.Invalid($"Project {nameof(value)} exceeds maximum length of {ValidationConstants.DefaultTextLength} characters");
         }
         else
         {
@@ -50,9 +55,39 @@ public readonly partial struct ProjectName
         }
     }
 
-    internal static string NormalizeInput(string name)
+    internal static string NormalizeInput(string value)
     {
-        return name?.Trim() ?? string.Empty;
+        return value?.Trim() ?? string.Empty;
+    }
+}
+
+[ValueObject<string>]
+public readonly partial struct ProjectColor
+{
+    public static readonly ProjectColor Unspecified = new(string.Empty);
+
+    [GeneratedRegex(@"^#([A-Fa-f0-9]{6})$")]
+    private static partial Regex HexColorRegex();
+
+    internal static Validation Validate(string value)
+    {
+        if (value is null)
+        {
+            return Validation.Invalid($"Project {nameof(value)} cannot be null");
+        }
+        else if (!string.IsNullOrEmpty(value) && !HexColorRegex().IsMatch(value))
+        {
+            return Validation.Invalid($"Project {nameof(value)} is not a valid hex color");
+        }
+        else
+        {
+            return Validation.Ok;
+        }
+    }
+
+    internal static string NormalizeInput(string value)
+    {
+        return value?.Trim() ?? string.Empty;
     }
 }
 
@@ -61,15 +96,15 @@ public readonly partial struct ProjectDescription
 {
     public static readonly ProjectDescription Unspecified = new(string.Empty);
 
-    internal static Validation Validate(string description)
+    internal static Validation Validate(string value)
     {
-        if (description is null)
+        if (value is null)
         {
-            return Validation.Invalid($"Project {nameof(description)} cannot be null");
+            return Validation.Invalid($"Project {nameof(value)} cannot be null");
         }
-        else if (description.Length > ValidationConstants.DefaultNameLength)
+        else if (value.Length > ValidationConstants.DefaultTextLength)
         {
-            return Validation.Invalid($"Project {nameof(description)} exceeds maximum length of {ValidationConstants.DefaultNameLength} characters");
+            return Validation.Invalid($"Project {nameof(value)} exceeds maximum length of {ValidationConstants.DefaultTextLength} characters");
         }
         else
         {
@@ -77,9 +112,9 @@ public readonly partial struct ProjectDescription
         }
     }
 
-    internal static string NormalizeInput(string name)
+    internal static string NormalizeInput(string value)
     {
-        return name?.Trim() ?? string.Empty;
+        return value?.Trim() ?? string.Empty;
     }
 }
 

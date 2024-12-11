@@ -15,7 +15,7 @@ public sealed class CreateProjectValidator : AbstractValidator<CreateProjectRequ
 {
     public CreateProjectValidator()
     {
-        this.RuleFor(x => x.Name).NotEmpty().MaximumLength(ValidationConstants.DefaultNameLength);
-        this.RuleFor(x => x.Description).MaximumLength(ValidationConstants.DefaultNameLength);
+        this.RuleFor(x => x.Name).NotEmpty().MaximumLength(ValidationConstants.DefaultTextLength);
+        this.RuleFor(x => x.Description).MaximumLength(ValidationConstants.DefaultTextLength);
     }
 }

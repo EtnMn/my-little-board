@@ -32,7 +32,7 @@
     {
         if (!this.CustomPalette.Any(x => string.Equals(x, CurrentValue, StringComparison.InvariantCultureIgnoreCase)))
         {
-            this.CurrentValue = this.CustomPalette.First();
+            this.CurrentValue = ColorConstants.ProjectDefaultColor;
         }
     }
 

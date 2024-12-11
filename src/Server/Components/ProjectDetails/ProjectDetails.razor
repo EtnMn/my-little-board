@@ -1,4 +1,9 @@
 @page "/project/{ProjectId:int}"
+
+@inject ISender sender
+
+@using Etn.MyLittleBoard.Application.Projects.GetById
+@using Etn.MyLittleBoard.Domain.Aggregates.Projects
 @using Etn.MyLittleBoard.Server.Components.Shared
 @using MudBlazor.Utilities
 
@@ -13,20 +18,24 @@
 </MudBreadcrumbs>
 
 <MudText Typo="Typo.h1" Class="mb-6">
-    <MudAvatar Size="Size.Large" Color="Color.Primary" class="mr-2">A</MudAvatar>
-    My Project
+    <MudAvatar Size="Size.Large" Class="mr-2" style="@($"background:{this.ProjectColor}; color: var(--mud-palette-primary-text);")">A</MudAvatar>
+    @(this.project?.Name)
 </MudText>
 
-<ColorSelect @bind-Value="this.myColor" class="select-primary" id="color"></ColorSelect>
+@* <ColorSelect @bind-Value="this.myColor" class="select-primary" id="color"></ColorSelect> *@
 
 <MudGrid Class="flex-row-reverse">
-    <MudItem xs="12" sm="4">
+    <MudItem xs="12" sm="4" md="3">
         <MudPaper Elevation="0" Class="pa-4">
-            <MudText Typo="Typo.h2" Class="mb-4">About</MudText>
-            <p>Lorem ipsum, dolor sit amet consectetur adipisicing elit. Rerum iure libero molestiae debitis incidunt dicta architecto, laborum neque perspiciatis sit ab est ipsum omnis accusantium suscipit aperiam id quod corrupti.</p>
+            <div class="d-flex justify-space-between align-center mb-4">
+                <MudText Typo="Typo.h2">About</MudText>
+                <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Settings" />
+            </div>
+
+            <p>@(this.project?.Description)</p>
         </MudPaper>
     </MudItem>
-    <MudItem xs="12" sm="8">
+    <MudItem xs="12" sm="8" md="9">
         <MudPaper Class="pa-4">
             <MudText Typo="Typo.h2" Class="mb-4">Iterations</MudText>
         </MudPaper>
@@ -35,18 +44,39 @@
 
 @code {
     private BreadcrumbItem[] items = [];
-    private string myColor = Colors.Red.Default;
+    // private string myColor = string.Empty;
+    private Project? project = default;
 
     [Parameter]
     public int? ProjectId { get; set; }
 
-    protected override void OnParametersSet() {
+    private string ProjectColor => !string.IsNullOrWhiteSpace(this.project?.Color.Value) ? this.project.Color.Value : ColorConstants.ProjectDefaultColor;
+
+    protected override void OnParametersSet()
+    {
+        this.items = new BreadcrumbItem[] {
+            new BreadcrumbItem("Home", href: "/"),
+            new BreadcrumbItem("Project", href: $"/project/{this.ProjectId}", disabled: true)
+        };
+    }
+
+    protected override async Task OnParametersSetAsync() {
         if (this.ProjectId.HasValue)
         {
-            this.items = new BreadcrumbItem[] {
-                new BreadcrumbItem("Home", href: "/"),
-                new BreadcrumbItem("Project", href: $"/project/{this.ProjectId}", disabled: true)
-            };
+            this.project = await GetProjectById(this.ProjectId.Value);
+        }
+    }
+
+    private async Task<Project> GetProjectById(int projectId)
+    {
+        GetProjectByIdRequest getProjectById = new(projectId);
+        Result<Project> result = await sender.Send(getProjectById);
+        if (result.IsSuccess)
+        {
+            return result.Value;
+        }
+        else{
+            throw new Exception("Project not found"); // Todo: EM: Display not found page.
         }
     }
 }

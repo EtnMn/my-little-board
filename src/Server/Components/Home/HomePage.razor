@@ -23,7 +23,7 @@
 </MudToolBar>
 
 <div>
-    <MudPaper Elevation="0" Outlined="this.count < 1" Class="@($"{(this.count > 0 ? "cards-grid" : "")} gap-6 relative")" Style="min-height: 250px;">
+    <div class="@($"{(this.count > 0 ? "cards-grid" : "")} gap-6 relative")" style="min-height: 250px;">
         <MudOverlay Visible="this.loading" LightBackground="true" Absolute="true">
             <MudProgressCircular Color="Color.Default" Size="Size.Large" Indeterminate="true" />
         </MudOverlay>
@@ -34,12 +34,12 @@
 
         @if (this.count < 1 && this.initialized)
         {
-            <div class="d-flex justify-center align-center flex-column gap-10 pa-16" style="width: 100%">
+            <div class="d-flex justify-center align-center flex-column gap-10 pa-16 border rounded" style="width: 100%; border-color: var(--mud-palette-lines-inputs)">
                 <MudIcon Icon="@Icons.Material.Outlined.FolderOff" Style="font-size: 4rem;" />
                 <MudText>No open projects</MudText>
             </div>
         }
-    </MudPaper>
+    </div>
 </div>
 
 @if (this.count > 0)

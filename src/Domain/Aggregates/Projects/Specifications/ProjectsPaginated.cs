@@ -14,6 +14,7 @@ public sealed class ProjectsPaginated : Specification<Project, Project>
                 new Project(
                     p.Name,
                     ProjectDescription.From(new string(p.Description.Value.Take(100).ToArray())),
+                    p.Color,
                     p.Status)
                 {
                     Id = p.Id,

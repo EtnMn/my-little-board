@@ -34,12 +34,12 @@ public sealed class CreateProjectRequestValidate
     [Fact]
     public async Task CreateProjectRequestValidate_ShouldHaveErrorWhenNameTooLong()
     {
-        CreateProjectRequest request = new(new string('x', ValidationConstants.DefaultNameLength + 1), default);
+        CreateProjectRequest request = new(new string('x', ValidationConstants.DefaultTextLength + 1), default);
         TestValidationResult<CreateProjectRequest> result = await this.validator.TestValidateAsync(request);
         result
             .ShouldHaveValidationErrorFor(x => x.Name)
             .WithErrorCode("MaximumLengthValidator")
-            .WithErrorMessage($"The length of '{nameof(CreateProjectRequest.Name)}' must be {ValidationConstants.DefaultNameLength} characters or fewer. You entered {ValidationConstants.DefaultNameLength + 1} characters.")
+            .WithErrorMessage($"The length of '{nameof(CreateProjectRequest.Name)}' must be {ValidationConstants.DefaultTextLength} characters or fewer. You entered {ValidationConstants.DefaultTextLength + 1} characters.")
             .Only();
     }
 
@@ -54,12 +54,12 @@ public sealed class CreateProjectRequestValidate
     [Fact]
     public async Task CreateProjectRequestValidate_ShouldHaveErrorWhenDescriptionTooLong()
     {
-        CreateProjectRequest request = new(this.fixture.Create<string>(), new string('x', ValidationConstants.DefaultNameLength + 1));
+        CreateProjectRequest request = new(this.fixture.Create<string>(), new string('x', ValidationConstants.DefaultTextLength + 1));
         TestValidationResult<CreateProjectRequest> result = await this.validator.TestValidateAsync(request);
         result
             .ShouldHaveValidationErrorFor(x => x.Description)
             .WithErrorCode("MaximumLengthValidator")
-            .WithErrorMessage($"The length of '{nameof(CreateProjectRequest.Description)}' must be {ValidationConstants.DefaultNameLength} characters or fewer. You entered {ValidationConstants.DefaultNameLength + 1} characters.")
+            .WithErrorMessage($"The length of '{nameof(CreateProjectRequest.Description)}' must be {ValidationConstants.DefaultTextLength} characters or fewer. You entered {ValidationConstants.DefaultTextLength + 1} characters.")
             .Only();
     }
 }

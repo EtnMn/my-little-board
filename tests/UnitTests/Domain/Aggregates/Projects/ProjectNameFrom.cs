@@ -17,9 +17,9 @@ public sealed class ProjectNameFrom
 
     [Theory]
     [MemberData(nameof(StringValidationExceptionData))]
-    public void ProjectName_ThrowsException_WhenNameIsNotSet(string? name)
+    public void ProjectName_ThrowsException_WhenNameIsNotSet(string? value)
     {
-        Action action = () => ProjectName.From(name!);
+        Action action = () => ProjectName.From(value!);
         action.Should().Throw<ValueObjectValidationException>();
     }
 
@@ -28,6 +28,6 @@ public sealed class ProjectNameFrom
         { null },
         { string.Empty },
         { " " },
-        { new string('x', ValidationConstants.DefaultNameLength + 1) }
+        { new string('x', ValidationConstants.DefaultTextLength + 1) }
     };
 }

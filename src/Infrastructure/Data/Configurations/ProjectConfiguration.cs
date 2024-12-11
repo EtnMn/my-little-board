@@ -17,12 +17,17 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
 
         builder.Property(p => p.Name)
             .HasVogenConversion()
-            .HasMaxLength(ValidationConstants.DefaultNameLength)
+            .HasMaxLength(ValidationConstants.DefaultTextLength)
+            .IsRequired();
+
+        builder.Property(p => p.Color)
+            .HasVogenConversion()
+            .HasMaxLength(ValidationConstants.ShortTextLength)
             .IsRequired();
 
         builder.Property(p => p.Description)
             .HasVogenConversion()
-            .HasMaxLength(ValidationConstants.DefaultNameLength)
+            .HasMaxLength(ValidationConstants.DefaultTextLength)
             .IsRequired();
 
         builder.Property(p => p.Start)
@@ -39,6 +44,7 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
     }
 }
 
+[EfCoreConverter<ProjectColor>]
 [EfCoreConverter<ProjectDescription>]
 [EfCoreConverter<ProjectEnd>]
 [EfCoreConverter<ProjectId>]
