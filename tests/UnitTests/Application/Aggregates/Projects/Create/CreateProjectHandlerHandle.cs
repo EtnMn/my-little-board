@@ -32,11 +32,12 @@ public sealed class CreateProjectHandlerHandle
         userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, true).Create());
 
         CreateProjectHandler handler = new(this.repository, userService);
-        CreateProjectRequest request = new(this.projectName, default);
+        CreateProjectRequest request = new() { Name = this.projectName };
         Result<ProjectId> result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().NotBeNull();
         result.Value.Should().BeOfType<ProjectId>();
+        await this.repository.Received().AddAsync(Arg.Any<Project>(), Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -44,7 +45,7 @@ public sealed class CreateProjectHandlerHandle
     {
         IUserService userService = Substitute.For<IUserService>();
         CreateProjectHandler handler = new(this.repository, userService);
-        CreateProjectRequest request = new(this.projectName, default);
+        CreateProjectRequest request = new();
         Result<ProjectId> result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeFalse();
         result.Status.Should().Be(ResultStatus.Unauthorized);
@@ -57,7 +58,7 @@ public sealed class CreateProjectHandlerHandle
         userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, false).Create());
 
         CreateProjectHandler handler = new(this.repository, userService);
-        CreateProjectRequest request = new(this.projectName, default);
+        CreateProjectRequest request = new();
         Result<ProjectId> result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeFalse();
         result.Status.Should().Be(ResultStatus.Forbidden);

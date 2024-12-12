@@ -31,5 +31,8 @@ public sealed class ListPaginatedProjectsHandlerHandle
         result.Value.Items.Should().NotBeNull();
         result.Value.Items.Should().BeOfType<Project[]>();
         result.Value.Items.Should().HaveCount(count);
+        await repository.Received().CountAsync(Arg.Any<ProjectsPaginated>(), Arg.Any<CancellationToken>());
+        await repository.Received().ListAsync(Arg.Any<ProjectsPaginated>(), Arg.Any<CancellationToken>());
+
     }
 }

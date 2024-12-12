@@ -28,6 +28,6 @@ public sealed class ProjectNameFrom
         { null },
         { string.Empty },
         { " " },
-        { new string('x', ValidationConstants.DefaultTextLength + 1) }
+        { StringHelpers.GenerateOverMaximumLengthString(ValidationConstants.DefaultTextLength) }
     };
 }

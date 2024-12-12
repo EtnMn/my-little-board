@@ -11,7 +11,7 @@ public sealed class CreateProjectRequestValidate
     [Fact]
     public async Task CreateProjectRequestValidate_ShouldBeValidWhenNameSet()
     {
-        CreateProjectRequest request = new(this.fixture.Create<string>(), default);
+        CreateProjectRequest request = new() { Name = this.fixture.Create<string>() };
         TestValidationResult<CreateProjectRequest> result = await this.validator.TestValidateAsync(request);
         result.ShouldNotHaveValidationErrorFor(x => x.Name);
     }
@@ -22,7 +22,7 @@ public sealed class CreateProjectRequestValidate
     [InlineData(" ")]
     public async Task CreateProjectRequestValidate_ShouldHaveErrorWhenNameNotSet(string? name)
     {
-        CreateProjectRequest request = new(name!, default);
+        CreateProjectRequest request = new() { Name = name! };
         TestValidationResult<CreateProjectRequest> result = await this.validator.TestValidateAsync(request);
         result
             .ShouldHaveValidationErrorFor(x => x.Name)
@@ -34,19 +34,19 @@ public sealed class CreateProjectRequestValidate
     [Fact]
     public async Task CreateProjectRequestValidate_ShouldHaveErrorWhenNameTooLong()
     {
-        CreateProjectRequest request = new(new string('x', ValidationConstants.DefaultTextLength + 1), default);
+        CreateProjectRequest request = new() { Name = StringHelpers.GenerateOverMaximumLengthString(ValidationConstants.DefaultTextLength) };
         TestValidationResult<CreateProjectRequest> result = await this.validator.TestValidateAsync(request);
         result
             .ShouldHaveValidationErrorFor(x => x.Name)
             .WithErrorCode("MaximumLengthValidator")
-            .WithErrorMessage($"The length of '{nameof(CreateProjectRequest.Name)}' must be {ValidationConstants.DefaultTextLength} characters or fewer. You entered {ValidationConstants.DefaultTextLength + 1} characters.")
+            .WithErrorMessage($"The length of '{nameof(CreateProjectRequest.Name)}' must be {ValidationConstants.DefaultTextLength} characters or fewer. You entered {request.Name.Length} characters.")
             .Only();
     }
 
     [Fact]
     public async Task CreateProjectRequestValidate_CanSetDescription()
     {
-        CreateProjectRequest request = new(this.fixture.Create<string>(), this.fixture.Create<string>());
+        CreateProjectRequest request = new() { Name = this.fixture.Create<string>(), Description = this.fixture.Create<string>() };
         TestValidationResult<CreateProjectRequest> result = await this.validator.TestValidateAsync(request);
         result.ShouldNotHaveValidationErrorFor(x => x.Description);
     }
@@ -54,12 +54,12 @@ public sealed class CreateProjectRequestValidate
     [Fact]
     public async Task CreateProjectRequestValidate_ShouldHaveErrorWhenDescriptionTooLong()
     {
-        CreateProjectRequest request = new(this.fixture.Create<string>(), new string('x', ValidationConstants.DefaultTextLength + 1));
+        CreateProjectRequest request = new() { Name = this.fixture.Create<string>(), Description = StringHelpers.GenerateOverMaximumLengthString(ValidationConstants.DefaultTextLength) };
         TestValidationResult<CreateProjectRequest> result = await this.validator.TestValidateAsync(request);
         result
             .ShouldHaveValidationErrorFor(x => x.Description)
             .WithErrorCode("MaximumLengthValidator")
-            .WithErrorMessage($"The length of '{nameof(CreateProjectRequest.Description)}' must be {ValidationConstants.DefaultTextLength} characters or fewer. You entered {ValidationConstants.DefaultTextLength + 1} characters.")
+            .WithErrorMessage($"The length of '{nameof(CreateProjectRequest.Description)}' must be {ValidationConstants.DefaultTextLength} characters or fewer. You entered {request.Description.Length} characters.")
             .Only();
     }
 }

@@ -30,11 +30,11 @@ public sealed class ProjectDescriptionFrom
     {
         ProjectDescription projectDescription = ProjectDescription.From(value!);
         projectDescription.Should().NotBeNull();
-        projectDescription.Value.Should().Be(string.Empty);
+        projectDescription.Value.Should().Be(ProjectDescription.Unspecified.Value);
     }
 
     public static TheoryData<string?> StringValidationExceptionData => new()
     {
-        { new string('x', ValidationConstants.DefaultTextLength + 1) }
+        { StringHelpers.GenerateOverMaximumLengthString(ValidationConstants.DefaultTextLength) }
     };
 }

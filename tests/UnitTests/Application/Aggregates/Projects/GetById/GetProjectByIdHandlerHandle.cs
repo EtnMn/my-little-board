@@ -11,9 +11,13 @@ public sealed class GetProjectByIdHandlerHandle
     [Fact]
     public async Task GetProjectByIdHandler_GetProject()
     {
-        Project project = this.fixture.Build<Project>().With(x => x.Id, ProjectId.From(this.fixture.Create<int>())).Create();
+        Project project = this.fixture
+            .Build<Project>()
+            .With(x => x.Id, ProjectId.From(this.fixture.Create<int>()))
+            .Create();
+
         IRepository<Project> repository = Substitute.For<IRepository<Project>>();
-        repository.GetByIdAsync(project.Id.Value, Arg.Any<CancellationToken>()).Returns(project);
+        repository.GetByIdAsync(project.Id, Arg.Any<CancellationToken>()).Returns(project);
 
         GetProjectByIdHandler handler = new(repository);
         GetProjectByIdRequest request = new(project.Id.Value);
@@ -21,5 +25,6 @@ public sealed class GetProjectByIdHandlerHandle
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(project);
+        await repository.Received().GetByIdAsync(Arg.Any<ProjectId>(), Arg.Any<CancellationToken>());
     }
 }

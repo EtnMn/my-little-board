@@ -19,7 +19,7 @@ public sealed class Project(
     {
     }
 
-    public ProjectName Name { get; } = name;
+    public ProjectName Name { get; private set; } = name;
 
     public ProjectColor Color { get; } = color;
 
@@ -30,6 +30,11 @@ public sealed class Project(
     public ProjectEnd End { get; } = ProjectEnd.Unspecified;
 
     public ProjectStatus Status { get; } = projectStatus;
+
+    public void UpdateName(ProjectName value)
+    {
+        this.Name = value;
+    }
 }
 
 // Remarks: use struct causes OutOfMemoryException, when using Select in EF Core projection.
@@ -66,7 +71,7 @@ public readonly partial struct ProjectColor
 {
     public static readonly ProjectColor Unspecified = new(string.Empty);
 
-    [GeneratedRegex(@"^#([A-Fa-f0-9]{6})$")]
+    [GeneratedRegex(ValidationConstants.HexColorRegex)]
     private static partial Regex HexColorRegex();
 
     internal static Validation Validate(string value)

@@ -9,7 +9,7 @@ public sealed class ProjectColorFrom
     [Fact]
     public void ProjectColorFrom_CreatesProjectColorFrom()
     {
-        string color = GenerateValidHexColor();
+        string color = StringHelpers.GenerateHexColor();
         ProjectColor projectName = ProjectColor.From(color);
         projectName.Should().NotBeNull();
         projectName.Value.Should().Be(color);
@@ -31,12 +31,6 @@ public sealed class ProjectColorFrom
         string color = this.fixture.Create<string>();
         Action action = () => ProjectColor.From(color);
         action.Should().Throw<ValueObjectValidationException>();
-    }
-
-    private static string GenerateValidHexColor()
-    {
-        Random random = new();
-        return $"#{random.Next(0x1000000):X6}";
     }
 
     public static TheoryData<string?> StringValidationExceptionData => new()

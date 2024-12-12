@@ -44,13 +44,14 @@
 
 @code {
     private BreadcrumbItem[] items = [];
-    // private string myColor = string.Empty;
     private Project? project = default;
 
     [Parameter]
     public int? ProjectId { get; set; }
 
-    private string ProjectColor => !string.IsNullOrWhiteSpace(this.project?.Color.Value) ? this.project.Color.Value : ColorConstants.ProjectDefaultColor;
+    private string ProjectColor => !string.IsNullOrWhiteSpace(this.project?.Color.Value) ?
+        this.project.Color.Value :
+        ColorConstants.ProjectDefaultColor;
 
     protected override void OnParametersSet()
     {
