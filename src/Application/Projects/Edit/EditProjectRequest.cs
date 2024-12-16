@@ -12,6 +12,10 @@ public sealed class EditProjectRequest(int projectId) : IRequest<Result>
     public string Description { get; set; } = string.Empty;
 
     public string Color { get; set; } = string.Empty;
+
+    public DateTime? Start { get; set; }
+
+    public DateTime? End { get; set; }
 }
 
 public sealed class EditProjectValidator : AbstractValidator<EditProjectRequest>
@@ -22,5 +26,7 @@ public sealed class EditProjectValidator : AbstractValidator<EditProjectRequest>
         this.RuleFor(x => x.Name).NotEmpty().MaximumLength(ValidationConstants.DefaultTextLength);
         this.RuleFor(x => x.Description).MaximumLength(ValidationConstants.DefaultTextLength);
         this.RuleFor(x => x.Color).Matches(ValidationConstants.HexColorRegex).When(x => !string.IsNullOrWhiteSpace(x.Color));
+        this.RuleFor(x => x.Start).LessThanOrEqualTo(x => x.End).When(x => x.Start.HasValue && x.End.HasValue);
+        this.RuleFor(x => x.End).GreaterThanOrEqualTo(x => x.Start).When(x => x.End.HasValue && x.Start.HasValue);
     }
 }

@@ -36,7 +36,7 @@ public sealed class EditProjectHandlerHandle
         string name = this.fixture.Create<string>();
         string description = this.fixture.Create<string>();
         string color = StringHelpers.GenerateHexColor();
-        EditProjectRequest request = new(project.Id.Value) { Name = name };
+        EditProjectRequest request = new(project.Id.Value) { Name = name, Description = description, Color = color };
         Result result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeTrue();
         await this.repository.Received().GetByIdAsync(Arg.Any<ProjectId>(), Arg.Any<CancellationToken>());

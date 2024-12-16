@@ -67,18 +67,30 @@
 
     private async Task LoadProject()
     {
-        this.loading = true;
-        ListPaginatedProjectsRequest listProjects = new((this.currentPage - 1) * itemsPerPage, itemsPerPage);
-        Result<PageDto<Project>> result = await sender.Send(listProjects);
-        if (result.IsSuccess)
+        if (this.loading)
         {
-            this.count = result.Value.Count;
-            this.projects = result.Value.Items;
-            this.currentPage = result.Value.Skip / itemsPerPage + 1;
+            return;
         }
 
-        this.loading = false;
-        this.StateHasChanged();
+        try
+        {
+            this.loading = true;
+            ListPaginatedProjectsRequest listProjects = new((this.currentPage - 1) * itemsPerPage, itemsPerPage);
+            Result<PageDto<Project>> result = await sender.Send(listProjects);
+            if (result.IsSuccess)
+            {
+                this.count = result.Value.Count;
+                this.projects = result.Value.Items;
+                this.currentPage = result.Value.Skip / itemsPerPage + 1;
+            }
+
+            this.loading = false;
+            this.StateHasChanged();
+        }
+        finally
+        {
+            this.loading = false;
+        }
     }
 
     private async Task CreateProject()
@@ -86,6 +98,7 @@
         IDialogReference dialog = await Dialog.ShowAsync<CreateProjectDialog>(
             "Create a new project",
             new DialogOptions() {
+                FullWidth = true,
                 MaxWidth = MaxWidth.Medium,
                 CloseButton = true
             }

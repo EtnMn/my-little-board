@@ -20,6 +20,11 @@ public sealed class EditProjectHandler(
         if (project is not null)
         {
             project.UpdateName(ProjectName.From(request.Name));
+            project.UpdateDescription(ProjectDescription.From(request.Description));
+            project.UpdateColor(ProjectColor.From(request.Color));
+            project.UpdatePeriod(
+                request.Start.HasValue ? ProjectStart.From(request.Start.Value) : ProjectStart.Unspecified,
+                request.End.HasValue ? ProjectEnd.From(request.End.Value) : ProjectEnd.Unspecified);
 
             await repository.UpdateAsync(project, cancellationToken);
             return Result.Success();

@@ -1,24 +1,51 @@
 @using Etn.MyLittleBoard.Application.Projects.Edit
+@using Etn.MyLittleBoard.Domain.Aggregates.Projects
+
 <MudDialog DefaultFocus="DefaultFocus.FirstChild">
     <DialogContent>
-        <MudForm Model="@projectRequest" @ref="@form" Validation="@(validator.Validation)">
-            <MudTextField @bind-Value="this.projectRequest.Name" Required="true" Immediate="true" For="@(() => this.projectRequest.Name)" Label="Name" Variant="Variant.Text" MaxLength="25" Counter="25" />
-            <MudTextField @bind-Value="this.projectRequest.Description" Immediate="true" For="@(() => this.projectRequest.Description)" Label="Description" Variant="Variant.Text" MaxLength="300" Counter="300" AutoGrow />
-        </MudForm>
+        @if (this.projectRequest is not null)
+        {
+            <EditProjectDialog Project="@this.Project" />
+            <MudForm Model="@projectRequest" @ref="@form" Validation="@(validator.Validation)" Spacing="6" Class="mb-4">
+                <MudTextField @bind-Value="this.projectRequest.Name" Required="true" Immediate="true" For="@(() => this.projectRequest.Name)" Label="Name" Variant="Variant.Text" MaxLength="25" />
+                <MudTextField @bind-Value="this.projectRequest.Description" Immediate="true" For="@(() => this.projectRequest.Description)" Label="Description" Variant="Variant.Text" MaxLength="300" AutoGrow />
+                <ColorSelect @bind-Value="this.projectRequest.Color" id="color" />
+                <div class="d-flex flex-wrap gap-4">
+                    <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Start" @bind-Date="this.projectRequest.Start" For="@(() => this.projectRequest.Start)" Clearable="true" Placeholder="Select start date" DateFormat="dd MMM yyyy" />
+                    <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="End" @bind-Date="this.projectRequest.End" For="@(() => this.projectRequest.End)" Clearable="true" Placeholder=" Select end date" DateFormat="dd MMM yyyy" />
+                </div>
+            </MudForm>
+        }
     </DialogContent>
     <DialogActions>
         <MudButton @onclick="Cancel">Cancel</MudButton>
-        <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="@(async () => await Submit())">Create project</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="@(async () => await Submit())">Save changes</MudButton>
     </DialogActions>
 </MudDialog>
 
 @code {
     private readonly FluentValueValidator<EditProjectValidator, EditProjectRequest> validator = new(new());
     private MudForm form = default!;
-    private readonly EditProjectRequest projectRequest = new EditProjectRequest(0);
+    private EditProjectRequest? projectRequest;
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Project? Project { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (this.Project is not null)
+        {
+            this.projectRequest = new EditProjectRequest(this.Project.Id.Value);
+            this.projectRequest.Name = this.Project.Name.Value;
+            this.projectRequest.Description = this.Project.Description.Value;
+            this.projectRequest.Color = this.Project.Color.Value;
+            this.projectRequest.Start =  this.Project.Start != ProjectStart.Unspecified ? this.Project.Start.Value : null;
+            this.projectRequest.End = this.Project.End != ProjectEnd.Unspecified ? this.Project.End.Value : null;
+        }
+    }
 
     private async Task Submit()
     {

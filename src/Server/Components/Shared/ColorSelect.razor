@@ -2,13 +2,12 @@
 
 @inherits InputBase<string>
 
-<div class="wrapper my-1" @onfocusout=@(() => this.open = false)>
-    <MudButton Variant="Variant.Text" EndIcon="@Icons.Material.Filled.ArrowDropDown" Class="color-select relative px-3 py-2" @onclick="() => this.open = !this.open">
-        <div class="color-square rounded" style="@($"background:{this.CurrentValue};")"></div>
-        <div class="outline"></div>
-    </MudButton>
+<div class="relative" @onfocusout=@(() => this.open = false)>
+    <MudField Label="Color" OnAdornmentClick="() => this.open = !this.open" Adornment="Adornment.End" AdornmentIcon="@Icons.Material.Filled.ArrowDropDown">
+        <input type="button" Class="color-square rounded cursor-pointer" Style="@($"background:{this.CurrentValue}; width: 100%")" @onclick="() => this.open = true" />
+    </MudField>
     <MudPopover Open="this.open" AnchorOrigin="Origin.BottomLeft" TransformOrigin="Origin.TopLeft" Class="mt-1">
-        <MudPaper Class="d-flex flex-wrap gap-3 pa-4" Width="240px">
+        <MudPaper Class="palette d-flex flex-wrap gap-3 pa-4" Width="240px">
             @foreach (var item in CustomPalette)
             {
                 <button style="@($"background:{item};")" class="@($"color-square {(this.IsActiveColor(item) ? "rounded-xl" : "rounded")}")" @onmousedown="() => { this.CurrentValue = item; }" />

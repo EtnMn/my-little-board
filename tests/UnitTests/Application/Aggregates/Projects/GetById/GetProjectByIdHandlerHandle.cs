@@ -1,6 +1,7 @@
 using Etn.MyLittleBoard.Application.Interfaces;
 using Etn.MyLittleBoard.Application.Projects.GetById;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
+using Etn.MyLittleBoard.Domain.Aggregates.Projects.Specifications;
 
 namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.GetById;
 
@@ -17,7 +18,7 @@ public sealed class GetProjectByIdHandlerHandle
             .Create();
 
         IRepository<Project> repository = Substitute.For<IRepository<Project>>();
-        repository.GetByIdAsync(project.Id, Arg.Any<CancellationToken>()).Returns(project);
+        repository.FirstOrDefaultAsync(Arg.Any<ProjectByIdNoTracking>(), Arg.Any<CancellationToken>()).Returns(project);
 
         GetProjectByIdHandler handler = new(repository);
         GetProjectByIdRequest request = new(project.Id.Value);
@@ -25,6 +26,6 @@ public sealed class GetProjectByIdHandlerHandle
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(project);
-        await repository.Received().GetByIdAsync(Arg.Any<ProjectId>(), Arg.Any<CancellationToken>());
+        await repository.Received().FirstOrDefaultAsync(Arg.Any<ProjectByIdNoTracking>(), Arg.Any<CancellationToken>());
     }
 }

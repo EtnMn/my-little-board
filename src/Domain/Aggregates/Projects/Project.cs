@@ -21,19 +21,42 @@ public sealed class Project(
 
     public ProjectName Name { get; private set; } = name;
 
-    public ProjectColor Color { get; } = color;
+    public ProjectColor Color { get; private set; } = color;
 
-    public ProjectDescription Description { get; } = description;
+    public ProjectDescription Description { get; private set; } = description;
 
-    public ProjectStart Start { get; } = ProjectStart.Unspecified;
+    public ProjectStart Start { get; private set; } = ProjectStart.Unspecified;
 
-    public ProjectEnd End { get; } = ProjectEnd.Unspecified;
+    public ProjectEnd End { get; private set; } = ProjectEnd.Unspecified;
 
     public ProjectStatus Status { get; } = projectStatus;
+
+    public void UpdateColor(ProjectColor projectColor)
+    {
+        this.Color = projectColor;
+    }
+
+    public void UpdateDescription(ProjectDescription value)
+    {
+        this.Description = value;
+    }
 
     public void UpdateName(ProjectName value)
     {
         this.Name = value;
+    }
+
+    public void UpdatePeriod(ProjectStart start, ProjectEnd end)
+    {
+        if (end.Value >= start.Value)
+        {
+            this.Start = start;
+            this.End = end;
+        }
+        else
+        {
+            throw new ValueObjectValidationException("Project end date must be greater than or equal to start date");
+        }
     }
 }
 
@@ -123,14 +146,14 @@ public readonly partial struct ProjectDescription
     }
 }
 
-[ValueObject<DateTimeOffset>]
+[ValueObject<DateTime>]
 public readonly partial struct ProjectStart
 {
-    public static readonly ProjectStart Unspecified = new(DateTimeOffset.MinValue);
+    public static readonly ProjectStart Unspecified = new(DateTime.MinValue);
 }
 
-[ValueObject<DateTimeOffset>]
+[ValueObject<DateTime>]
 public readonly partial struct ProjectEnd
 {
-    public static readonly ProjectEnd Unspecified = new(DateTimeOffset.MaxValue);
+    public static readonly ProjectEnd Unspecified = new(DateTime.MaxValue);
 }
