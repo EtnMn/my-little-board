@@ -9,7 +9,7 @@ public sealed class ProjectsPaginatedConstructor
 
     public ProjectsPaginatedConstructor()
     {
-        this.fixture.Register(() => new Project(ProjectName.From(this.fixture.Create<string>())));
+        this.fixture.Register(() => new Project(ProjectName.From(this.fixture.Create<string>()), ProjectDescription.Unspecified));
     }
 
     [Theory]

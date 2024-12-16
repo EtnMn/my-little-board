@@ -10,7 +10,6 @@ internal sealed class AppDbContext(
     DbContextOptions<AppDbContext> options,
     IDomainEventDispatcher? dispatcher) :
     DbContext(options)
-//IAppDbContext
 {
     private readonly IDomainEventDispatcher? dispatcher = dispatcher;
 

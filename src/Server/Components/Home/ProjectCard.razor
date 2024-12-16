@@ -1,0 +1,44 @@
+@using Etn.MyLittleBoard.Domain.Aggregates.Projects
+
+@inject NavigationManager NavigationManager
+
+<div>
+    <MudCard Class="cursor-pointer overflow-hidden highlight-hover" @onclick="@(() => NavigationManager.NavigateTo($"/project/{this.Project.Id}"))" Style="height: 100%;">
+        <MudPaper Class="pa-6 d-flex justify-center" Style="@($"background:{this.BackGroundColor};")" Elevation="0" Square="true">
+            <MudText Typo="Typo.button" Style="font-size: 4rem; color:white">@this.Project.Name.Value[0]</MudText>
+        </MudPaper>
+        <MudCardContent>
+            <div class="d-flex justify-space-between align-center">
+                <MudText Typo="Typo.h2">@this.Project.Name</MudText>
+                @if (this.Project.Status != ProjectStatus.Active)
+                {
+                    <MudChip T="string" Label="true" Variant="Variant.Outlined" Size="Size.Small" Color="this.Project.Status.GetColor()">@this.Project.Status</MudChip>
+                }
+            </div>
+            <MudText Typo="Typo.body2" Class="overflow-hidden" Style="text-overflow: ellipsis; white-space: nowrap;">@this.Project.Description</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary" Href="@($"/project/{this.Project.Id}")">See More</MudButton>
+        </MudCardActions>
+    </MudCard>
+</div>
+
+@code {
+    [Parameter, EditorRequired]
+    public Project Project { get; set; } = default!;
+
+    private string BackGroundColor
+    {
+        get
+        {
+            if (this.Project.Color != ProjectColor.Unspecified)
+            {
+                return this.Project.Color.Value;
+            }
+            else
+            {
+                return ColorConstants.ProjectDefaultColor;
+            }
+        }
+    }
+}

@@ -1,0 +1,165 @@
+@page "/project/{ProjectId:int}"
+
+@inject ISender sender
+@inject IDialogService Dialog
+@inject ISnackbar Snackbar
+
+@using Etn.MyLittleBoard.Application.Projects.Edit
+@using Etn.MyLittleBoard.Application.Projects.GetById
+@using Etn.MyLittleBoard.Domain.Aggregates.Projects
+@using System.Globalization
+
+
+@attribute [Authorize]
+
+<PageTitle>Project - My Little Board</PageTitle>
+
+<MudBreadcrumbs Items="items" Class="px-0">
+    <ItemTemplate Context="i">
+        <MudLink Href="@i.Href" Typo="Typo.subtitle2">@i.Text</MudLink>
+    </ItemTemplate>
+</MudBreadcrumbs>
+
+@if (this.project is not null)
+{
+    <div class="d-flex mb-8 align-center flex-wrap gap-4">
+        <MudAvatar Size="Size.Large" Class="mr-2" style="@($"background:{this.ProjectColor}; color: var(--mud-palette-primary-text);")">@this.project.Name.Value[0]</MudAvatar>
+        <MudText Typo="Typo.h1">
+            @(this.project.Name)
+        </MudText>
+        <MudChip T="ProjectStatus" Label="true" Variant="Variant.Outlined" Size="Size.Medium" Color="this.project.Status.GetColor()">@this.project.Status</MudChip>
+    </div>
+
+    <MudGrid Class="flex-row-reverse">
+        <MudItem xs="12" sm="4" md="3">
+            <MudPaper Elevation="0" Class="d-flex flex-column gap-4">
+                <div class="d-flex justify-space-between align-center">
+                    <MudText Typo="Typo.h2">About</MudText>
+                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Settings" @onclick="@(() => UpdateProject())" />
+                </div>
+
+                <div class="d-flex align-center gap-2">
+                    @if (this.project.Start != ProjectStart.Unspecified || this.project.End != ProjectEnd.Unspecified)
+                    {
+                        <MudIcon Icon="@Icons.Material.Filled.DateRange" Title="Start" class="ml-n1"/>  
+                        <div class="d-flex flex-wrap gap-1">
+                            @if (this.project.Start != ProjectStart.Unspecified){
+                                <spand>from</spand>
+                                <MudText Typo="Typo.subtitle2">@this.project.Start.Value.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</MudText>
+                            }
+                            @if (this.project.End != ProjectEnd.Unspecified)
+                            {
+                                <spand>to</spand>
+                                <MudText Typo="Typo.subtitle2">@this.project.End.Value.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</MudText>
+                            }
+                        </div>
+                    }
+                </div>
+                @if (this.project.Description != ProjectDescription.Unspecified)
+                {
+                    <MudText Typo="Typo.body1">@(this.project.Description)</MudText>
+                }
+                else {
+                    <MudText Typo="Typo.body2"><em>No description</em></MudText>
+                }
+            </MudPaper>
+        </MudItem>
+        <MudItem xs="12" sm="8" md="9">
+            <MudPaper Class="pa-4">
+                <MudText Typo="Typo.h2" Class="mb-4">Iterations</MudText>
+            </MudPaper>
+        </MudItem>
+    </MudGrid>
+}
+else{
+    <NotFound />
+}
+
+@code {
+    private BreadcrumbItem[] items = [];
+    private Project? project = default;
+    private bool loading = false;
+
+    [Parameter]
+    public int? ProjectId { get; set; }
+
+    private string ProjectColor => !string.IsNullOrWhiteSpace(this.project?.Color.Value) ?
+        this.project.Color.Value :
+        ColorConstants.ProjectDefaultColor;
+
+    protected override void OnParametersSet()
+    {
+        this.items = new BreadcrumbItem[] {
+            new BreadcrumbItem("Home", href: "/"),
+            new BreadcrumbItem("Project", href: $"/project/{this.ProjectId}", disabled: true)
+    };
+    }
+
+    protected override async Task OnParametersSetAsync() {
+        if (this.ProjectId.HasValue)
+        {
+            this.project = await GetProjectById(this.ProjectId.Value);
+        }
+    }
+
+    private async Task<Project?> GetProjectById(int projectId)
+    {
+        // Prevent multiple concurrent operations https://learn.microsoft.com/en-us/aspnet/core/blazor/blazor-ef-core?view=aspnetcore-9.0#database-access.
+        if (this.loading)
+        {
+            return this.project;
+        }
+
+        try
+        {
+            this.loading = true;
+            GetProjectByIdRequest getProjectById = new(projectId);
+            Result<Project> result = await sender.Send(getProjectById);
+            if (result.IsSuccess)
+            {
+                return result.Value;
+            }
+            else
+            {
+                return default;
+            }
+        }
+        finally
+        {
+            this.loading = false;
+        }
+    }
+
+    private async Task UpdateProject()
+    {
+        DialogParameters<EditProjectDialog> parameters = new() { { x => x.Project, this.project } };
+        IDialogReference dialog = await Dialog.ShowAsync<EditProjectDialog>(
+            "Edit project",
+            parameters,
+            new DialogOptions()
+                {
+                    FullWidth = true,
+                    MaxWidth = MaxWidth.Medium,
+                    CloseButton = true
+                }
+        );
+
+        DialogResult? dialogResult = await dialog.Result;
+        if (dialogResult is not null && !dialogResult.Canceled && dialogResult.Data is EditProjectRequest editProjectRequest)
+        {
+            Result result = await sender.Send(editProjectRequest);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add("Project saved", Severity.Success);
+                if (this.ProjectId.HasValue)
+                {
+                    this.project = await GetProjectById(this.ProjectId.Value);
+                }
+            }
+            else
+            {
+                Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
+            }
+        }
+    }
+}
