@@ -30,14 +30,14 @@ public sealed class ProjectsPaginatedConstructor
     [Fact]
     public void ProjectsPaginatedConstructor_ThrowsException_WhenSkipIsNegative()
     {
-        Action action = () => new ProjectsPaginated(-1, this.fixture.Create<int>());
+        Action action = () => _ = new ProjectsPaginated(-1, this.fixture.Create<int>());
         action.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Fact]
     public void ProjectsPaginatedConstructor_ThrowsException_WhenTakeIsNegative()
     {
-        Action action = () => new ProjectsPaginated(this.fixture.Create<int>(), -1);
+        Action action = () => _ = new ProjectsPaginated(this.fixture.Create<int>(), -1);
         action.Should().Throw<ArgumentOutOfRangeException>();
     }
 }

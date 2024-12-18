@@ -29,7 +29,7 @@ public sealed class Project(
 
     public ProjectEnd End { get; private set; } = ProjectEnd.Unspecified;
 
-    public ProjectStatus Status { get; } = projectStatus;
+    public ProjectStatus Status { get; private set; } = projectStatus;
 
     public void UpdateColor(ProjectColor projectColor)
     {
@@ -55,7 +55,19 @@ public sealed class Project(
         }
         else
         {
-            throw new ValueObjectValidationException("Project end date must be greater than or equal to start date");
+            throw new ArgumentException("Project end date must be greater than or equal to start date");
+        }
+    }
+
+    public void UpdateStatus(ProjectStatus value)
+    {
+        if (Enum.IsDefined(value))
+        {
+            this.Status = value;
+        }
+        else
+        {
+            throw new ArgumentException("Invalid project status value", nameof(value));
         }
     }
 }

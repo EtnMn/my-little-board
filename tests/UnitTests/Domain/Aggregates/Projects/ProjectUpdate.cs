@@ -6,7 +6,6 @@ public sealed class ProjectUpdate
 {
     private readonly Fixture fixture = new();
     private readonly Project project;
-    private readonly string name;
 
     public ProjectUpdate()
     {
@@ -14,13 +13,71 @@ public sealed class ProjectUpdate
             ProjectName.From(this.fixture.Create<string>()),
             ProjectDescription.Unspecified);
 
-        this.name = this.fixture.Create<string>();
+    }
+
+    [Fact]
+    public void UpdateColor()
+    {
+        string color = StringHelpers.GenerateHexColor();
+        this.project.UpdateColor(ProjectColor.From(color));
+        this.project.Color.Value.Should().Be(color);
+    }
+
+    [Fact]
+    public void UpdateDescription()
+    {
+        string description = this.fixture.Create<string>();
+        this.project.UpdateDescription(ProjectDescription.From(description));
+        this.project.Description.Value.Should().Be(description);
     }
 
     [Fact]
     public void Project_UpdateName()
     {
-        this.project.UpdateName(ProjectName.From(this.name));
-        this.project.Name.Value.Should().Be(this.name);
+        string name = this.fixture.Create<string>();
+        this.project.UpdateName(ProjectName.From(name));
+        this.project.Name.Value.Should().Be(name);
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(1)]
+    public void Project_UpdatePeriod(int dayOffset)
+    {
+        DateTime start = this.fixture.Create<DateTime>();
+        DateTime end = start.AddDays(dayOffset);
+        this.project.UpdatePeriod(ProjectStart.From(start), ProjectEnd.From(end));
+        this.project.Start.Value.Should().Be(start);
+        this.project.End.Value.Should().Be(end);
+    }
+
+    [Fact]
+    public void Project_UpdatePeriod_ThrowsException_WhenEndIsSmallerThanStart()
+    {
+        DateTime start = this.fixture.Create<DateTime>();
+        DateTime end = start.AddDays(-1);
+        Action action = () => this.project.UpdatePeriod(ProjectStart.From(start), ProjectEnd.From(end));
+
+        action.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void Project_UpdateStatus()
+    {
+        ProjectStatus status = this.fixture.Create<ProjectStatus>();
+        this.project.UpdateStatus(status);
+
+        this.project.Status.Should().Be(status);
+    }
+
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public void Project_UpdateStatus_ThrowsException_WhenStatusIsNotDefined(int status)
+    {
+        Action action = () => this.project.UpdateStatus((ProjectStatus)status);
+
+        action.Should().Throw<ArgumentException>();
     }
 }

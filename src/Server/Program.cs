@@ -17,4 +17,3 @@ app.UseApplicationMiddleware();
 app.UseApplicationEndpoints();
 
 await app.RunAsync();
-

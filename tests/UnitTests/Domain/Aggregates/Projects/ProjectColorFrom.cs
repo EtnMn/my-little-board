@@ -32,10 +32,4 @@ public sealed class ProjectColorFrom
         Action action = () => ProjectColor.From(color);
         action.Should().Throw<ValueObjectValidationException>();
     }
-
-    public static TheoryData<string?> StringValidationExceptionData => new()
-    {
-        { string.Empty },
-        { " " },
-    };
 }
