@@ -51,7 +51,7 @@
                 <div class="d-flex justify-space-between align-center">
                     <MudText Typo="Typo.h2">About</MudText>
                     <AuthorizeView Roles="@Role.Administrator">
-                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Settings" @onclick="this.UpdateProject" />
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Settings" @onclick="this.UpdateProject" aria-label="Update settings"/>
                     </AuthorizeView>
                 </div>
 
