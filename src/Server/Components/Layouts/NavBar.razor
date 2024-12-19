@@ -6,7 +6,6 @@
 @implements IDisposable
 
 @inject AuthenticationStateProvider AuthenticationStateProvider
-@inject MicrosoftIdentityConsentAndConditionalAccessHandler ConsentHandler
 @inject IUserService UserService
 
 <MudAppBar Elevation="1">
@@ -18,7 +17,7 @@
     <MudSpacer />
 
     @* Todo: OnClick issue. https://github.com/dotnet/razor/issues/10896 *@
-    <MudButton @onclick="@(() => drawer = !drawer)">
+    <MudButton @onclick="@(() => drawer = !drawer)" aria-label="Toggle drawer">
         <UserAvatar Source="@this.AvatarSource">@Initials</UserAvatar>
     </MudButton>
 

@@ -1,4 +1,3 @@
-using Etn.MyLittleBoard.Application.Interfaces;
 using Etn.MyLittleBoard.Application.Projects.GetById;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects.Specifications;

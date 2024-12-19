@@ -9,9 +9,10 @@ public static class ProjectStatusExtension
     {
         return value switch
         {
-            ProjectStatus.Draft => Color.Secondary,
-            ProjectStatus.Inactive => Color.Warning,
-            ProjectStatus.Complete => Color.Dark,
+            ProjectStatus.Draft => Color.Warning,
+            ProjectStatus.Active => Color.Primary,
+            ProjectStatus.Inactive => Color.Secondary,
+            ProjectStatus.Complete => Color.Success,
             _ => Color.Default,
         };
     }

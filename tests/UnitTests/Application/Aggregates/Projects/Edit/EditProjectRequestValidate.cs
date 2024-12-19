@@ -2,6 +2,7 @@ using Etn.MyLittleBoard.Application.Projects.Edit;
 using FluentValidation.TestHelper;
 
 namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.Edit;
+
 public sealed class EditProjectRequestValidate
 {
     private readonly EditProjectValidator validator = new();
@@ -12,14 +13,18 @@ public sealed class EditProjectRequestValidate
     {
         EditProjectRequest request = new(this.fixture.Create<int>()) { Name = this.fixture.Create<string>() };
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
         result.ShouldNotHaveAnyValidationErrors();
     }
 
-    [Fact]
-    public async Task EditProjectRequestValidate_ShouldHavePositiveId()
+    [Theory]
+    [InlineData(0)]
+    [InlineData(-1)]
+    public async Task EditProjectRequestValidate_ShouldHaveErrorWhenProjectIdNotSet(int id)
     {
-        EditProjectRequest request = new(0) { Name = this.fixture.Create<string>() };
+        EditProjectRequest request = new(id) { Name = this.fixture.Create<string>() };
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
         result
             .ShouldHaveValidationErrorFor(x => x.ProjectId)
             .WithErrorCode("GreaterThanValidator")
@@ -35,6 +40,7 @@ public sealed class EditProjectRequestValidate
     {
         EditProjectRequest request = new(this.fixture.Create<int>()) { Name = name! };
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
         result
             .ShouldHaveValidationErrorFor(x => x.Name)
             .WithErrorCode("NotEmptyValidator")
@@ -47,6 +53,7 @@ public sealed class EditProjectRequestValidate
     {
         EditProjectRequest request = new(this.fixture.Create<int>()) { Name = StringHelpers.GenerateOverMaximumLengthString(ValidationConstants.DefaultTextLength) };
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
         result
             .ShouldHaveValidationErrorFor(x => x.Name)
             .WithErrorCode("MaximumLengthValidator")
@@ -59,6 +66,7 @@ public sealed class EditProjectRequestValidate
     {
         EditProjectRequest request = new(this.fixture.Create<int>()) { Description = this.fixture.Create<string>() };
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
         result.ShouldNotHaveValidationErrorFor(x => x.Description);
     }
 
@@ -72,6 +80,7 @@ public sealed class EditProjectRequestValidate
         };
 
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
         result
             .ShouldHaveValidationErrorFor(x => x.Description)
             .WithErrorCode("MaximumLengthValidator")
@@ -85,6 +94,7 @@ public sealed class EditProjectRequestValidate
         string color = StringHelpers.GenerateHexColor();
         EditProjectRequest request = new(this.fixture.Create<int>()) { Color = color };
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
         result.ShouldNotHaveValidationErrorFor(x => x.Color);
     }
 
@@ -98,6 +108,7 @@ public sealed class EditProjectRequestValidate
         };
 
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
         result
             .ShouldHaveValidationErrorFor(x => x.Color)
             .WithErrorCode("RegularExpressionValidator")

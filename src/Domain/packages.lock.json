@@ -29,9 +29,9 @@
       },
       "Vogen": {
         "type": "Direct",
-        "requested": "[5.0.5, )",
-        "resolved": "5.0.5",
-        "contentHash": "FrFZLtWOLb9Q0gBWTbwo0fIYYZ+ppLv6KMhzeAIB9oDzDSTJ+Y9KnjAne/gJZ24Bng2wgEge/Q85J63hVQUVmA=="
+        "requested": "[5.0.6, )",
+        "resolved": "5.0.6",
+        "contentHash": "yRBazqc3EF5+9qCvq5WHHY3jz23fativnuQo/j394j3p7lW0PcXwMcr0FxvOzNvz6I3tIEJKHnx2MNvBzKK16A=="
       },
       "MediatR.Contracts": {
         "type": "Transitive",

@@ -1,24 +1,25 @@
-using Etn.MyLittleBoard.Application.Projects.Edit;
+using Etn.MyLittleBoard.Application.Projects.EditStatus;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
-namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.Edit;
+namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.EditStatus;
 
-public sealed class EditProjectHandlerHandle
+public sealed class EditProjectStatusHandlerHandle
 {
     private readonly Fixture fixture = new();
     private readonly IRepository<Project> repository;
     private readonly IUserService userService;
 
-    public EditProjectHandlerHandle()
+    public EditProjectStatusHandlerHandle()
     {
         this.repository = Substitute.For<IRepository<Project>>();
         this.userService = Substitute.For<IUserService>();
     }
 
     [Fact]
-    public async Task EditProjectHandler_EditProjectValues()
+    public async Task EditProjectStatusHandler_EditProjectStatus()
     {
         this.userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, true).Create());
+
         Project project = this.fixture
             .Build<Project>()
             .FromFactory<int>((x) => new Project(
@@ -27,55 +28,50 @@ public sealed class EditProjectHandlerHandle
             .With(x => x.Id, ProjectId.From(this.fixture.Create<int>()))
             .Create();
 
+        EditProjectStatusRequest request = new(project.Id.Value, this.fixture.Create<ProjectStatus>());
+        EditProjectStatusHandler handler = new(this.repository, this.userService);
+
         this.repository
             .GetByIdAsync(project.Id, Arg.Any<CancellationToken>())
             .Returns(project);
 
-        EditProjectHandler handler = new(this.repository, this.userService);
-        EditProjectRequest request = new(project.Id.Value)
-        {
-            Name = this.fixture.Create<string>(),
-            Description = this.fixture.Create<string>(),
-            Color = StringHelpers.GenerateHexColor()
-        };
-
         Result result = await handler.Handle(request, CancellationToken.None);
-
         _ = this.userService.Received().AuthenticatedUser;
+
         await this.repository.Received().GetByIdAsync(Arg.Any<ProjectId>(), Arg.Any<CancellationToken>());
         await this.repository.Received().UpdateAsync(project, Arg.Any<CancellationToken>());
         result.IsSuccess.Should().BeTrue();
     }
 
     [Fact]
-    public async Task EditProjectHandler_ReturnNotFoundWhenProjectDoesNotExist()
+    public async Task EditProjectStatusHandler_ReturnNotFoundWhenProjectDoesNotExist()
     {
         this.userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, true).Create());
 
-        EditProjectHandler handler = new(this.repository, this.userService);
-        EditProjectRequest request = new(this.fixture.Create<int>());
+        EditProjectStatusRequest request = new(this.fixture.Create<int>(), this.fixture.Create<ProjectStatus>());
+        EditProjectStatusHandler handler = new(this.repository, this.userService);
         Result<ProjectId> result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeFalse();
         result.Status.Should().Be(ResultStatus.NotFound);
     }
 
     [Fact]
-    public async Task EditProjectHandler_ReturnUnauthorizedWhenNoUser()
+    public async Task EditProjectStatusHandler_ReturnUnauthorizedWhenNoUser()
     {
-        EditProjectHandler handler = new(this.repository, this.userService);
-        EditProjectRequest request = new(this.fixture.Create<int>());
+        EditProjectStatusRequest request = new(this.fixture.Create<int>(), this.fixture.Create<ProjectStatus>());
+        EditProjectStatusHandler handler = new(this.repository, this.userService);
         Result<ProjectId> result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeFalse();
         result.Status.Should().Be(ResultStatus.Unauthorized);
     }
 
     [Fact]
-    public async Task EditProjectHandler_ReturnForbiddenWhenNotAdministrator()
+    public async Task EditProjectStatusHandler_ReturnForbiddenWhenNotAdministrator()
     {
         this.userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, false).Create());
 
-        EditProjectHandler handler = new(this.repository, this.userService);
-        EditProjectRequest request = new(this.fixture.Create<int>());
+        EditProjectStatusRequest request = new(this.fixture.Create<int>(), this.fixture.Create<ProjectStatus>());
+        EditProjectStatusHandler handler = new(this.repository, this.userService);
         Result<ProjectId> result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeFalse();
         result.Status.Should().Be(ResultStatus.Forbidden);

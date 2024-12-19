@@ -1,14 +1,16 @@
 @page "/project/{ProjectId:int}"
 
-@inject ISender sender
-@inject IDialogService Dialog
-@inject ISnackbar Snackbar
-
 @using Etn.MyLittleBoard.Application.Projects.Edit
+@using Etn.MyLittleBoard.Application.Projects.EditStatus
 @using Etn.MyLittleBoard.Application.Projects.GetById
 @using Etn.MyLittleBoard.Domain.Aggregates.Projects
 @using System.Globalization
+@using Microsoft.AspNetCore.Components.Authorization
 
+@inject ISender sender
+@inject IDialogService Dialog
+@inject ISnackbar Snackbar
+@inject AuthenticationStateProvider AuthenticationStateProvider
 
 @attribute [Authorize]
 
@@ -27,7 +29,20 @@
         <MudText Typo="Typo.h1">
             @(this.project.Name)
         </MudText>
-        <MudChip T="ProjectStatus" Label="true" Variant="Variant.Outlined" Size="Size.Medium" Color="this.project.Status.GetColor()">@this.project.Status</MudChip>
+
+        <AuthorizeView Roles="@Role.Administrator">
+            <Authorized>
+                <MudMenu Label="@this.project.Status.ToString()" Variant="Variant.Outlined" Color="this.project.Status.GetColor()" Size="Size.Small" EndIcon="@Icons.Material.Filled.KeyboardArrowDown">
+                    @foreach (var item in this.AvailableProjectStatus)
+                    {
+                        <MudMenuItem @onclick="() => this.UpdateProjectStatus(item)">@item</MudMenuItem>
+                    }
+                </MudMenu>
+            </Authorized>
+            <NotAuthorized>
+                <MudChip T="ProjectStatus" Label="true" Variant="Variant.Outlined" Size="Size.Small" Color="this.project.Status.GetColor()">@this.project.Status</MudChip>
+            </NotAuthorized>                
+        </AuthorizeView>
     </div>
 
     <MudGrid Class="flex-row-reverse">
@@ -35,7 +50,9 @@
             <MudPaper Elevation="0" Class="d-flex flex-column gap-4">
                 <div class="d-flex justify-space-between align-center">
                     <MudText Typo="Typo.h2">About</MudText>
-                    <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Settings" @onclick="@(() => UpdateProject())" />
+                    <AuthorizeView Roles="@Role.Administrator">
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Settings" @onclick="this.UpdateProject" aria-label="Update settings"/>
+                    </AuthorizeView>
                 </div>
 
                 <div class="d-flex align-center gap-2">
@@ -45,12 +62,12 @@
                         <div class="d-flex flex-wrap gap-1">
                             @if (this.project.Start != ProjectStart.Unspecified){
                                 <spand>from</spand>
-                                <MudText Typo="Typo.subtitle2">@this.project.Start.Value.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</MudText>
+                                <MudText Typo="Typo.subtitle2">@this.project.Start.Value.ToString(datePattern, CultureInfo.InvariantCulture)</MudText>
                             }
                             @if (this.project.End != ProjectEnd.Unspecified)
                             {
                                 <spand>to</spand>
-                                <MudText Typo="Typo.subtitle2">@this.project.End.Value.ToString("dd MMM yyyy", CultureInfo.InvariantCulture)</MudText>
+                                <MudText Typo="Typo.subtitle2">@this.project.End.Value.ToString(datePattern, CultureInfo.InvariantCulture)</MudText>
                             }
                         </div>
                     }
@@ -76,16 +93,31 @@ else{
 }
 
 @code {
+    private const string datePattern = "dd MMM yyyy";
     private BreadcrumbItem[] items = [];
     private Project? project = default;
     private bool loading = false;
+    private AuthenticationState? authState;
 
     [Parameter]
     public int? ProjectId { get; set; }
 
+    [CascadingParameter]
+    private Task<AuthenticationState>? AuthenticationState { get; set; }
+
     private string ProjectColor => !string.IsNullOrWhiteSpace(this.project?.Color.Value) ?
         this.project.Color.Value :
         ColorConstants.ProjectDefaultColor;
+
+    private ProjectStatus[] AvailableProjectStatus => Enum.GetValues<ProjectStatus>().Except(new[] { this.project?.Status ?? default }).ToArray();
+
+    protected override async Task OnInitializedAsync()
+    {
+        if (this.AuthenticationState is not null)
+        {
+            this.authState = await this.AuthenticationState;
+        }
+    }
 
     protected override void OnParametersSet()
     {
@@ -155,6 +187,23 @@ else{
                 {
                     this.project = await GetProjectById(this.ProjectId.Value);
                 }
+            }
+            else
+            {
+                Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
+            }
+        }
+    }
+
+    // Remarks: Not handled by ErrorBoundary. https://github.com/MudBlazor/MudBlazor/issues/10265.
+    private async Task UpdateProjectStatus(ProjectStatus projectStatus){
+        if (this.ProjectId.HasValue)
+        {
+            Result result = await sender.Send(new EditProjectStatusRequest(this.ProjectId.Value, projectStatus));
+            if (result.IsSuccess)
+            {
+                Snackbar.Add("Project status saved", Severity.Success);
+                this.project = await GetProjectById(this.ProjectId.Value);
             }
             else
             {

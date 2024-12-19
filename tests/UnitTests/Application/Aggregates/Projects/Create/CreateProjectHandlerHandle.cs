@@ -1,4 +1,3 @@
-using Etn.MyLittleBoard.Application.Interfaces;
 using Etn.MyLittleBoard.Application.Projects.Create;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
