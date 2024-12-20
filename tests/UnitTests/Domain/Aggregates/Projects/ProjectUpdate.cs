@@ -16,7 +16,7 @@ public sealed class ProjectUpdate
     }
 
     [Fact]
-    public void UpdateColor()
+    public void Should_Update_ProjectColor()
     {
         string color = StringHelpers.GenerateHexColor();
         this.project.UpdateColor(ProjectColor.From(color));
@@ -24,7 +24,7 @@ public sealed class ProjectUpdate
     }
 
     [Fact]
-    public void UpdateDescription()
+    public void Should_Update_ProjectDescription()
     {
         string description = this.fixture.Create<string>();
         this.project.UpdateDescription(ProjectDescription.From(description));
@@ -32,7 +32,7 @@ public sealed class ProjectUpdate
     }
 
     [Fact]
-    public void Project_UpdateName()
+    public void Should_Update_ProjectName()
     {
         string name = this.fixture.Create<string>();
         this.project.UpdateName(ProjectName.From(name));
@@ -42,7 +42,7 @@ public sealed class ProjectUpdate
     [Theory]
     [InlineData(0)]
     [InlineData(1)]
-    public void Project_UpdatePeriod(int dayOffset)
+    public void Should_Update_Project_Period(int dayOffset)
     {
         DateTime start = this.fixture.Create<DateTime>();
         DateTime end = start.AddDays(dayOffset);
@@ -52,21 +52,19 @@ public sealed class ProjectUpdate
     }
 
     [Fact]
-    public void Project_UpdatePeriod_ThrowsException_WhenEndIsSmallerThanStart()
+    public void Should_ThrowException_When_Project_EndIsSmallerThanStart()
     {
         DateTime start = this.fixture.Create<DateTime>();
         DateTime end = start.AddDays(-1);
         Action action = () => this.project.UpdatePeriod(ProjectStart.From(start), ProjectEnd.From(end));
-
         action.Should().Throw<ArgumentException>();
     }
 
     [Fact]
-    public void Project_UpdateStatus()
+    public void Should_Update_ProjectStatus()
     {
         ProjectStatus status = this.fixture.Create<ProjectStatus>();
         this.project.UpdateStatus(status);
-
         this.project.Status.Should().Be(status);
     }
 
@@ -74,10 +72,9 @@ public sealed class ProjectUpdate
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public void Project_UpdateStatus_ThrowsException_WhenStatusIsNotDefined(int status)
+    public void Should_ThrowException_When_ProjectStatus_IsNotDefined(int status)
     {
         Action action = () => this.project.UpdateStatus((ProjectStatus)status);
-
         action.Should().Throw<ArgumentException>();
     }
 }

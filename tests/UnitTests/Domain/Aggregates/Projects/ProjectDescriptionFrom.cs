@@ -7,7 +7,7 @@ public sealed class ProjectDescriptionFrom
     private readonly Fixture fixture = new();
 
     [Fact]
-    public void ProjectDescriptionFrom_CreatesProjectDescription()
+    public void Should_Initialize_ProjectDescription()
     {
         string description = this.fixture.Create<string>();
         ProjectDescription projectDescription = ProjectDescription.From(description);
@@ -15,26 +15,32 @@ public sealed class ProjectDescriptionFrom
         projectDescription.Value.Should().Be(description);
     }
 
-    [Theory]
-    [MemberData(nameof(StringValidationExceptionData))]
-    public void ProjectDescriptionFrom_ThrowsException_WhenDescriptionIsNotValid(string? value)
+    [Fact]
+    public void Should_ThrowException_When_ProjectDescription_ExceedsMaxLength()
     {
+        string value = StringHelpers.GenerateOverMaximumLengthString(ValidationConstants.LongTextLength);
         Action action = () => ProjectDescription.From(value!);
         action.Should().Throw<ValueObjectValidationException>();
     }
 
     [Theory]
     [InlineData(null)]
+    [InlineData("")]
     [InlineData("    ")]
-    public void ProjectDescriptionFrom_MustNormalizeNullAndEmptyValue(string? value)
+    public void Should_Be_Unspecified_When_ProjectDescription_IsNullOrEmpty(string? value)
     {
         ProjectDescription projectDescription = ProjectDescription.From(value!);
         projectDescription.Should().NotBeNull();
-        projectDescription.Value.Should().Be(ProjectDescription.Unspecified.Value);
+        Assert.Equal(ProjectDescription.Unspecified, projectDescription);
     }
 
-    public static TheoryData<string?> StringValidationExceptionData => new()
+    [Theory]
+    [InlineData(" x")]
+    [InlineData("x ")]
+    [InlineData(" x ")]
+    public void Should_Trim_ProjectDescription_Value(string value)
     {
-        { StringHelpers.GenerateOverMaximumLengthString(ValidationConstants.DefaultTextLength) }
-    };
+        ProjectDescription clientNote = ProjectDescription.From(value);
+        clientNote.Value.Should().Be(value.Trim());
+    }
 }

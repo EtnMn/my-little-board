@@ -23,6 +23,15 @@ public sealed class ProjectNameFrom
         action.Should().Throw<ValueObjectValidationException>();
     }
 
+    [Theory]
+    [InlineData(" x")]
+    [InlineData("x ")]
+    [InlineData(" x ")]
+    public void Should_Trim_ProjectName_Value(string value)
+    {
+        ProjectName projectName = ProjectName.From(value);
+        projectName.Value.Should().Be(value.Trim());
+    }
     public static TheoryData<string?> StringValidationExceptionData => new()
     {
         { null },
