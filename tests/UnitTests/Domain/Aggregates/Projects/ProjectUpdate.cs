@@ -12,7 +12,6 @@ public sealed class ProjectUpdate
         this.project = new(
             ProjectName.From(this.fixture.Create<string>()),
             ProjectDescription.Unspecified);
-
     }
 
     [Fact]
