@@ -1,0 +1,109 @@
+@page "/settings"
+@page "/settings/clients"
+
+@layout SettingsLayout
+
+@attribute [Authorize(Roles = Role.Administrator)]
+
+<PageTitle>Client settings| My Little Board</PageTitle>
+
+<MudText Typo="Typo.h5" GutterBottom="true">Clients</MudText>
+
+<MudStack Row="true" Class="mb-4" StretchItems="StretchItems.All" >
+    <MudCard Outlined="true">
+        <MudCardContent>
+            <MudText>Story of the day</MudText>
+            <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+        </MudCardActions>
+    </MudCard>
+    <MudCard Outlined="true">
+        <MudCardContent>
+            <MudText>Story of the day</MudText>
+            <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
+        </MudCardContent>
+        <MudCardActions>
+            <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
+        </MudCardActions>
+    </MudCard>
+</MudStack>
+
+<MudTable Outlined="true" ServerData="ServerReload" Hover="true">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh><MudTableSortLabel SortLabel="nr_field" T="Employee">Name</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="sign_field" T="Employee">Position</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="name_field" T="Employee">YearsEmployed</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="position_field" T="Employee">Salary</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="mass_field" T="Employee">Rating</MudTableSortLabel></MudTh>
+    </HeaderContent>
+    <RowTemplate>
+        <MudTd DataLabel="Name">@context.Name</MudTd>
+        <MudTd DataLabel="Sign">@context.Position</MudTd>
+        <MudTd DataLabel="YearsEmployed">@context.YearsEmployed</MudTd>
+        <MudTd DataLabel="Salary">@context.Salary</MudTd>
+        <MudTd DataLabel="Molar mass">@context.Rating</MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Loading...</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager />
+    </PagerContent>
+</MudTable>
+
+@code {
+    public record Employee(string Name, string Position, int YearsEmployed, int Salary, int Rating);
+    public IEnumerable<Employee> employees = [];
+
+    private async Task<TableData<Employee>> ServerReload(TableState state, CancellationToken token)
+    {
+        // Forward the provided token to methods which support it
+        employees = new List<Employee>
+        {
+            new Employee("Sam", "CPA", 23, 87_000, 4),
+            new Employee("Alicia", "Product Manager", 11, 143_000, 5),
+            new Employee("Ira", "Developer", 4, 92_000, 3),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+            new Employee("John", "IT Director", 17, 229_000, 4),
+        };
+
+        // Simulate a long-running operation
+        await Task.Delay(300, token);
+        // Get the total count
+        var totalItems = employees.Count();
+        // Get the paged data
+        var pagedData = employees.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
+        // Return the data
+        return new TableData<Employee>() { TotalItems = totalItems, Items = pagedData };
+    }
+}

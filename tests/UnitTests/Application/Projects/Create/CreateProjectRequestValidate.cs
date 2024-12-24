@@ -1,7 +1,6 @@
 using Etn.MyLittleBoard.Application.Projects.Create;
-using FluentValidation.TestHelper;
 
-namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.Create;
+namespace Etn.MyLittleBoard.UnitTests.Application.Projects.Create;
 
 public sealed class CreateProjectRequestValidate
 {
@@ -13,7 +12,7 @@ public sealed class CreateProjectRequestValidate
     {
         CreateProjectRequest request = new() { Name = this.fixture.Create<string>() };
         TestValidationResult<CreateProjectRequest> result = await this.validator.TestValidateAsync(request);
-        result.ShouldNotHaveValidationErrorFor(x => x.Name);
+        result.ShouldNotHaveAnyValidationErrors();
     }
 
     [Theory]

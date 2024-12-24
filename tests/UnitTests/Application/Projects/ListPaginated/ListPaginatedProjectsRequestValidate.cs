@@ -2,7 +2,7 @@ using AutoFixture.Kernel;
 using Etn.MyLittleBoard.Application.Projects.ListPaginated;
 using FluentValidation.TestHelper;
 
-namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.ListPaginated;
+namespace Etn.MyLittleBoard.UnitTests.Application.Projects.ListPaginated;
 
 public sealed class ListPaginatedProjectsRequestValidate
 {

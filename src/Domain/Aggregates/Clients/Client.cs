@@ -75,7 +75,7 @@ public readonly partial struct ClientNote
         {
             return Validation.Invalid($"{nameof(ClientNote)} cannot be null");
         }
-        else if (value.Length > ValidationConstants.DefaultTextLength)
+        else if (value.Length > ValidationConstants.LongTextLength)
         {
             return Validation.Invalid($"{nameof(ClientNote)} exceeds maximum length of {ValidationConstants.LongTextLength} characters");
         }

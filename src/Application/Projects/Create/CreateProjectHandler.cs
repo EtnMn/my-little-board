@@ -22,8 +22,8 @@ public sealed class CreateProjectHandler(
                 ProjectDescription.From(request.Description) :
                 ProjectDescription.Unspecified);
 
-        Project result = await repository.AddAsync(project, cancellationToken);
+        project = await repository.AddAsync(project, cancellationToken);
 
-        return result.Id;
+        return project.Id;
     }
 }

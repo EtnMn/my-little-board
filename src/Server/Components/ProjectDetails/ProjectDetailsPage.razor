@@ -124,11 +124,11 @@ else{
         this.items = new BreadcrumbItem[] {
             new BreadcrumbItem("Home", href: "/"),
             new BreadcrumbItem("Project", href: $"/project/{this.ProjectId}", disabled: true)
-    };
+        };
     }
 
     protected override async Task OnParametersSetAsync() {
-        if (this.ProjectId.HasValue)
+        if (this.ProjectId.HasValue && this.ProjectId.Value != this.project?.Id.Value)
         {
             this.project = await GetProjectById(this.ProjectId.Value);
         }
