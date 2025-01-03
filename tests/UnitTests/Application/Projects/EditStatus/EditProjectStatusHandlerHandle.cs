@@ -22,7 +22,7 @@ public sealed class EditProjectStatusHandlerHandle
 
         Project project = this.fixture
             .Build<Project>()
-            .FromFactory<int>((x) => new Project(
+            .FromFactory(() => new Project(
                 ProjectName.From(this.fixture.Create<string>()),
                 ProjectDescription.Unspecified))
             .With(x => x.Id, ProjectId.From(this.fixture.Create<int>()))

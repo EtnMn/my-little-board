@@ -12,7 +12,7 @@ public sealed class ListPaginatedProjectsHandlerHandle
     [Theory]
     [InlineData(0)]
     [InlineData(100)]
-    public async Task ListPaginatedProjectsHandler_ListProjects(int count)
+    public async Task Should_Get_Right_Projects_Count(int count)
     {
         IEnumerable<Project> projects = this.fixture.CreateMany<Project>(count);
         IRepository<Project> repository = Substitute.For<IRepository<Project>>();

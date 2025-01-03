@@ -1,4 +1,3 @@
-using Ardalis.Result;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
 namespace Etn.MyLittleBoard.Application.Projects.GetById;

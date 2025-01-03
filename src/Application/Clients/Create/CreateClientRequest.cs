@@ -1,4 +1,3 @@
-using Ardalis.Result;
 using Etn.MyLittleBoard.Domain.Aggregates.Clients;
 using Etn.MyLittleBoard.Domain.Constants;
 
