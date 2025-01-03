@@ -11,7 +11,7 @@ public sealed class ProjectConstructor
     {
         string name = this.fixture.Create<string>();
         Project project = new(ProjectName.From(name), ProjectDescription.Unspecified);
-        Assert.Equal(name, project.Name.Value);
+        project.Name.Value.Should().Be(name);
         Assert.Equal(ProjectDescription.Unspecified, project.Description);
         Assert.Equal(ProjectColor.Unspecified, project.Color);
         Assert.Equal(ProjectStart.Unspecified, project.Start);
@@ -25,8 +25,8 @@ public sealed class ProjectConstructor
         string name = this.fixture.Create<string>();
         string description = this.fixture.Create<string>();
         Project project = new(ProjectName.From(name), ProjectDescription.From(description));
-        Assert.Equal(name, project.Name.Value);
-        Assert.Equal(description, project.Description.Value);
+        project.Name.Value.Should().Be(name);
+        project.Description.Value.Should().Be(description);
         Assert.Equal(ProjectColor.Unspecified, project.Color);
         Assert.Equal(ProjectStart.Unspecified, project.Start);
         Assert.Equal(ProjectEnd.Unspecified, project.End);

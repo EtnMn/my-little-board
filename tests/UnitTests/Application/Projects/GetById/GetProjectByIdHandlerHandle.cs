@@ -2,7 +2,7 @@ using Etn.MyLittleBoard.Application.Projects.GetById;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects.Specifications;
 
-namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.GetById;
+namespace Etn.MyLittleBoard.UnitTests.Application.Projects.GetById;
 
 public sealed class GetProjectByIdHandlerHandle
 {

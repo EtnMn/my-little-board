@@ -2,7 +2,7 @@ using Etn.MyLittleBoard.Application.Projects.EditStatus;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 using FluentValidation.TestHelper;
 
-namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.EditStatus;
+namespace Etn.MyLittleBoard.UnitTests.Application.Projects.EditStatus;
 
 public sealed class EditProjectStatusRequestValidate
 {

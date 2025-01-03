@@ -12,6 +12,13 @@
 
 <PageTitle>My Little Board</PageTitle>
 
+
+<MudBreadcrumbs Items="items" Class="px-0">
+    <ItemTemplate Context="i">
+        <MudLink Href="@i.Href" Typo="Typo.subtitle2">@i.Text</MudLink>
+    </ItemTemplate>
+</MudBreadcrumbs>
+
 <MudToolBar WrapContent="true" Gutters="false" Class="mb-3">
     <MudText Typo="Typo.h1">Your projects</MudText>
     <MudSpacer />
@@ -51,11 +58,15 @@
 
 @code {
     private const int itemsPerPage = 6;
+    private readonly BreadcrumbItem[] items = new BreadcrumbItem[] {
+            new BreadcrumbItem("Home", href: "/"),
+    };
+
     private Project[] projects = [];
     private int count = 0;
     private int currentPage = 1;
     private bool loading = false;
-    private bool initialized = false;
+    private bool initialized = false;    
 
     private int Pages => (int)Math.Ceiling((double)this.count / itemsPerPage);
 

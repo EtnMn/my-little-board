@@ -1,0 +1,36 @@
+@using Etn.MyLittleBoard.Application.Clients.Create
+
+<MudDialog DefaultFocus="DefaultFocus.FirstChild">
+    <DialogContent>
+        <MudText Class="mb-4">
+            A client is an entity or individual for whom projects are managed and held.
+        </MudText>
+        <MudForm Model="@clientRequest" @ref="@form" Validation="@(validator.Validation)">
+            <MudTextField @bind-Value="this.clientRequest.Name" Required="true" Immediate="true" For="@(() => this.clientRequest.Name)" Label="Name" Variant="Variant.Text" MaxLength="25" Counter="25" />
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton @onclick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="@(async () => await Submit())">Create client</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private readonly FluentValueValidator<CreateClientValidator, CreateClientRequest> validator = new(new());
+    private readonly CreateClientRequest clientRequest = new ();
+    private MudForm form = default!;
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+
+    private async Task Submit() 
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(clientRequest));
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+}

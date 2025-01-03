@@ -1,7 +1,7 @@
 using Etn.MyLittleBoard.Application.Projects.Edit;
 using FluentValidation.TestHelper;
 
-namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.Edit;
+namespace Etn.MyLittleBoard.UnitTests.Application.Projects.Edit;
 
 public sealed class EditProjectRequestValidate
 {

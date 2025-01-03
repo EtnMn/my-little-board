@@ -5,7 +5,7 @@ using Vogen;
 
 namespace Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
-// Todo: EM: client, BU, tags
+// Todo: EM: client, tags
 public sealed class Project(
     ProjectName name,
     ProjectDescription description,
@@ -83,11 +83,11 @@ public readonly partial struct ProjectName
     {
         if (string.IsNullOrWhiteSpace(value))
         {
-            return Validation.Invalid($"Project {nameof(value)} cannot be empty");
+            return Validation.Invalid($"{nameof(ProjectName)} cannot be empty");
         }
         else if (value.Length > ValidationConstants.DefaultTextLength)
         {
-            return Validation.Invalid($"Project {nameof(value)} exceeds maximum length of {ValidationConstants.DefaultTextLength} characters");
+            return Validation.Invalid($"{nameof(ProjectName)} exceeds maximum length of {ValidationConstants.DefaultTextLength} characters");
         }
         else
         {
@@ -113,11 +113,11 @@ public readonly partial struct ProjectColor
     {
         if (value is null)
         {
-            return Validation.Invalid($"Project {nameof(value)} cannot be null");
+            return Validation.Invalid($"{nameof(ProjectColor)} cannot be null");
         }
         else if (!string.IsNullOrEmpty(value) && !HexColorRegex().IsMatch(value))
         {
-            return Validation.Invalid($"Project {nameof(value)} is not a valid hex color");
+            return Validation.Invalid($"{nameof(ProjectColor)} is not a valid hex color");
         }
         else
         {
@@ -140,11 +140,11 @@ public readonly partial struct ProjectDescription
     {
         if (value is null)
         {
-            return Validation.Invalid($"Project {nameof(value)} cannot be null");
+            return Validation.Invalid($"{nameof(ProjectDescription)} cannot be null");
         }
         else if (value.Length > ValidationConstants.DefaultTextLength)
         {
-            return Validation.Invalid($"Project {nameof(value)} exceeds maximum length of {ValidationConstants.DefaultTextLength} characters");
+            return Validation.Invalid($"{nameof(ProjectDescription)} exceeds maximum length of {ValidationConstants.DefaultTextLength} characters");
         }
         else
         {

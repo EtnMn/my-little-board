@@ -1,7 +1,7 @@
 using Etn.MyLittleBoard.Application.Projects.Create;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
-namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.Create;
+namespace Etn.MyLittleBoard.UnitTests.Application.Projects.Create;
 
 public sealed class CreateProjectHandlerHandle
 {

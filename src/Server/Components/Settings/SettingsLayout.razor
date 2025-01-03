@@ -1,0 +1,37 @@
+@using Etn.MyLittleBoard.Server.Components.Layouts
+
+@layout MainLayout
+@inherits LayoutComponentBase
+
+@attribute [Authorize(Roles = Role.Administrator)]
+
+<MudBreadcrumbs Items="items" Class="px-0">
+    <ItemTemplate Context="i">
+        <MudLink Href="@i.Href" Typo="Typo.subtitle2">@i.Text</MudLink>
+    </ItemTemplate>
+</MudBreadcrumbs>
+
+<MudGrid>
+    <MudItem xs="12" sm="3">        
+        <MudToolBar Gutters="false" Class="gap-2 px-4">
+            <MudIcon Icon="@Icons.Material.Outlined.Settings" />
+            <MudText Typo="Typo.h2">Settings</MudText>
+        </MudToolBar>
+
+        <MudDivider Class="my-2" />
+        <MudNavMenu Color="Color.Primary" Bordered="true" Rounded="true">
+            <MudNavLink Href="/settings/clients" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Wallet">Clients</MudNavLink>
+            <MudNavLink Href="/settings/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
+        </MudNavMenu>
+    </MudItem>
+    <MudItem xs="12" sm="9">
+        @Body
+    </MudItem>
+</MudGrid>
+
+@code {
+    private readonly BreadcrumbItem[] items = new BreadcrumbItem[] {
+            new BreadcrumbItem("Home", href: "/"),
+            new BreadcrumbItem("Settings", href: $"/settings", disabled: true),
+    };
+}

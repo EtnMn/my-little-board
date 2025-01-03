@@ -3,7 +3,7 @@ using Etn.MyLittleBoard.Application.Shared;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects.Specifications;
 
-namespace Etn.MyLittleBoard.UnitTests.Application.Aggregates.Projects.ListPaginated;
+namespace Etn.MyLittleBoard.UnitTests.Application.Projects.ListPaginated;
 
 public sealed class ListPaginatedProjectsHandlerHandle
 {

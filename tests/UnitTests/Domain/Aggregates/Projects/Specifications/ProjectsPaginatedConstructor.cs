@@ -18,7 +18,7 @@ public sealed class ProjectsPaginatedConstructor
     [InlineData(0, 0, 5)]
     [InlineData(0, 0, 0)]
     [InlineData(10, 10, 10)]
-    public void ProjectsPaginatedConstructor_ReturnList(int count, int skip, int take)
+    public void Should_Return_Right_Projects_Count(int count, int skip, int take)
     {
         ProjectsPaginated specifications = new(skip, take);
         IEnumerable<Project> projects = this.fixture.CreateMany<Project>(count);
@@ -28,14 +28,14 @@ public sealed class ProjectsPaginatedConstructor
     }
 
     [Fact]
-    public void ProjectsPaginatedConstructor_ThrowsException_WhenSkipIsNegative()
+    public void Should_ThrowException_When_ProjectsPaginated_Skip_IsNegative()
     {
         Action action = () => _ = new ProjectsPaginated(-1, this.fixture.Create<int>());
         action.Should().Throw<ArgumentOutOfRangeException>();
     }
 
     [Fact]
-    public void ProjectsPaginatedConstructor_ThrowsException_WhenTakeIsNegative()
+    public void Should_ThrowException_When_ProjectsPaginated_Take_IsNegative()
     {
         Action action = () => _ = new ProjectsPaginated(this.fixture.Create<int>(), -1);
         action.Should().Throw<ArgumentOutOfRangeException>();
