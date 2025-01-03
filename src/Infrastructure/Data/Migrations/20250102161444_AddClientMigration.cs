@@ -21,7 +21,7 @@ public partial class AddClientMigration : Migration
             oldMaxLength: 300);
 
         migrationBuilder.CreateTable(
-            name: "Client",
+            name: "Clients",
             columns: table => new
             {
                 Id = table.Column<int>(type: "int", nullable: false),
@@ -31,7 +31,7 @@ public partial class AddClientMigration : Migration
             },
             constraints: table =>
             {
-                table.PrimaryKey("PK_Client", x => x.Id);
+                table.PrimaryKey("PK_Clients", x => x.Id);
             });
     }
 
@@ -39,7 +39,7 @@ public partial class AddClientMigration : Migration
     protected override void Down(MigrationBuilder migrationBuilder)
     {
         migrationBuilder.DropTable(
-            name: "Client");
+            name: "Clients");
 
         migrationBuilder.AlterColumn<string>(
             name: "Color",

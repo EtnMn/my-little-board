@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace Etn.MyLittleBoard.Infrastructure.Data.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20241223215809_AddClientMigration")]
+    [Migration("20250102161444_AddClientMigration")]
     partial class AddClientMigration
     {
         /// <inheritdoc />
@@ -47,7 +47,7 @@ namespace Etn.MyLittleBoard.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Client");
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("Etn.MyLittleBoard.Domain.Aggregates.Projects.Project", b =>

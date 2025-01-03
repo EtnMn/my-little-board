@@ -1,4 +1,5 @@
 using Etn.MyLittleBoard.Domain.Aggregates;
+using Etn.MyLittleBoard.Domain.Aggregates.Clients;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 using Etn.MyLittleBoard.Domain.Interfaces;
 using Microsoft.EntityFrameworkCore;
@@ -14,6 +15,8 @@ internal sealed class AppDbContext(
     private readonly IDomainEventDispatcher? dispatcher = dispatcher;
 
     public DbSet<Project> Projects => this.Set<Project>();
+
+    public DbSet<Client> Clients => this.Set<Client>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {

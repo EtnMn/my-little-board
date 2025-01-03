@@ -44,7 +44,7 @@ namespace Etn.MyLittleBoard.Infrastructure.Data.Migrations
 
                     b.HasKey("Id");
 
-                    b.ToTable("Client");
+                    b.ToTable("Clients");
                 });
 
             modelBuilder.Entity("Etn.MyLittleBoard.Domain.Aggregates.Projects.Project", b =>

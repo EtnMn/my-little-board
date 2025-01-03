@@ -1,16 +1,32 @@
 @page "/settings"
 @page "/settings/clients"
-
 @layout SettingsLayout
+
+@inject ISender sender
+@inject IDialogService Dialog
+@inject ISnackbar Snackbar
+@inject NavigationManager NavigationManager
 
 @attribute [Authorize(Roles = Role.Administrator)]
 
-<PageTitle>Client settings| My Little Board</PageTitle>
+@using Etn.MyLittleBoard.Application.Clients.Create
+@using Etn.MyLittleBoard.Domain.Aggregates.Clients
+@using Microsoft.AspNetCore.Components.Authorization
 
-<MudText Typo="Typo.h5" GutterBottom="true">Clients</MudText>
+<PageTitle>Client settings | My Little Board</PageTitle>
 
-<MudStack Row="true" Class="mb-4" StretchItems="StretchItems.All" >
-    <MudCard Outlined="true">
+<MudToolBar WrapContent="true" Gutters="false" Class="mb-3">
+    <MudText Typo="Typo.h1">Clients</MudText>
+    <MudSpacer />
+    <AuthorizeView Roles="@Role.Administrator">
+        <Authorized>
+            <MudButton StartIcon="@Icons.Material.Outlined.AddBox" Color="Color.Primary" Variant="Variant.Filled" @onclick="@(() => CreateClient())">New</MudButton>
+        </Authorized>
+    </AuthorizeView>
+</MudToolBar>
+
+<MudStack Row="true" Class="mb-4" StretchItems="StretchItems.All">
+    <MudCard>
         <MudCardContent>
             <MudText>Story of the day</MudText>
             <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
@@ -19,7 +35,7 @@
             <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
         </MudCardActions>
     </MudCard>
-    <MudCard Outlined="true">
+    <MudCard>
         <MudCardContent>
             <MudText>Story of the day</MudText>
             <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
@@ -30,7 +46,7 @@
     </MudCard>
 </MudStack>
 
-<MudTable Outlined="true" ServerData="ServerReload" Hover="true">
+<MudTable ServerData="ServerReload" Hover="true">
     <ToolBarContent>
         <MudText Typo="Typo.h6">Periodic Elements</MudText>
     </ToolBarContent>
@@ -62,6 +78,44 @@
 @code {
     public record Employee(string Name, string Position, int YearsEmployed, int Salary, int Rating);
     public IEnumerable<Employee> employees = [];
+
+    private async Task CreateClient()
+    {
+        IDialogReference dialog = await Dialog.ShowAsync<CreateClientDialog>(
+            "Create a new client",
+            new DialogOptions()
+                {
+                    FullWidth = true,
+                    MaxWidth = MaxWidth.Medium,
+                    CloseButton = true
+                }
+        );
+
+        DialogResult? dialogResult = await dialog.Result;
+        if (dialogResult is not null && !dialogResult.Canceled && dialogResult.Data is CreateClientRequest createClientRequest)
+        {
+            Result<ClientId> result = await sender.Send(createClientRequest);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add("Client created", Severity.Success, config =>
+                {
+                    config.Action = "See";
+                    config.ActionVariant = Variant.Text;
+                    config.ActionColor = Color.Primary;
+                    config.Onclick = s =>
+                    {
+                        NavigationManager.NavigateTo($"/client/{result.Value}");
+                        return Task.CompletedTask;
+                    };
+                });
+                // await this.LoadProject();
+            }
+            else
+            {
+                Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
+            }
+        }
+    }
 
     private async Task<TableData<Employee>> ServerReload(TableState state, CancellationToken token)
     {

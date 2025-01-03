@@ -11,16 +11,16 @@
     </ItemTemplate>
 </MudBreadcrumbs>
 
-<MudGrid Spacing="9" Class="mt-0">
-    <MudItem xs="12" sm="3">
-        <div class="d-flex px-4 gap-2">
+<MudGrid>
+    <MudItem xs="12" sm="3">        
+        <MudToolBar Gutters="false" Class="gap-2 px-4">
             <MudIcon Icon="@Icons.Material.Outlined.Settings" />
-            <MudText Typo="Typo.h2"> Settings</MudText>
-        </div>
+            <MudText Typo="Typo.h2">Settings</MudText>
+        </MudToolBar>
 
         <MudDivider Class="my-2" />
         <MudNavMenu Color="Color.Primary" Bordered="true" Rounded="true">
-            <MudNavLink Href="/settings" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Wallet">Clients</MudNavLink>
+            <MudNavLink Href="/settings/clients" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Wallet">Clients</MudNavLink>
             <MudNavLink Href="/settings/users" Match="NavLinkMatch.Prefix" Icon="@Icons.Material.Filled.People">Users</MudNavLink>
         </MudNavMenu>
     </MudItem>
