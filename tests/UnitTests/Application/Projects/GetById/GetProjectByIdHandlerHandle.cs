@@ -9,7 +9,7 @@ public sealed class GetProjectByIdHandlerHandle
     private readonly Fixture fixture = new();
 
     [Fact]
-    public async Task GetProjectByIdHandler_GetProject()
+    public async Task Should_Get_Specified_Project_Or_Null()
     {
         Project project = this.fixture
             .Build<Project>()
@@ -17,7 +17,9 @@ public sealed class GetProjectByIdHandlerHandle
             .Create();
 
         IRepository<Project> repository = Substitute.For<IRepository<Project>>();
-        repository.FirstOrDefaultAsync(Arg.Any<ProjectByIdNoTracking>(), Arg.Any<CancellationToken>()).Returns(project);
+        repository
+            .FirstOrDefaultAsync(Arg.Any<ProjectByIdNoTracking>(), Arg.Any<CancellationToken>())
+            .Returns(project);
 
         GetProjectByIdHandler handler = new(repository);
         GetProjectByIdRequest request = new(project.Id.Value);
@@ -25,6 +27,8 @@ public sealed class GetProjectByIdHandlerHandle
 
         result.IsSuccess.Should().BeTrue();
         result.Value.Should().Be(project);
-        await repository.Received().FirstOrDefaultAsync(Arg.Any<ProjectByIdNoTracking>(), Arg.Any<CancellationToken>());
+        await repository
+            .Received()
+            .FirstOrDefaultAsync(Arg.Any<ProjectByIdNoTracking>(), Arg.Any<CancellationToken>());
     }
 }

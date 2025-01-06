@@ -51,7 +51,7 @@
                 <div class="d-flex justify-space-between align-center">
                     <MudText Typo="Typo.h2">About</MudText>
                     <AuthorizeView Roles="@Role.Administrator">
-                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Settings" @onclick="this.UpdateProject" aria-label="Update settings"/>
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Settings" @onclick="this.EditProject" aria-label="Update settings"/>
                     </AuthorizeView>
                 </div>
 
@@ -163,7 +163,7 @@ else{
         }
     }
 
-    private async Task UpdateProject()
+    private async Task EditProject()
     {
         DialogParameters<EditProjectDialog> parameters = new() { { x => x.Project, this.project } };
         IDialogReference dialog = await Dialog.ShowAsync<EditProjectDialog>(

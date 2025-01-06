@@ -16,9 +16,12 @@ public sealed class EditProjectHandlerHandle
     }
 
     [Fact]
-    public async Task EditProjectHandler_EditProjectValues()
+    public async Task Should_Update_Project_Values()
     {
-        this.userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, true).Create());
+        this.userService.AuthenticatedUser
+            .Returns(this.fixture.Build<User>().With(x => x.Administrator, true)
+            .Create());
+
         Project project = this.fixture
             .Build<Project>()
             .FromFactory<int>((x) => new Project(
@@ -48,9 +51,11 @@ public sealed class EditProjectHandlerHandle
     }
 
     [Fact]
-    public async Task EditProjectHandler_ReturnNotFoundWhenProjectDoesNotExist()
+    public async Task Should_Return_NotFound_When_Project_Does_Not_Exist()
     {
-        this.userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, true).Create());
+        this.userService.AuthenticatedUser
+            .Returns(this.fixture.Build<User>().With(x => x.Administrator, true)
+            .Create());
 
         EditProjectHandler handler = new(this.repository, this.userService);
         EditProjectRequest request = new(this.fixture.Create<int>());
@@ -60,7 +65,7 @@ public sealed class EditProjectHandlerHandle
     }
 
     [Fact]
-    public async Task EditProjectHandler_ReturnUnauthorizedWhenNoUser()
+    public async Task Should_Return_Unauthorized_When_User_Not_Authenticated()
     {
         EditProjectHandler handler = new(this.repository, this.userService);
         EditProjectRequest request = new(this.fixture.Create<int>());
@@ -70,9 +75,11 @@ public sealed class EditProjectHandlerHandle
     }
 
     [Fact]
-    public async Task EditProjectHandler_ReturnForbiddenWhenNotAdministrator()
+    public async Task Should_Return_Forbidden_When_User_Not_Administrator()
     {
-        this.userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, false).Create());
+        this.userService.AuthenticatedUser
+            .Returns(this.fixture.Build<User>().With(x => x.Administrator, false)
+            .Create());
 
         EditProjectHandler handler = new(this.repository, this.userService);
         EditProjectRequest request = new(this.fixture.Create<int>());

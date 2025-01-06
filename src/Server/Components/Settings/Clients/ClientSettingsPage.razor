@@ -9,7 +9,9 @@
 
 @attribute [Authorize(Roles = Role.Administrator)]
 
+@using Etn.MyLittleBoard.Application.Clients.CountActive
 @using Etn.MyLittleBoard.Application.Clients.Create
+@using Etn.MyLittleBoard.Application.Clients.Edit
 @using Etn.MyLittleBoard.Application.Clients.EditState
 @using Etn.MyLittleBoard.Application.Clients.ListPaginated
 @using Etn.MyLittleBoard.Domain.Aggregates.Clients
@@ -17,31 +19,33 @@
 
 <PageTitle>Client settings | My Little Board</PageTitle>
 
+<MudGrid Class="mb-4">
+    <MudItem xs="6" md="4">
+        <MudCard Class="mud-theme-primary">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h2">Active clients</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIcon Icon="@Icons.Material.Filled.Wallet" Class="mt-4 mr-4" Style="@($"color:{Theme.PaletteLight.PrimaryContrastText};")" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (this.activeClientsCount.HasValue)
+                {
+                    <MudText Style="font-weight: 700;font-size: 2.5rem;line-height: 2.5rem;text-align:start">@this.activeClientsCount</MudText>
+                }
+                else {
+                    <MudText Style="font-weight: 700;font-size: 2.5rem;line-height: 2.5rem;text-align:start">&nbsp;</MudText>
+                }
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
 <MudToolBar WrapContent="true" Gutters="false" Class="mb-3">
     <MudText Typo="Typo.h1">Clients</MudText>
 </MudToolBar>
-
-<MudStack Row="true" Class="mb-4" StretchItems="StretchItems.All">
-    <MudCard>
-        <MudCardContent>
-            <MudText>Story of the day</MudText>
-            <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
-        </MudCardContent>
-        <MudCardActions>
-            <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-        </MudCardActions>
-    </MudCard>
-    <MudCard>
-        <MudCardContent>
-            <MudText>Story of the day</MudText>
-            <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
-        </MudCardContent>
-        <MudCardActions>
-            <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-        </MudCardActions>
-    </MudCard>
-</MudStack>
-
 <MudTable ServerData="LoadClients" Hover="true" LoadingProgressColor="Color.Primary" RowsPerPage="10" @ref="clientTable">
     <ToolBarContent>
         <MudTextField T="string" Immediate="true" DebounceInterval="300" ValueChanged="@(s=>OnClientSearch(s))" Clearable="true" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" />
@@ -53,7 +57,7 @@
         <MudTh /> @* No header for actions column. *@
     </HeaderContent>
     <RowTemplate>
-        @if(context.State.Value)
+        @if (context.State.Value)
         {
             <MudTd DataLabel="Name"><MudText>@context.Name</MudText></MudTd>
         }
@@ -71,7 +75,7 @@
             <MudMenu Icon="@Icons.Material.Filled.MoreHoriz" AriaLabel="Client settings menu">
                 @if (context.State.Value)
                 {
-                    <MudMenuItem>Edit</MudMenuItem>
+                    <MudMenuItem @onclick="() => this.EditClient(context)">Edit</MudMenuItem>
                     <MudMenuItem @onclick="() => this.EditClientState(context.Id, false)">Disable</MudMenuItem>
                 }
                 else
@@ -96,6 +100,25 @@
     private MudTable<Client> clientTable = default!;
     private MudTheme Theme = new MudTheme();
     private string search = string.Empty;
+    private int? activeClientsCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await this.CountActiveClients();
+    }
+
+    private async Task CountActiveClients(){
+        CountActiveClientsRequest request = new();
+        Result<int> result = await sender.Send(request);
+        if (result.IsSuccess)
+        {
+            this.activeClientsCount = result.Value;
+        }
+        else
+        {
+            this.activeClientsCount = default;
+        }
+    }
 
     private async Task CreateClient()
     {
@@ -117,6 +140,7 @@
             {
                 this.Snackbar.Add("Client created", Severity.Success);
                 await this.clientTable.ReloadServerData();
+                await this.CountActiveClients();
             }
             else
             {
@@ -152,9 +176,43 @@
         Result result = await sender.Send(request);
         await this.clientTable.ReloadServerData();
 
-        if (!result.IsSuccess)
+        if (result.IsSuccess)
+        {
+            await this.CountActiveClients();
+        }
+        else
         {
             this.Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
+        }
+    }
+
+    private async Task EditClient(Client client)
+    {
+        DialogParameters<EditClientDialog> parameters = new() { { x => x.Client, client } };
+        IDialogReference dialog = await Dialog.ShowAsync<EditClientDialog>(
+            "Edit client",
+            parameters,
+            new DialogOptions()
+                {
+                    FullWidth = true,
+                    MaxWidth = MaxWidth.Medium,
+                    CloseButton = true
+                }
+        );
+
+        DialogResult? dialogResult = await dialog.Result;
+        if (dialogResult is not null && !dialogResult.Canceled && dialogResult.Data is EditClientRequest editClientRequest)
+        {
+            Result result = await sender.Send(editClientRequest);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add("Client saved", Severity.Success);
+                await this.clientTable.ReloadServerData();
+            }
+            else
+            {
+                Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
+            }
         }
     }
 

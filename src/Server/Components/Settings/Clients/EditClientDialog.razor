@@ -1,0 +1,52 @@
+@using Etn.MyLittleBoard.Application.Clients.Edit
+@using Etn.MyLittleBoard.Domain.Aggregates.Clients
+
+<MudDialog DefaultFocus="DefaultFocus.FirstChild">
+    <DialogContent>
+        @if (this.clientRequest is not null)
+        {
+            <MudForm Model="@clientRequest" @ref="@form" Validation="@(validator.Validation)" Spacing="6" Class="mb-4">
+                <MudTextField @bind-Value="this.clientRequest.Name" Required="true" Immediate="true" For="@(() => this.clientRequest.Name)" Label="Name" Variant="Variant.Text" MaxLength="25" />
+                <MudTextField @bind-Value="this.clientRequest.Note" Immediate="true" For="@(() => this.clientRequest.Note)" Label="Note" Variant="Variant.Text" MaxLength="1000" AutoGrow />
+            </MudForm>
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton @onclick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Primary" Variant="Variant.Filled" @onclick="@(async () => await Submit())">Save changes</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+    private readonly FluentValueValidator<EditClientValidator, EditClientRequest> validator = new(new());
+    private MudForm form = default!;
+    private EditClientRequest? clientRequest;
+
+    [CascadingParameter]
+    private MudDialogInstance MudDialog { get; set; } = default!;
+
+    [Parameter, EditorRequired]
+    public Client? Client { get; set; }
+
+    protected override void OnParametersSet()
+    {
+        if (this.Client is not null)
+        {
+            this.clientRequest = new EditClientRequest(this.Client.Id.Value);
+            this.clientRequest.Name = this.Client.Name.Value;
+            this.clientRequest.Note = this.Client.Note.Value;
+        }
+    }
+
+    private async Task Submit()
+    {
+        await form.Validate();
+        if (form.IsValid)
+        {
+            MudDialog.Close(DialogResult.Ok(clientRequest));
+        }
+    }
+
+    private void Cancel() => MudDialog.Cancel();
+
+}
