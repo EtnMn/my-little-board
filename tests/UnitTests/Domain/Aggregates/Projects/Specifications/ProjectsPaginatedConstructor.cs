@@ -20,9 +20,9 @@ public sealed class ProjectsPaginatedConstructor
     [InlineData(10, 10, 10)]
     public void Should_Return_Right_Projects_Count(int count, int skip, int take)
     {
-        ProjectsPaginated specifications = new(skip, take);
+        ProjectsPaginated specification = new(skip, take);
         IEnumerable<Project> projects = this.fixture.CreateMany<Project>(count);
-        IEnumerable<Project> result = specifications.Evaluate(projects);
+        IEnumerable<Project> result = specification.Evaluate(projects);
 
         result.Should().HaveCount(Math.Min(take, Math.Max(count - skip, 0)));
     }

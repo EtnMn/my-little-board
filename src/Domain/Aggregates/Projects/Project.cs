@@ -5,7 +5,6 @@ using Vogen;
 
 namespace Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
-// Todo: EM: client, tags
 public sealed class Project(
     ProjectName name,
     ProjectDescription description,
@@ -20,6 +19,8 @@ public sealed class Project(
     }
 
     public ProjectName Name { get; private set; } = name;
+
+    public ProjectClientId ClientId { get; private set; } = ProjectClientId.Unspecified;
 
     public ProjectColor Color { get; private set; } = color;
 
@@ -69,6 +70,16 @@ public sealed class Project(
         {
             throw new ArgumentException("Invalid project status value", nameof(value));
         }
+    }
+
+    public void SetClient(ProjectClientId clientId)
+    {
+        this.ClientId = clientId;
+    }
+
+    public void RemoveClient()
+    {
+        this.ClientId = ProjectClientId.Unspecified;
     }
 }
 
@@ -168,4 +179,22 @@ public readonly partial struct ProjectStart
 public readonly partial struct ProjectEnd
 {
     public static readonly ProjectEnd Unspecified = new(DateTime.MaxValue);
+}
+
+[ValueObject<int>]
+public readonly partial struct ProjectClientId
+{
+    public static readonly ProjectClientId Unspecified = new(0);
+
+    internal static Validation Validate(int value)
+    {
+        if (value >= 0)
+        {
+            return Validation.Ok;
+        }
+        else
+        {
+            return Validation.Invalid($"{nameof(ProjectClientId)} cannot be negative");
+        }
+    }
 }

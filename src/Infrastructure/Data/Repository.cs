@@ -1,5 +1,4 @@
 using Ardalis.Specification.EntityFrameworkCore;
-using Etn.MyLittleBoard.Application.Interfaces;
 using Etn.MyLittleBoard.Domain.Interfaces;
 
 namespace Etn.MyLittleBoard.Infrastructure.Data;

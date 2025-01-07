@@ -1,4 +1,3 @@
-using Etn.MyLittleBoard.Application.Interfaces;
 using Etn.MyLittleBoard.Domain.Aggregates.Clients;
 using Etn.MyLittleBoard.Domain.Aggregates.Clients.Specifications;
 

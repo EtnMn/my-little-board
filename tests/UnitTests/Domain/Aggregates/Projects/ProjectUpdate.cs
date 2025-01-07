@@ -1,3 +1,4 @@
+using Etn.MyLittleBoard.Domain.Aggregates.Clients;
 using Etn.MyLittleBoard.Domain.Aggregates.Projects;
 
 namespace Etn.MyLittleBoard.UnitTests.Domain.Aggregates.Projects;
@@ -67,7 +68,6 @@ public sealed class ProjectUpdate
         this.project.Status.Should().Be(status);
     }
 
-
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
@@ -75,5 +75,22 @@ public sealed class ProjectUpdate
     {
         Action action = () => this.project.UpdateStatus((ProjectStatus)status);
         action.Should().Throw<ArgumentException>();
+    }
+
+    [Fact]
+    public void Should_Set_Client()
+    {
+        ProjectClientId clientId = ProjectClientId.From(this.fixture.Create<int>());
+        this.project.SetClient(clientId);
+
+        this.project.ClientId.Should().Be(clientId);
+    }
+
+    [Fact]
+    public void Should_Remove_Client()
+    {
+        this.project.SetClient(ProjectClientId.From(this.fixture.Create<int>()));
+        this.project.RemoveClient();
+        this.project.ClientId.Should().Be(ProjectClientId.Unspecified);
     }
 }
