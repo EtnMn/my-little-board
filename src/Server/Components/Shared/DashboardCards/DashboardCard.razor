@@ -1,0 +1,50 @@
+<MudCard Class="@($"mud-theme-{this.Color.ToString().ToLowerInvariant()}")" Style="height: 100%;">
+    <MudCardHeader>
+        <CardHeaderContent>
+            <MudText Typo="Typo.body2">@this.Title</MudText>
+        </CardHeaderContent>
+        <CardHeaderActions>
+            @if (!string.IsNullOrWhiteSpace(this.Icon))
+            {
+                <MudIcon Icon="@this.Icon" Class="mt-4 mr-4" Style="@(this.IconStyle)" />
+            }
+        </CardHeaderActions>
+    </MudCardHeader>
+    <MudCardContent>
+        @if (!string.IsNullOrWhiteSpace(this.Text))
+        {
+            <p class="dashboard-card-text">@this.Text</p>
+        }
+        else
+        {
+            <p class="dashboard-card-text">&nbsp;</p>
+        }
+
+    </MudCardContent>
+</MudCard>
+
+@code {
+    [Parameter, EditorRequired]
+    public string Title { get; set; } = string.Empty;
+
+    [Parameter]
+    public string Text { get; set; } = string.Empty;
+
+    [Parameter]
+    public Color Color { get; set; } = Color.Default;
+
+    [Parameter]
+    public string? Icon { get; set; }
+
+    private string IconStyle {
+        get
+        {
+            if (this.Color == Color.Default){
+                return string.Empty;
+            }
+            else {
+                return $"color:var(--mud-palette-{this.Color.ToString().ToLowerInvariant()}-text)";
+            }
+        }
+    }
+}

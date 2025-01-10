@@ -1,0 +1,25 @@
+<MudGrid Class="mb-4" Spacing="4" Justify="Justify.SpaceBetween">
+    @if (this.Cards is not null && this.CardTemplate is not null)
+    {
+        @foreach (var item in this.Cards)
+        {
+            <MudItem xs="12" sm="6" md="4">
+                @this.CardTemplate(item)
+            </MudItem>
+        }
+
+        @this.EndCards
+    }
+</MudGrid>
+
+@code {
+
+    [Parameter]
+    public RenderFragment? EndCards { get; set; }
+
+    [Parameter]
+    public RenderFragment<Card>? CardTemplate { get; set; }
+
+    [Parameter]
+    public IReadOnlyList<Card>? Cards { get; set; }
+}
