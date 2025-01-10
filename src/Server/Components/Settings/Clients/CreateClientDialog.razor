@@ -6,7 +6,7 @@
             A client is an entity or individual for whom projects are managed and held.
         </MudText>
         <MudForm Model="@clientRequest" @ref="@form" Validation="@(validator.Validation)">
-            <MudTextField @bind-Value="this.clientRequest.Name" Required="true" Immediate="true" For="@(() => this.clientRequest.Name)" Label="Name" Variant="Variant.Text" MaxLength="25" Counter="25" />
+            <MudTextField @bind-Value="this.clientRequest.Name" Required="true" Immediate="true" For="@(() => this.clientRequest.Name)" Label="Name" Variant="Variant.Text" MaxLength="50" Counter="50" />
         </MudForm>
     </DialogContent>
     <DialogActions>

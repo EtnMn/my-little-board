@@ -4,8 +4,9 @@
 @using Etn.MyLittleBoard.Application.Projects.EditStatus
 @using Etn.MyLittleBoard.Application.Projects.GetById
 @using Etn.MyLittleBoard.Domain.Aggregates.Projects
-@using System.Globalization
+@using Etn.MyLittleBoard.Server.Components.Shared.DashboardCards
 @using Microsoft.AspNetCore.Components.Authorization
+@using System.Globalization
 
 @inject ISender sender
 @inject IDialogService Dialog
@@ -51,7 +52,7 @@
                 <div class="d-flex justify-space-between align-center">
                     <MudText Typo="Typo.h2">About</MudText>
                     <AuthorizeView Roles="@Role.Administrator">
-                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Settings" @onclick="this.UpdateProject" aria-label="Update settings"/>
+                        <MudIconButton Size="Size.Small" Icon="@Icons.Material.Outlined.Settings" @onclick="this.EditProject" aria-label="Update settings"/>
                     </AuthorizeView>
                 </div>
 
@@ -81,15 +82,22 @@
                     <MudText Typo="Typo.body2"><em>No description</em></MudText>
                 }
             </MudPaper>
-        </MudItem>
+        </MudItem>         
+
         <MudItem xs="12" sm="8" md="9">
+            <DashboardCardGrid Cards="cards" Context="c">
+                <CardTemplate>
+                    <DashboardCard Title="@c.Name" Icon="@c.Icon" Text="@c.Text" Color="@c.Color" />
+                </CardTemplate>                
+            </DashboardCardGrid>
             <MudPaper Class="pa-4">
                 <MudText Typo="Typo.h2" Class="mb-4">Iterations</MudText>
             </MudPaper>
         </MudItem>
     </MudGrid>
 }
-else{
+else if (!this.loading)
+{
     <NotFound />
 }
 
@@ -99,6 +107,8 @@ else{
     private Project? project = default;
     private bool loading = false;
     private AuthenticationState? authState;
+
+    private List<Shared.DashboardCards.Card> cards = [];
 
     [Parameter]
     public int? ProjectId { get; set; }
@@ -125,7 +135,7 @@ else{
         this.items = new BreadcrumbItem[] {
             new BreadcrumbItem("Home", href: "/"),
             new BreadcrumbItem("Project", href: $"/project/{this.ProjectId}", disabled: true)
-        };
+    };
     }
 
     protected override async Task OnParametersSetAsync() {
@@ -146,10 +156,19 @@ else{
         try
         {
             this.loading = true;
+            this.cards.Clear();
             GetProjectByIdRequest getProjectById = new(projectId);
             Result<Project> result = await sender.Send(getProjectById);
             if (result.IsSuccess)
             {
+                this.cards.Add(
+                    new Shared.DashboardCards.Card {
+                        Name = "Client",
+                        Text = result.Value.Name.Value,
+                        Icon = Icons.Material.Outlined.Wallet,
+                        Color = Color.Primary
+                    });
+
                 return result.Value;
             }
             else
@@ -163,7 +182,7 @@ else{
         }
     }
 
-    private async Task UpdateProject()
+    private async Task EditProject()
     {
         DialogParameters<EditProjectDialog> parameters = new() { { x => x.Project, this.project } };
         IDialogReference dialog = await Dialog.ShowAsync<EditProjectDialog>(

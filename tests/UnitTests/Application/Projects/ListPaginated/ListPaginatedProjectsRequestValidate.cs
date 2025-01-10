@@ -1,6 +1,4 @@
-using AutoFixture.Kernel;
 using Etn.MyLittleBoard.Application.Projects.ListPaginated;
-using FluentValidation.TestHelper;
 
 namespace Etn.MyLittleBoard.UnitTests.Application.Projects.ListPaginated;
 
@@ -15,7 +13,7 @@ public sealed class ListPaginatedProjectsRequestValidate
     }
 
     [Fact]
-    public async Task CreateProjectRequestValidate_ShouldBeValidWhenSkipTakeSet()
+    public async Task Should_Be_Valid_When_Skip_Take_Set()
     {
         ListPaginatedProjectsRequest request = new(this.fixture.Create<int>(), this.fixture.Create<int>());
         TestValidationResult<ListPaginatedProjectsRequest> result = await this.validator.TestValidateAsync(request);
@@ -23,7 +21,7 @@ public sealed class ListPaginatedProjectsRequestValidate
     }
 
     [Fact]
-    public async Task CreateProjectRequestValidate_ShouldHaveErrorWhenSkipNegative()
+    public async Task Should_Have_Error_When_Skip_Negative()
     {
         ListPaginatedProjectsRequest request = new(-1, this.fixture.Create<int>());
         TestValidationResult<ListPaginatedProjectsRequest> result = await this.validator.TestValidateAsync(request);
@@ -35,7 +33,7 @@ public sealed class ListPaginatedProjectsRequestValidate
     }
 
     [Fact]
-    public async Task CreateProjectRequestValidate_ShouldHaveErrorWhenTakeNegative()
+    public async Task Should_Have_Error_When_Take_Negative()
     {
         ListPaginatedProjectsRequest request = new(this.fixture.Create<int>(), -1);
         TestValidationResult<ListPaginatedProjectsRequest> result = await this.validator.TestValidateAsync(request);
@@ -44,22 +42,5 @@ public sealed class ListPaginatedProjectsRequestValidate
             .WithErrorCode("GreaterThanOrEqualValidator")
             .WithErrorMessage($"'{nameof(ListPaginatedProjectsRequest.Take)}' must be greater than or equal to '0'.")
             .Only();
-    }
-
-    public sealed class RandomZeroIntGenerator : ISpecimenBuilder
-    {
-        private readonly Random random = new();
-
-        public object Create(object request, ISpecimenContext context)
-        {
-            if (request is Type type && type == typeof(int))
-            {
-                return this.random.Next(0, 100);
-            }
-            else
-            {
-                return new NoSpecimen();
-            }
-        }
     }
 }

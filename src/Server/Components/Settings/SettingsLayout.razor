@@ -12,7 +12,7 @@
 </MudBreadcrumbs>
 
 <MudGrid>
-    <MudItem xs="12" sm="3">        
+    <MudItem xs="12" sm="3">
         <MudToolBar Gutters="false" Class="gap-2 px-4">
             <MudIcon Icon="@Icons.Material.Outlined.Settings" />
             <MudText Typo="Typo.h2">Settings</MudText>
@@ -31,7 +31,7 @@
 
 @code {
     private readonly BreadcrumbItem[] items = new BreadcrumbItem[] {
-            new BreadcrumbItem("Home", href: "/"),
-            new BreadcrumbItem("Settings", href: $"/settings", disabled: true),
+        new BreadcrumbItem("Home", href: "/"),
+        new BreadcrumbItem("Settings", href: $"/settings", disabled: true),
     };
 }

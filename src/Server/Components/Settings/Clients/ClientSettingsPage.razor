@@ -9,75 +9,116 @@
 
 @attribute [Authorize(Roles = Role.Administrator)]
 
+@using Etn.MyLittleBoard.Application.Clients.CountActive
 @using Etn.MyLittleBoard.Application.Clients.Create
+@using Etn.MyLittleBoard.Application.Clients.Edit
+@using Etn.MyLittleBoard.Application.Clients.EditState
+@using Etn.MyLittleBoard.Application.Clients.ListPaginated
 @using Etn.MyLittleBoard.Domain.Aggregates.Clients
 @using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Client settings | My Little Board</PageTitle>
 
+<MudGrid Class="mb-4">
+    <MudItem xs="6" md="4">
+        <MudCard Class="mud-theme-primary">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h2">Active clients</MudText>
+                </CardHeaderContent>
+                <CardHeaderActions>
+                    <MudIcon Icon="@Icons.Material.Filled.Wallet" Class="mt-4 mr-4" Style="@($"color:{Theme.PaletteLight.PrimaryContrastText};")" />
+                </CardHeaderActions>
+            </MudCardHeader>
+            <MudCardContent>
+                @if (this.activeClientsCount.HasValue)
+                {
+                    <MudText Style="font-weight: 700;font-size: 2.5rem;line-height: 2.5rem;text-align:start">@this.activeClientsCount</MudText>
+                }
+                else {
+                    <MudText Style="font-weight: 700;font-size: 2.5rem;line-height: 2.5rem;text-align:start">&nbsp;</MudText>
+                }
+            </MudCardContent>
+        </MudCard>
+    </MudItem>
+</MudGrid>
+
 <MudToolBar WrapContent="true" Gutters="false" Class="mb-3">
     <MudText Typo="Typo.h1">Clients</MudText>
-    <MudSpacer />
-    <AuthorizeView Roles="@Role.Administrator">
-        <Authorized>
-            <MudButton StartIcon="@Icons.Material.Outlined.AddBox" Color="Color.Primary" Variant="Variant.Filled" @onclick="@(() => CreateClient())">New</MudButton>
-        </Authorized>
-    </AuthorizeView>
 </MudToolBar>
-
-<MudStack Row="true" Class="mb-4" StretchItems="StretchItems.All">
-    <MudCard>
-        <MudCardContent>
-            <MudText>Story of the day</MudText>
-            <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
-        </MudCardContent>
-        <MudCardActions>
-            <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-        </MudCardActions>
-    </MudCard>
-    <MudCard>
-        <MudCardContent>
-            <MudText>Story of the day</MudText>
-            <MudText Typo="Typo.body2">The quick, brown fox jumps over a lazy dog.</MudText>
-        </MudCardContent>
-        <MudCardActions>
-            <MudButton Variant="Variant.Text" Color="Color.Primary">Learn More</MudButton>
-        </MudCardActions>
-    </MudCard>
-</MudStack>
-
-<MudTable ServerData="ServerReload" Hover="true">
+<MudTable ServerData="LoadClients" Hover="true" LoadingProgressColor="Color.Primary" RowsPerPage="10" @ref="clientTable">
     <ToolBarContent>
-        <MudText Typo="Typo.h6">Periodic Elements</MudText>
+        <MudTextField T="string" Immediate="true" DebounceInterval="300" ValueChanged="@(s=>OnClientSearch(s))" Clearable="true" Placeholder="Search" Adornment="Adornment.Start" AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" />
+        <MudSpacer />
+        <MudButton StartIcon="@Icons.Material.Outlined.AddBox" Color="Color.Primary" Variant="Variant.Filled" @onclick="@(() => CreateClient())">New</MudButton>
     </ToolBarContent>
     <HeaderContent>
-        <MudTh><MudTableSortLabel SortLabel="nr_field" T="Employee">Name</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="sign_field" T="Employee">Position</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="name_field" T="Employee">YearsEmployed</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="position_field" T="Employee">Salary</MudTableSortLabel></MudTh>
-        <MudTh><MudTableSortLabel SortLabel="mass_field" T="Employee">Rating</MudTableSortLabel></MudTh>
+        <MudTh><MudTableSortLabel SortLabel="name" T="Client">Name</MudTableSortLabel></MudTh>
+        <MudTh /> @* No header for actions column. *@
     </HeaderContent>
     <RowTemplate>
-        <MudTd DataLabel="Name">@context.Name</MudTd>
-        <MudTd DataLabel="Sign">@context.Position</MudTd>
-        <MudTd DataLabel="YearsEmployed">@context.YearsEmployed</MudTd>
-        <MudTd DataLabel="Salary">@context.Salary</MudTd>
-        <MudTd DataLabel="Molar mass">@context.Rating</MudTd>
+        @if (context.State.Value)
+        {
+            <MudTd DataLabel="Name"><MudText>@context.Name</MudText></MudTd>
+        }
+        else
+        {
+            <MudTd DataLabel="Name">
+                <div class="d-flex align-center gap-2">
+                    <MudText Style="color: var(--mud-palette-text-disabled)">@context.Name</MudText>
+                    <MudChip T="string" Variant="Variant.Outlined" Disabled="true" Size="Size.Small" Label="true">Disabled</MudChip>
+                </div>
+            </MudTd>
+
+        }
+        <MudTd DataLabel="State" Style="text-align: right;">
+            <MudMenu Icon="@Icons.Material.Filled.MoreHoriz" AriaLabel="Client settings menu">
+                @if (context.State.Value)
+                {
+                    <MudMenuItem @onclick="() => this.EditClient(context)">Edit</MudMenuItem>
+                    <MudMenuItem @onclick="() => this.EditClientState(context.Id, false)">Disable</MudMenuItem>
+                }
+                else
+                {
+                    <MudMenuItem @onclick="() => this.EditClientState(context.Id, true)">Enable</MudMenuItem>
+                }
+            </MudMenu>
+        </MudTd>
     </RowTemplate>
     <NoRecordsContent>
-        <MudText>No matching records found</MudText>
+        <MudText>No matching items</MudText>
     </NoRecordsContent>
     <LoadingContent>
         <MudText>Loading...</MudText>
     </LoadingContent>
     <PagerContent>
-        <MudTablePager />
+        <MudTablePager HideRowsPerPage="true" HidePageNumber="true" />
     </PagerContent>
 </MudTable>
 
 @code {
-    public record Employee(string Name, string Position, int YearsEmployed, int Salary, int Rating);
-    public IEnumerable<Employee> employees = [];
+    private MudTable<Client> clientTable = default!;
+    private MudTheme Theme = new MudTheme();
+    private string search = string.Empty;
+    private int? activeClientsCount;
+
+    protected override async Task OnInitializedAsync()
+    {
+        await this.CountActiveClients();
+    }
+
+    private async Task CountActiveClients(){
+        CountActiveClientsRequest request = new();
+        Result<int> result = await sender.Send(request);
+        if (result.IsSuccess)
+        {
+            this.activeClientsCount = result.Value;
+        }
+        else
+        {
+            this.activeClientsCount = default;
+        }
+    }
 
     private async Task CreateClient()
     {
@@ -97,18 +138,76 @@
             Result<ClientId> result = await sender.Send(createClientRequest);
             if (result.IsSuccess)
             {
-                Snackbar.Add("Client created", Severity.Success, config =>
+                this.Snackbar.Add("Client created", Severity.Success);
+                await this.clientTable.ReloadServerData();
+                await this.CountActiveClients();
+            }
+            else
+            {
+                this.Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
+            }
+        }
+    }
+
+    private async Task<TableData<Client>> LoadClients(TableState state, CancellationToken token)
+    {
+        ListPaginatedClientsRequest request = new(
+            this.search,
+            (state.Page) * state.PageSize,
+            state.PageSize,
+            state.SortDirection == SortDirection.Descending);
+
+        Result<PageDto<Client>> result = await sender.Send(request);
+        if (result.IsSuccess)
+        {
+            return new TableData<Client>() { TotalItems = result.Value.Count, Items = result.Value.Items };
+        }
+        else
+        {
+            this.Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
+
+            return new TableData<Client>() { TotalItems = 0, Items = [] };
+        }
+    }
+
+    private async Task EditClientState(ClientId clientId, bool value)
+    {
+        EditClientStateRequest request = new(clientId.Value, value);
+        Result result = await sender.Send(request);
+        await this.clientTable.ReloadServerData();
+
+        if (result.IsSuccess)
+        {
+            await this.CountActiveClients();
+        }
+        else
+        {
+            this.Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
+        }
+    }
+
+    private async Task EditClient(Client client)
+    {
+        DialogParameters<EditClientDialog> parameters = new() { { x => x.Client, client } };
+        IDialogReference dialog = await Dialog.ShowAsync<EditClientDialog>(
+            "Edit client",
+            parameters,
+            new DialogOptions()
                 {
-                    config.Action = "See";
-                    config.ActionVariant = Variant.Text;
-                    config.ActionColor = Color.Primary;
-                    config.Onclick = s =>
-                    {
-                        NavigationManager.NavigateTo($"/client/{result.Value}");
-                        return Task.CompletedTask;
-                    };
-                });
-                // await this.LoadProject();
+                    FullWidth = true,
+                    MaxWidth = MaxWidth.Medium,
+                    CloseButton = true
+                }
+        );
+
+        DialogResult? dialogResult = await dialog.Result;
+        if (dialogResult is not null && !dialogResult.Canceled && dialogResult.Data is EditClientRequest editClientRequest)
+        {
+            Result result = await sender.Send(editClientRequest);
+            if (result.IsSuccess)
+            {
+                Snackbar.Add("Client saved", Severity.Success);
+                await this.clientTable.ReloadServerData();
             }
             else
             {
@@ -117,47 +216,9 @@
         }
     }
 
-    private async Task<TableData<Employee>> ServerReload(TableState state, CancellationToken token)
+    private void OnClientSearch(string text)
     {
-        // Forward the provided token to methods which support it
-        employees = new List<Employee>
-        {
-            new Employee("Sam", "CPA", 23, 87_000, 4),
-            new Employee("Alicia", "Product Manager", 11, 143_000, 5),
-            new Employee("Ira", "Developer", 4, 92_000, 3),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-            new Employee("John", "IT Director", 17, 229_000, 4),
-        };
-
-        // Simulate a long-running operation
-        await Task.Delay(300, token);
-        // Get the total count
-        var totalItems = employees.Count();
-        // Get the paged data
-        var pagedData = employees.Skip(state.Page * state.PageSize).Take(state.PageSize).ToList();
-        // Return the data
-        return new TableData<Employee>() { TotalItems = totalItems, Items = pagedData };
+        this.search = text;
+        this.clientTable.ReloadServerData();
     }
 }

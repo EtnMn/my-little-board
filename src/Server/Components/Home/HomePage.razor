@@ -72,11 +72,11 @@
 
     protected override async Task OnInitializedAsync()
     {
-        await this.LoadProject();
+        await this.LoadProjects();
         this.initialized = true;
     }
 
-    private async Task LoadProject()
+    private async Task LoadProjects()
     {
         if (this.loading)
         {
@@ -86,8 +86,8 @@
         try
         {
             this.loading = true;
-            ListPaginatedProjectsRequest listProjects = new((this.currentPage - 1) * itemsPerPage, itemsPerPage);
-            Result<PageDto<Project>> result = await sender.Send(listProjects);
+            ListPaginatedProjectsRequest projectsList = new((this.currentPage - 1) * itemsPerPage, itemsPerPage);
+            Result<PageDto<Project>> result = await sender.Send(projectsList);
             if (result.IsSuccess)
             {
                 this.count = result.Value.Count;
@@ -132,7 +132,7 @@
                         return Task.CompletedTask;
                     };
                 });
-                await this.LoadProject();
+                await this.LoadProjects();
             }
             else{
                 Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
@@ -143,6 +143,6 @@
     private async Task PageChanged(int i)
     {
         this.currentPage = i;
-        await this.LoadProject();
+        await this.LoadProjects();
     }
 }

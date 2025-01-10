@@ -5,7 +5,7 @@
 <div>
     <MudCard Class="cursor-pointer overflow-hidden highlight-hover" @onclick="@(() => NavigationManager.NavigateTo($"/project/{this.Project.Id}"))" Style="height: 100%;">
         <MudPaper Class="pa-6 d-flex justify-center" Style="@($"background:{this.BackGroundColor};")" Elevation="0" Square="true">
-            <MudText Typo="Typo.button" Style="font-size: 4rem; color:white">@this.Project.Name.Value[0]</MudText>
+            <MudText Typo="Typo.button" Style="font-size: 4rem; color:var(--mud-palette-primary-text)">@this.Project.Name.Value[0]</MudText>
         </MudPaper>
         <MudCardContent>
             <div class="d-flex justify-space-between align-center">

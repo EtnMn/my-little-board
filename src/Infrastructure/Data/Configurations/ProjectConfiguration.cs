@@ -20,6 +20,10 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
             .HasMaxLength(ValidationConstants.DefaultTextLength)
             .IsRequired();
 
+        builder.Property(p => p.ClientId)
+            .HasVogenConversion()
+            .IsRequired();
+
         builder.Property(p => p.Color)
             .HasVogenConversion()
             .HasMaxLength(ValidationConstants.ShortTextLength)
@@ -50,4 +54,5 @@ internal sealed class ProjectConfiguration : IEntityTypeConfiguration<Project>
 [EfCoreConverter<ProjectId>]
 [EfCoreConverter<ProjectName>]
 [EfCoreConverter<ProjectStart>]
+[EfCoreConverter<ProjectClientId>]
 internal sealed partial class ProjectEfCoreConverters;

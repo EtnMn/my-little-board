@@ -5,7 +5,6 @@
     <DialogContent>
         @if (this.projectRequest is not null)
         {
-            <EditProjectDialog Project="@this.Project" />
             <MudForm Model="@projectRequest" @ref="@form" Validation="@(validator.Validation)" Spacing="6" Class="mb-4">
                 <MudTextField @bind-Value="this.projectRequest.Name" Required="true" Immediate="true" For="@(() => this.projectRequest.Name)" Label="Name" Variant="Variant.Text" MaxLength="25" />
                 <MudTextField @bind-Value="this.projectRequest.Description" Immediate="true" For="@(() => this.projectRequest.Description)" Label="Description" Variant="Variant.Text" MaxLength="300" AutoGrow />

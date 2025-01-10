@@ -1,5 +1,4 @@
 using Etn.MyLittleBoard.Application.Projects.Edit;
-using FluentValidation.TestHelper;
 
 namespace Etn.MyLittleBoard.UnitTests.Application.Projects.Edit;
 
@@ -9,7 +8,7 @@ public sealed class EditProjectRequestValidate
     private readonly Fixture fixture = new();
 
     [Fact]
-    public async Task EditProjectRequestValidate_ShouldBeValidWhenNameSet()
+    public async Task Should_Have_Valid_Name()
     {
         EditProjectRequest request = new(this.fixture.Create<int>()) { Name = this.fixture.Create<string>() };
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
@@ -20,7 +19,7 @@ public sealed class EditProjectRequestValidate
     [Theory]
     [InlineData(0)]
     [InlineData(-1)]
-    public async Task EditProjectRequestValidate_ShouldHaveErrorWhenProjectIdNotSet(int id)
+    public async Task Should_Have_Error_When_ProjectId_Invalid(int id)
     {
         EditProjectRequest request = new(id) { Name = this.fixture.Create<string>() };
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
@@ -36,7 +35,7 @@ public sealed class EditProjectRequestValidate
     [InlineData(null)]
     [InlineData("")]
     [InlineData(" ")]
-    public async Task EditProjectRequestValidate_ShouldHaveErrorWhenNameNotSet(string? name)
+    public async Task Should_Have_Error_When_Name_NotSet(string? name)
     {
         EditProjectRequest request = new(this.fixture.Create<int>()) { Name = name! };
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
@@ -49,7 +48,7 @@ public sealed class EditProjectRequestValidate
     }
 
     [Fact]
-    public async Task EditProjectRequestValidate_ShouldHaveErrorWhenNameTooLong()
+    public async Task Should_Have_Error_When_Name_TooLong()
     {
         EditProjectRequest request = new(this.fixture.Create<int>()) { Name = StringHelpers.GenerateOverMaximumLengthString(ValidationConstants.DefaultTextLength) };
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
@@ -62,7 +61,7 @@ public sealed class EditProjectRequestValidate
     }
 
     [Fact]
-    public async Task EditProjectRequestValidate_CanSetDescription()
+    public async Task Should_Have_Valid_Description()
     {
         EditProjectRequest request = new(this.fixture.Create<int>()) { Description = this.fixture.Create<string>() };
         TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
@@ -71,7 +70,7 @@ public sealed class EditProjectRequestValidate
     }
 
     [Fact]
-    public async Task EditProjectRequestValidate_ShouldHaveErrorWhenDescriptionTooLong()
+    public async Task Should_Have_Error_When_Description_TooLong()
     {
         EditProjectRequest request = new(this.fixture.Create<int>())
         {
@@ -89,7 +88,7 @@ public sealed class EditProjectRequestValidate
     }
 
     [Fact]
-    public async Task EditProjectRequestValidate_CanSetColor()
+    public async Task Should_Have_Valid_Color()
     {
         string color = StringHelpers.GenerateHexColor();
         EditProjectRequest request = new(this.fixture.Create<int>()) { Color = color };
@@ -99,7 +98,7 @@ public sealed class EditProjectRequestValidate
     }
 
     [Fact]
-    public async Task EditProjectRequestValidate_ShouldHaveErrorWhenNotHexColor()
+    public async Task Should_Have_Error_When_Not_Hex_Color()
     {
         EditProjectRequest request = new(this.fixture.Create<int>())
         {
