@@ -1217,7 +1217,7 @@
           "Ardalis.Specification": "[8.0.0, )",
           "MediatR": "[12.4.1, )",
           "Microsoft.Extensions.Logging.Abstractions": "[9.0.0, )",
-          "Vogen": "[5.0.6, )"
+          "Vogen": "[6.0.0, )"
         }
       },
       "Ardalis.Result": {
@@ -1306,9 +1306,9 @@
       },
       "Vogen": {
         "type": "CentralTransitive",
-        "requested": "[5.0.6, )",
-        "resolved": "5.0.6",
-        "contentHash": "yRBazqc3EF5+9qCvq5WHHY3jz23fativnuQo/j394j3p7lW0PcXwMcr0FxvOzNvz6I3tIEJKHnx2MNvBzKK16A=="
+        "requested": "[6.0.0, )",
+        "resolved": "6.0.0",
+        "contentHash": "HDeCgFmyu9IgM40AWOvB0ieuoLVHSYE4EN6uQNv7bVkUnaZnn6GeGDMIb/zvfOJbtyIEn411eQ8g+iIrzCM4ng=="
       }
     }
   }
