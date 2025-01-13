@@ -4,13 +4,18 @@ namespace Etn.MyLittleBoard.Domain.Aggregates.Clients.Specifications;
 
 public sealed class ClientsPaginated : Specification<Client>
 {
-    public ClientsPaginated(string search, int skip, int take, bool descending)
+    public ClientsPaginated(string search, int skip, int take, bool descending, bool excludeDisabled)
     {
         ArgumentNullException.ThrowIfNull(search);
         ArgumentOutOfRangeException.ThrowIfLessThan(skip, 0);
         ArgumentOutOfRangeException.ThrowIfLessThan(take, 0);
 
         this.Query.AsNoTracking();
+
+        if (excludeDisabled)
+        {
+            this.Query.Where(x => x.State != ClientState.Disabled);
+        }
 
         if (descending)
         {

@@ -1,8 +1,10 @@
 @page "/project/{ProjectId:int}"
 
+@using Etn.MyLittleBoard.Application.Clients.GetById
 @using Etn.MyLittleBoard.Application.Projects.Edit
 @using Etn.MyLittleBoard.Application.Projects.EditStatus
 @using Etn.MyLittleBoard.Application.Projects.GetById
+@using Etn.MyLittleBoard.Domain.Aggregates.Clients
 @using Etn.MyLittleBoard.Domain.Aggregates.Projects
 @using Etn.MyLittleBoard.Server.Components.Shared.DashboardCards
 @using Microsoft.AspNetCore.Components.Authorization
@@ -25,6 +27,15 @@
 
 @if (this.project is not null)
 {
+    <MudStack Class="mb-4">
+        @if (this.hasDisabledClient)
+        {
+            <MudAlert Severity="Severity.Warning" ShowCloseIcon="true" CloseIconClicked="(() => this.hasDisabledClient = false)">
+                The specified client is currently inactive. Please check the project settings.
+            </MudAlert>
+        }
+    </MudStack>
+
     <div class="d-flex mb-8 align-center flex-wrap gap-4">
         <MudAvatar Size="Size.Large" Class="mr-2" style="@($"background:{this.ProjectColor}; color: var(--mud-palette-primary-text);")">@this.project.Name.Value[0]</MudAvatar>
         <MudText Typo="Typo.h1">
@@ -60,14 +71,14 @@
                     @if (this.project.Start != ProjectStart.Unspecified || this.project.End != ProjectEnd.Unspecified)
                     {
                         <MudIcon Icon="@Icons.Material.Filled.DateRange" Title="Start" class="ml-n1"/>  
-                        <div class="d-flex flex-wrap gap-1">
+                        <div class="d-flex flex-wrap gap-1 align-center">
                             @if (this.project.Start != ProjectStart.Unspecified){
-                                <spand>from</spand>
+                                <MudText Typo="Typo.body2">from</MudText>
                                 <MudText Typo="Typo.subtitle2">@this.project.Start.Value.ToString(datePattern, CultureInfo.InvariantCulture)</MudText>
                             }
                             @if (this.project.End != ProjectEnd.Unspecified)
                             {
-                                <spand>to</spand>
+                                <MudText Typo="Typo.body2">to</MudText>
                                 <MudText Typo="Typo.subtitle2">@this.project.End.Value.ToString(datePattern, CultureInfo.InvariantCulture)</MudText>
                             }
                         </div>
@@ -90,6 +101,7 @@
                     <DashboardCard Title="@c.Name" Icon="@c.Icon" Text="@c.Text" Color="@c.Color" />
                 </CardTemplate>                
             </DashboardCardGrid>
+
             <MudPaper Class="pa-4">
                 <MudText Typo="Typo.h2" Class="mb-4">Iterations</MudText>
             </MudPaper>
@@ -103,10 +115,11 @@ else if (!this.loading)
 
 @code {
     private const string datePattern = "dd MMM yyyy";
+    private AuthenticationState? authState;
     private BreadcrumbItem[] items = [];
     private Project? project = default;
     private bool loading = false;
-    private AuthenticationState? authState;
+    private bool hasDisabledClient = false;
 
     private List<Shared.DashboardCards.Card> cards = [];
 
@@ -161,14 +174,7 @@ else if (!this.loading)
             Result<Project> result = await sender.Send(getProjectById);
             if (result.IsSuccess)
             {
-                this.cards.Add(
-                    new Shared.DashboardCards.Card {
-                        Name = "Client",
-                        Text = result.Value.Name.Value,
-                        Icon = Icons.Material.Outlined.Wallet,
-                        Color = Color.Primary
-                    });
-
+                _ = this.LoadClientCard(result.Value.ClientId);
                 return result.Value;
             }
             else
@@ -179,6 +185,28 @@ else if (!this.loading)
         finally
         {
             this.loading = false;
+        }
+    }
+
+    private async Task LoadClientCard(ProjectClientId clientId)
+    {
+        if (clientId != ProjectClientId.Unspecified)
+        {
+            GetClientByIdRequest request = new(clientId.Value);
+            Result<Client> result = await sender.Send(request);
+            if (result.IsSuccess)
+            {
+                this.cards.Add(new Shared.DashboardCards.Card
+                    {
+                        Name = "Client",
+                        Text = result.Value.Name.Value,
+                        Icon = Icons.Material.Outlined.Wallet,
+                        Color = Color.Primary
+                    });
+
+                this.hasDisabledClient = result.Value.State == ClientState.Disabled;
+                this.StateHasChanged();
+            }
         }
     }
 

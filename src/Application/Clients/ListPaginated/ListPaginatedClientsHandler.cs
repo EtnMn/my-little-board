@@ -11,7 +11,12 @@ public sealed class ListPaginatedClientsHandler(
         ListPaginatedClientsRequest request,
         CancellationToken cancellationToken)
     {
-        ClientsPaginated specification = new(request.Search, request.Skip, request.Take, request.Descending);
+        ClientsPaginated specification = new(
+            request.Search,
+            request.Skip,
+            request.Take,
+            request.Descending,
+            request.ExcludeDisabled);
 
         int count = await repository.CountAsync(specification, cancellationToken);
         List<Client> result = await repository.ListAsync(specification, cancellationToken);

@@ -11,37 +11,21 @@
 
 @using Etn.MyLittleBoard.Application.Clients.CountActive
 @using Etn.MyLittleBoard.Application.Clients.Create
+@using Etn.MyLittleBoard.Application.Clients.Delete
 @using Etn.MyLittleBoard.Application.Clients.Edit
 @using Etn.MyLittleBoard.Application.Clients.EditState
 @using Etn.MyLittleBoard.Application.Clients.ListPaginated
 @using Etn.MyLittleBoard.Domain.Aggregates.Clients
+@using Etn.MyLittleBoard.Server.Components.Shared.DashboardCards
 @using Microsoft.AspNetCore.Components.Authorization
 
 <PageTitle>Client settings | My Little Board</PageTitle>
 
-<MudGrid Class="mb-4">
-    <MudItem xs="6" md="4">
-        <MudCard Class="mud-theme-primary">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h2">Active clients</MudText>
-                </CardHeaderContent>
-                <CardHeaderActions>
-                    <MudIcon Icon="@Icons.Material.Filled.Wallet" Class="mt-4 mr-4" Style="@($"color:{Theme.PaletteLight.PrimaryContrastText};")" />
-                </CardHeaderActions>
-            </MudCardHeader>
-            <MudCardContent>
-                @if (this.activeClientsCount.HasValue)
-                {
-                    <MudText Style="font-weight: 700;font-size: 2.5rem;line-height: 2.5rem;text-align:start">@this.activeClientsCount</MudText>
-                }
-                else {
-                    <MudText Style="font-weight: 700;font-size: 2.5rem;line-height: 2.5rem;text-align:start">&nbsp;</MudText>
-                }
-            </MudCardContent>
-        </MudCard>
-    </MudItem>
-</MudGrid>
+<DashboardCardGrid Cards="cards" Context="c">
+    <CardTemplate>
+        <DashboardCard Title="@c.Name" Icon="@c.Icon" Text="@c.Text" Color="@c.Color" />
+    </CardTemplate>
+</DashboardCardGrid>
 
 <MudToolBar WrapContent="true" Gutters="false" Class="mb-3">
     <MudText Typo="Typo.h1">Clients</MudText>
@@ -82,6 +66,8 @@
                 {
                     <MudMenuItem @onclick="() => this.EditClientState(context.Id, true)">Enable</MudMenuItem>
                 }
+
+                <MudMenuItem Class="mud-error-text" @onclick="() => this.DeleteClient(context.Id)">Delete</MudMenuItem>
             </MudMenu>
         </MudTd>
     </RowTemplate>
@@ -98,26 +84,27 @@
 
 @code {
     private MudTable<Client> clientTable = default!;
-    private MudTheme Theme = new MudTheme();
+    private MudTheme theme = new MudTheme();
     private string search = string.Empty;
-    private int? activeClientsCount;
-
-    protected override async Task OnInitializedAsync()
-    {
-        await this.CountActiveClients();
-    }
+    private List<Shared.DashboardCards.Card> cards = [];
 
     private async Task CountActiveClients(){
         CountActiveClientsRequest request = new();
         Result<int> result = await sender.Send(request);
+
+        this.cards.Clear();
         if (result.IsSuccess)
         {
-            this.activeClientsCount = result.Value;
+            this.cards.Add(new Shared.DashboardCards.Card
+                {
+                    Name = "Active clients",
+                    Text = result.Value.ToString(),
+                    Icon = Icons.Material.Outlined.Wallet,
+                    Color = Color.Primary
+                });
         }
-        else
-        {
-            this.activeClientsCount = default;
-        }
+
+        this.StateHasChanged();
     }
 
     private async Task CreateClient()
@@ -155,7 +142,12 @@
             this.search,
             (state.Page) * state.PageSize,
             state.PageSize,
-            state.SortDirection == SortDirection.Descending);
+            state.SortDirection == SortDirection.Descending)
+            {
+                ExcludeDisabled = false,
+            };
+
+        await this.CountActiveClients();
 
         Result<PageDto<Client>> result = await sender.Send(request);
         if (result.IsSuccess)
@@ -214,6 +206,37 @@
                 Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
             }
         }
+    }
+
+    private async Task DeleteClient(ClientId clientId)
+    {
+        DialogParameters<ConfirmDialog> parameters = new()
+        {
+            { x => x.ContentText, "Do you really want to delete these client? This process cannot be undone." },
+            { x => x.ButtonText, "Delete" },
+            { x => x.Color, Color.Error }
+        };
+
+        DialogOptions options = new() { FullWidth = true, CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+        IDialogReference dialog = await this.Dialog.ShowAsync<ConfirmDialog>("Delete", parameters, options);
+        DialogResult? dialogResult = await dialog.Result;
+        if (dialogResult is not null && !dialogResult.Canceled)
+        {
+            DeleteClientRequest request = new(clientId.Value);
+            Result result = await this.sender.Send(request);
+            if (result.IsSuccess)
+            {
+
+                this.Snackbar.Add("Client deleted", Severity.Success);
+                await this.clientTable.ReloadServerData();
+                await this.CountActiveClients();
+            }
+            else
+            {
+                this.Snackbar.Add(result.ValidationErrors.First().ErrorMessage, Severity.Error);
+            }
+        }
+
     }
 
     private void OnClientSearch(string text)
