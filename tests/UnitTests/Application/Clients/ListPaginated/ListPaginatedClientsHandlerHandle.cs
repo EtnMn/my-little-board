@@ -60,4 +60,44 @@ public sealed class ListPaginatedClientsHandlerHandle
         result.IsSuccess.Should().BeTrue();
         result.Value.Count.Should().Be(count);
     }
+
+    [Theory]
+    [InlineData(true, 2)]
+    [InlineData(false, 3)]
+    public async Task Should_Filter_By_State(bool excludeDisabled, int count)
+    {
+        Queue<bool> enabled = new([true, true, false]);
+        IEnumerable<Client> clients = this.fixture
+            .Build<Client>()
+            .FromFactory(() =>
+            {
+                Client client = new(ClientName.From(this.fixture.Create<string>()), ClientNote.Unspecified);
+                if (enabled.Dequeue())
+                {
+                    client.Enable();
+                }
+                else
+                {
+                    client.Disable();
+                }
+
+                return client;
+            })
+            .CreateMany(enabled.Count);
+
+        IRepository<Client> repository = Substitute.For<IRepository<Client>>();
+        repository.CountAsync(Arg.Any<ClientsPaginated>(), Arg.Any<CancellationToken>()).Returns(count);
+        repository.ListAsync(Arg.Any<ClientsPaginated>(), Arg.Any<CancellationToken>()).Returns([.. clients]);
+
+        ListPaginatedClientsHandler handler = new(repository);
+        ListPaginatedClientsRequest request = new(string.Empty, 0, enabled.Count, this.fixture.Create<bool>())
+        {
+            ExcludeDisabled = excludeDisabled
+        };
+
+        Result<PageDto<Client>> result = await handler.Handle(request, CancellationToken.None);
+
+        result.IsSuccess.Should().BeTrue();
+        result.Value.Count.Should().Be(count);
+    }
 }

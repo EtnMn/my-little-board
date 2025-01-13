@@ -114,4 +114,76 @@ public sealed class EditProjectRequestValidate
             .WithErrorMessage($"'{nameof(EditProjectRequest.Color)}' is not in the correct format.")
             .Only();
     }
+
+    [Fact]
+    public async Task Should_Have_Error_When_ClientId_Is_Negative()
+    {
+        EditProjectRequest request = new(this.fixture.Create<int>())
+        {
+            Name = this.fixture.Create<string>(),
+            ClientId = -1,
+        };
+
+        TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
+        result
+            .ShouldHaveValidationErrorFor(x => x.ClientId)
+            .WithErrorCode("GreaterThanOrEqualValidator")
+            .WithErrorMessage($"'Client Id' must be greater than or equal to '0'.")
+            .Only();
+    }
+
+    [Fact]
+    public async Task Should_Be_Valid_When_Client_Set()
+    {
+        EditProjectRequest request = new(this.fixture.Create<int>())
+        {
+            ClientId = this.fixture.Create<int>(),
+            Name = this.fixture.Create<string>(),
+        };
+        TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Theory]
+    [InlineData(0)]
+    [InlineData(null)]
+    public async Task Should_Be_Valid_When_Client_Unset(int? clientId)
+    {
+        EditProjectRequest request = new(this.fixture.Create<int>())
+        {
+            Name = this.fixture.Create<string>(),
+            ClientId = clientId
+        };
+
+        TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
+        result.ShouldNotHaveAnyValidationErrors();
+    }
+
+    [Fact]
+    public async Task Should_Have_Error_When_End_Is_Smaller_Than_Start()
+    {
+        DateTime start = DateTime.Now;
+        DateTime end = DateTime.Now.AddDays(-1);
+        EditProjectRequest request = new(this.fixture.Create<int>())
+        {
+            Name = this.fixture.Create<string>(),
+            Start = start,
+            End = end,
+        };
+
+        TestValidationResult<EditProjectRequest> result = await this.validator.TestValidateAsync(request);
+
+        result
+            .ShouldHaveValidationErrorFor(x => x.Start)
+            .WithErrorCode("LessThanOrEqualValidator")
+            .WithErrorMessage($"'{nameof(EditProjectRequest.Start)}' must be less than or equal to '{end}'.");
+
+        result
+            .ShouldHaveValidationErrorFor(x => x.End)
+            .WithErrorCode("GreaterThanOrEqualValidator")
+            .WithErrorMessage($"'{nameof(EditProjectRequest.End)}' must be greater than or equal to '{start}'.");
+    }
 }

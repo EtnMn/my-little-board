@@ -20,7 +20,7 @@ public sealed class ClientsPaginatedConstructor
     [InlineData(10, 10, 10)]
     public void Should_Return_Right_Clients_Count(int count, int skip, int take)
     {
-        ClientsPaginated specifications = new(string.Empty, skip, take, this.fixture.Create<bool>());
+        ClientsPaginated specifications = new(string.Empty, skip, take, this.fixture.Create<bool>(), this.fixture.Create<bool>());
         IEnumerable<Client> clients = this.fixture.CreateMany<Client>(count);
         IEnumerable<Client> result = specifications.Evaluate(clients);
 
@@ -38,7 +38,7 @@ public sealed class ClientsPaginatedConstructor
             .FromFactory(() => new Client(ClientName.From(names.Dequeue()), ClientNote.Unspecified))
             .CreateMany(names.Count);
 
-        ClientsPaginated specifications = new(string.Empty, 0, names.Count, descending);
+        ClientsPaginated specifications = new(string.Empty, 0, names.Count, descending, this.fixture.Create<bool>());
         IEnumerable<Client> result = specifications.Evaluate(clients);
 
         if (descending)
@@ -58,6 +58,7 @@ public sealed class ClientsPaginatedConstructor
             string.Empty,
             -1,
             this.fixture.Create<int>(),
+            this.fixture.Create<bool>(),
             this.fixture.Create<bool>());
 
         action.Should().Throw<ArgumentOutOfRangeException>();
@@ -70,6 +71,7 @@ public sealed class ClientsPaginatedConstructor
             string.Empty,
             this.fixture.Create<int>(),
             -1,
+            this.fixture.Create<bool>(),
             this.fixture.Create<bool>());
 
         action.Should().Throw<ArgumentOutOfRangeException>();
@@ -82,8 +84,31 @@ public sealed class ClientsPaginatedConstructor
             null!,
             this.fixture.Create<int>(),
             this.fixture.Create<int>(),
+            this.fixture.Create<bool>(),
             this.fixture.Create<bool>());
 
         action.Should().Throw<ArgumentNullException>().WithParameterName("search");
+    }
+
+    [Fact]
+    public void Should_Exclude_Disabled_Clients()
+    {
+        const int count = 10;
+        ClientsPaginated specifications = new(string.Empty, 0, count, this.fixture.Create<bool>(), this.fixture.Create<bool>());
+        IEnumerable<Client> clients = this.fixture.CreateMany<Client>(count);
+        IEnumerable<Client> result = specifications.Evaluate(clients);
+
+        result.Should().HaveCount(clients.Count(c => c.State == ClientState.Enabled));
+    }
+
+    [Fact]
+    public void Should_Include_All_Clients()
+    {
+        const int count = 10;
+        ClientsPaginated specifications = new(string.Empty, 0, count, this.fixture.Create<bool>(), this.fixture.Create<bool>());
+        IEnumerable<Client> clients = this.fixture.CreateMany<Client>(count);
+        IEnumerable<Client> result = specifications.Evaluate(clients);
+
+        result.Should().HaveCount(clients.Count());
     }
 }

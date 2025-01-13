@@ -25,9 +25,9 @@
       },
       "Microsoft.Graph": {
         "type": "Direct",
-        "requested": "[5.67.0, )",
-        "resolved": "5.67.0",
-        "contentHash": "n6gbK37DBaEsw3Z+ZqGS1wH0ORXndQdJpfN+uUbYahghO8K3AB7tfumiLW2TKxQGP5GdUXSARAplXWM3ETRYRA==",
+        "requested": "[5.68.0, )",
+        "resolved": "5.68.0",
+        "contentHash": "HJW1FttmH7NzxklfAEANzVYDKXplxl4cjOLXL7guMSqrpFideFEjGbVMKpVboG8V1/YBPehxm+pJNaMJJfDYTQ==",
         "dependencies": {
           "Microsoft.Graph.Core": "3.2.1"
         }
@@ -985,7 +985,7 @@
           "Microsoft.EntityFrameworkCore.SqlServer": "[9.0.0, )",
           "Microsoft.Extensions.Configuration.Abstractions": "[9.0.0, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[9.0.0, )",
-          "Microsoft.Graph": "[5.67.0, )",
+          "Microsoft.Graph": "[5.68.0, )",
           "Microsoft.Identity.Web": "[3.5.0, )"
         }
       },

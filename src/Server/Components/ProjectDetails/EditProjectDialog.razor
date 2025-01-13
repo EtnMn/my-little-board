@@ -1,5 +1,10 @@
+@using Etn.MyLittleBoard.Application.Clients.GetById
+@using Etn.MyLittleBoard.Application.Clients.ListPaginated
 @using Etn.MyLittleBoard.Application.Projects.Edit
+@using Etn.MyLittleBoard.Domain.Aggregates.Clients
 @using Etn.MyLittleBoard.Domain.Aggregates.Projects
+
+@inject ISender sender
 
 <MudDialog DefaultFocus="DefaultFocus.FirstChild">
     <DialogContent>
@@ -13,6 +18,7 @@
                     <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="Start" @bind-Date="this.projectRequest.Start" For="@(() => this.projectRequest.Start)" Clearable="true" Placeholder="Select start date" DateFormat="dd MMM yyyy" />
                     <MudDatePicker PickerVariant="PickerVariant.Dialog" Label="End" @bind-Date="this.projectRequest.End" For="@(() => this.projectRequest.End)" Clearable="true" Placeholder=" Select end date" DateFormat="dd MMM yyyy" />
                 </div>
+                <MudAutocomplete T="int?" Label="Client" @bind-Value="this.projectRequest.ClientId" For="@(() => this.projectRequest.ClientId)" SearchFunc="@Search" ToStringFunc="@(x=> x.HasValue && this.clients.ContainsKey(x.Value) ? $"{this.clients[x.Value]}" : "")" ResetValueOnEmptyText="true" Clearable="true" />
             </MudForm>
         }
     </DialogContent>
@@ -26,6 +32,7 @@
     private readonly FluentValueValidator<EditProjectValidator, EditProjectRequest> validator = new(new());
     private MudForm form = default!;
     private EditProjectRequest? projectRequest;
+    private Dictionary<int, string> clients = new();
 
     [CascadingParameter]
     private MudDialogInstance MudDialog { get; set; } = default!;
@@ -43,13 +50,36 @@
             this.projectRequest.Color = this.Project.Color.Value;
             this.projectRequest.Start =  this.Project.Start != ProjectStart.Unspecified ? this.Project.Start.Value : null;
             this.projectRequest.End = this.Project.End != ProjectEnd.Unspecified ? this.Project.End.Value : null;
+            this.projectRequest.ClientId = this.Project.ClientId != ProjectClientId.Unspecified ? this.Project.ClientId.Value : null; 
         }
+    }
+
+    protected override async Task OnParametersSetAsync()
+    {
+        if (this.Project is not null && this.Project.ClientId != ProjectClientId.Unspecified)
+        {
+            GetClientByIdRequest request = new(this.Project.ClientId.Value);
+            Result<Client> result = await sender.Send(request);
+            if (result.IsSuccess)
+            {
+                this.clients.TryAdd(result.Value.Id.Value, result.Value.Name.Value);
+            }
+        }
+    }
+
+    private async Task<IEnumerable<int?>> Search(string value, CancellationToken cancellationToken)
+    {
+        ListPaginatedClientsRequest request = new(value ?? string.Empty, 0, 10, false);
+        Result<PageDto<Client>> result = await sender.Send(request, cancellationToken);
+        this.clients = result.Value.Items.ToDictionary(k => k.Id.Value, v => v.Name.Value);
+
+        return result.Value.Items.Select<Client, int?>(i => i.Id.Value);
     }
 
     private async Task Submit()
     {
         await form.Validate();
-        if (form.IsValid)
+        if (form.IsValid && this.projectRequest is not null)
         {
             MudDialog.Close(DialogResult.Ok(projectRequest));
         }

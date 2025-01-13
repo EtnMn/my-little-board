@@ -51,6 +51,71 @@ public sealed class EditProjectHandlerHandle
     }
 
     [Fact]
+    public async Task Should_Set_Client()
+    {
+        this.userService.AuthenticatedUser
+            .Returns(this.fixture.Build<User>().With(x => x.Administrator, true)
+            .Create());
+
+        Project project = this.fixture
+            .Build<Project>()
+            .With(x => x.Id, ProjectId.From(this.fixture.Create<int>()))
+            .Create();
+
+        this.repository
+            .GetByIdAsync(project.Id, Arg.Any<CancellationToken>())
+            .Returns(project);
+
+        int clientId = this.fixture.Create<int>();
+        EditProjectHandler handler = new(this.repository, this.userService);
+        EditProjectRequest request = new(project.Id.Value)
+        {
+            Name = this.fixture.Create<string>(),
+            ClientId = clientId,
+        };
+
+        Result result = await handler.Handle(request, CancellationToken.None);
+        _ = this.userService.Received().AuthenticatedUser;
+
+        await this.repository.Received().GetByIdAsync(Arg.Any<ProjectId>(), Arg.Any<CancellationToken>());
+        await this.repository.Received().UpdateAsync(project, Arg.Any<CancellationToken>());
+        result.IsSuccess.Should().BeTrue();
+        project.ClientId.Should().Be(ProjectClientId.From(clientId));
+    }
+
+    [Fact]
+    public async Task Should_Unset_Client()
+    {
+        this.userService.AuthenticatedUser
+            .Returns(this.fixture.Build<User>().With(x => x.Administrator, true)
+            .Create());
+
+        Project project = this.fixture
+            .Build<Project>()
+            .With(x => x.Id, ProjectId.From(this.fixture.Create<int>()))
+            .Create();
+
+        this.repository
+            .GetByIdAsync(project.Id, Arg.Any<CancellationToken>())
+            .Returns(project);
+
+        EditProjectHandler handler = new(this.repository, this.userService);
+        EditProjectRequest request = new(project.Id.Value)
+        {
+            Name = this.fixture.Create<string>(),
+            ClientId = null,
+        };
+
+        Result result = await handler.Handle(request, CancellationToken.None);
+        _ = this.userService.Received().AuthenticatedUser;
+
+        await this.repository.Received().GetByIdAsync(Arg.Any<ProjectId>(), Arg.Any<CancellationToken>());
+        await this.repository.Received().UpdateAsync(project, Arg.Any<CancellationToken>());
+        result.IsSuccess.Should().BeTrue();
+        project.ClientId.Should().Be(ProjectClientId.Unspecified);
+    }
+
+    [Fact]
     public async Task Should_Return_NotFound_When_Project_Does_Not_Exist()
     {
         this.userService.AuthenticatedUser

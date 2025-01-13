@@ -1,4 +1,5 @@
 using Etn.MyLittleBoard.Application.Configurations;
+using Etn.MyLittleBoard.Domain.Aggregates;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using System.Reflection;
@@ -13,13 +14,16 @@ public static class ApplicationServiceExtensions
     {
         services.AddMediatR(config =>
         {
-            config.RegisterServicesFromAssembly(Assembly.GetExecutingAssembly());
+            config.RegisterServicesFromAssemblies(
+                Assembly.GetExecutingAssembly(),
+                Assembly.GetAssembly(typeof(DomainEventBase))!);
+
             config.AddOpenBehavior(typeof(ValidationBehavior<,>));
         });
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());
-
         logger.LogInformation("Application services registered");
+
         return services;
     }
 }

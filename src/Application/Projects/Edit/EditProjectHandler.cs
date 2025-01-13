@@ -25,6 +25,16 @@ public sealed class EditProjectHandler(
                 request.Start.HasValue ? ProjectStart.From(request.Start.Value) : ProjectStart.Unspecified,
                 request.End.HasValue ? ProjectEnd.From(request.End.Value) : ProjectEnd.Unspecified);
 
+            // Client id does not have to be checked.
+            if (request.ClientId.HasValue && request.ClientId.Value > 0)
+            {
+                project.SetClient(ProjectClientId.From(request.ClientId.Value));
+            }
+            else
+            {
+                project.RemoveClient();
+            }
+
             await repository.UpdateAsync(project, cancellationToken);
             return Result.Success();
         }
