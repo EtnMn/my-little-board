@@ -2,6 +2,7 @@ using Ardalis.Result.FluentValidation;
 using FluentValidation.Results;
 
 namespace Etn.MyLittleBoard.Application.Configurations;
+
 internal sealed class ValidationBehavior<TRequest, TResponse>(IEnumerable<IValidator<TRequest>> validators)
     : IPipelineBehavior<TRequest, TResponse>
     where TRequest : class
