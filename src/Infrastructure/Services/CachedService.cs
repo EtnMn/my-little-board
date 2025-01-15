@@ -5,7 +5,7 @@ namespace Etn.MyLittleBoard.Infrastructure.Services;
 
 internal sealed class CachedService(HybridCache cache) : ICachedService
 {
-    public async Task<TResponse> GetOrCreate<TResponse>(
+    public async ValueTask<TResponse> GetOrCreate<TResponse>(
         string key,
         Func<CancellationToken, ValueTask<TResponse>> factory,
         IEnumerable<string>? tags = default,
@@ -20,22 +20,22 @@ internal sealed class CachedService(HybridCache cache) : ICachedService
         return result;
     }
 
-    public Task Set<TValue>(
+    public ValueTask Set<TValue>(
         string key,
         TValue value,
         IEnumerable<string>? tags = null,
         CancellationToken cancellationToken = default)
     {
-        return cache.SetAsync(key, value, tags: tags, cancellationToken: cancellationToken).AsTask();
+        return cache.SetAsync(key, value, tags: tags, cancellationToken: cancellationToken);
     }
 
-    public Task Remove(string key, CancellationToken cancellationToken = default)
+    public ValueTask Remove(string key, CancellationToken cancellationToken = default)
     {
-        return cache.RemoveAsync(key, cancellationToken).AsTask();
+        return cache.RemoveAsync(key, cancellationToken);
     }
 
-    public Task RemoveByTag(string tag, CancellationToken cancellationToken = default)
+    public ValueTask RemoveByTag(string tag, CancellationToken cancellationToken = default)
     {
-        return cache.RemoveByTagAsync(tag, cancellationToken).AsTask();
+        return cache.RemoveByTagAsync(tag, cancellationToken);
     }
 }
