@@ -7,6 +7,7 @@ public sealed class CreateClientHandlerHandle
 {
     private readonly Fixture fixture = new();
     private readonly IRepository<Client> repository;
+    private readonly ICachedService cachedService = Substitute.For<ICachedService>();
     private readonly int clientId;
     private readonly string clientName;
 
@@ -27,7 +28,7 @@ public sealed class CreateClientHandlerHandle
     {
         IUserService userService = Substitute.For<IUserService>();
         userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, true).Create());
-        CreateClientHandler handler = new(this.repository, userService);
+        CreateClientHandler handler = new(this.repository, userService, this.cachedService);
         CreateClientRequest request = new() { Name = this.clientName };
         Result<ClientId> result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeTrue();
@@ -37,10 +38,27 @@ public sealed class CreateClientHandlerHandle
     }
 
     [Fact]
+    public async Task Should_Set_Client_In_Cache()
+    {
+        IUserService userService = Substitute.For<IUserService>();
+        userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, true).Create());
+        CreateClientHandler handler = new(this.repository, userService, this.cachedService);
+        CreateClientRequest request = new() { Name = this.clientName };
+        _ = await handler.Handle(request, CancellationToken.None);
+
+        string[] tags = ["clients"];
+        await this.cachedService.Received().Set(
+            $"client-{this.clientId}",
+            Arg.Any<Client>(),
+            Arg.Is<IEnumerable<string>>(x => x.SequenceEqual(tags)),
+            Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
     public async Task Should_Return_Unauthorized_When_No_Authenticated()
     {
         IUserService userService = Substitute.For<IUserService>();
-        CreateClientHandler handler = new(this.repository, userService);
+        CreateClientHandler handler = new(this.repository, userService, this.cachedService);
         CreateClientRequest request = new();
         Result<ClientId> result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeFalse();
@@ -52,7 +70,7 @@ public sealed class CreateClientHandlerHandle
     {
         IUserService userService = Substitute.For<IUserService>();
         userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, false).Create());
-        CreateClientHandler handler = new(this.repository, userService);
+        CreateClientHandler handler = new(this.repository, userService, this.cachedService);
         CreateClientRequest request = new();
         Result<ClientId> result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeFalse();

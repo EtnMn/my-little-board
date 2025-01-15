@@ -5,7 +5,7 @@ namespace Etn.MyLittleBoard.Application.Clients.GetById;
 
 public sealed record GetClientByIdRequest(int Id) : ICachedRequest<Result<Client>>
 {
-    public string Key => $"client-by-id-{this.Id}";
+    public string Key => $"client-{this.Id}";
 
     public string[]? Tags => ["clients"];
 }

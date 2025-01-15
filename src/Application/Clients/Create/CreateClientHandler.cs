@@ -5,7 +5,8 @@ namespace Etn.MyLittleBoard.Application.Clients.Create;
 
 public sealed class CreateClientHandler(
     IRepository<Client> repository,
-    IUserService userService) :
+    IUserService userService,
+    ICachedService cachedService) :
     IRequestHandler<CreateClientRequest, Result<ClientId>>
 
 {
@@ -18,6 +19,12 @@ public sealed class CreateClientHandler(
 
         Client client = new(ClientName.From(request.Name), ClientNote.Unspecified);
         client = await repository.AddAsync(client, cancellationToken);
+
+        await cachedService.Set(
+            $"client-{client.Id}",
+            client,
+            ["clients"],
+            cancellationToken: cancellationToken);
 
         return client.Id;
     }

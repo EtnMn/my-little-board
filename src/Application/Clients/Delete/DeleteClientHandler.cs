@@ -7,6 +7,7 @@ namespace Etn.MyLittleBoard.Application.Clients.Delete;
 public sealed class DeleteClientHandler(
     IRepository<Client> repository,
     IUserService userService,
+    ICachedService cachedService,
     IPublisher publisher) :
     IRequestHandler<DeleteClientRequest, Result>
 {
@@ -22,6 +23,11 @@ public sealed class DeleteClientHandler(
         {
             await repository.DeleteAsync(client, cancellationToken);
             await publisher.Publish(new ClientDeletedEvent(client.Id), cancellationToken);
+
+            await cachedService.Remove(
+               $"client-{client.Id}",
+               cancellationToken: cancellationToken);
+
             return await Task.FromResult(Result.Success());
         }
         else

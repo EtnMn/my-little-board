@@ -1,4 +1,3 @@
-
 namespace Etn.MyLittleBoard.Application.Interfaces;
 
 public interface ICachedService
@@ -13,5 +12,5 @@ public interface ICachedService
 
     ValueTask RemoveByTag(string tag, CancellationToken cancellationToken = default);
 
-    ValueTask Set<TValue>(string key, TValue value, IEnumerable<string>? tags = null, CancellationToken cancellationToken = default);
+    ValueTask Set<T>(string key, T value, IEnumerable<string>? tags = null, CancellationToken cancellationToken = default);
 }

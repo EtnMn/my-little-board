@@ -20,9 +20,9 @@ internal sealed class CachedService(HybridCache cache) : ICachedService
         return result;
     }
 
-    public ValueTask Set<TValue>(
+    public ValueTask Set<T>(
         string key,
-        TValue value,
+        T value,
         IEnumerable<string>? tags = null,
         CancellationToken cancellationToken = default)
     {
