@@ -983,6 +983,7 @@
           "Domain": "[1.0.0, )",
           "Microsoft.EntityFrameworkCore": "[9.0.0, )",
           "Microsoft.EntityFrameworkCore.SqlServer": "[9.0.0, )",
+          "Microsoft.Extensions.Caching.Hybrid": "[9.0.0-preview.9.24556.5, )",
           "Microsoft.Extensions.Configuration.Abstractions": "[9.0.0, )",
           "Microsoft.Extensions.DependencyInjection.Abstractions": "[9.0.0, )",
           "Microsoft.Graph": "[5.68.0, )",
@@ -1073,6 +1074,18 @@
           "Microsoft.Extensions.Logging": "9.0.0",
           "System.Formats.Asn1": "9.0.0",
           "System.Text.Json": "9.0.0"
+        }
+      },
+      "Microsoft.Extensions.Caching.Hybrid": {
+        "type": "CentralTransitive",
+        "requested": "[9.0.0-preview.9.24556.5, )",
+        "resolved": "9.0.0-preview.9.24556.5",
+        "contentHash": "ktYy1ZK6V1mqdHQdZIVjHiWZG/pPZmjDa9SWmlMh9uUUPgOeFT+Uzfh6UUu6Fty4N7jsNKK81WL2dDkXr0nfZw==",
+        "dependencies": {
+          "Microsoft.Extensions.Caching.Abstractions": "9.0.0",
+          "Microsoft.Extensions.Caching.Memory": "9.0.0",
+          "Microsoft.Extensions.Logging.Abstractions": "9.0.0",
+          "Microsoft.Extensions.Options": "9.0.0"
         }
       },
       "Microsoft.Extensions.Configuration.Abstractions": {

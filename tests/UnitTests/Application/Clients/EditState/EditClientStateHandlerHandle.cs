@@ -8,11 +8,13 @@ public sealed class EditClientStateHandlerHandle
     private readonly Fixture fixture = new();
     private readonly IRepository<Client> repository;
     private readonly IUserService userService;
+    private readonly ICachedService cachedService;
 
     public EditClientStateHandlerHandle()
     {
         this.repository = Substitute.For<IRepository<Client>>();
         this.userService = Substitute.For<IUserService>();
+        this.cachedService = Substitute.For<ICachedService>();
     }
 
     [Fact]
@@ -28,13 +30,42 @@ public sealed class EditClientStateHandlerHandle
         this.userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, true).Create());
         this.repository.GetByIdAsync(client.Id, Arg.Any<CancellationToken>()).Returns(client);
 
-        EditClientStateHandler handler = new(this.repository, this.userService);
+        EditClientStateHandler handler = new(this.repository, this.userService, this.cachedService);
         EditClientStateRequest request = new(client.Id.Value, true);
         Result result = await handler.Handle(request, CancellationToken.None);
 
         result.IsSuccess.Should().BeTrue();
         client.State.Should().Be(ClientState.Enabled);
         await this.repository.Received().UpdateAsync(client, Arg.Any<CancellationToken>());
+    }
+
+    [Fact]
+    public async Task Should_Set_Client_In_Cache()
+    {
+        this.userService.AuthenticatedUser.Returns(this.fixture.Build<User>().With(x => x.Administrator, true).Create());
+        Client client = this.fixture
+           .Build<Client>()
+           .FromFactory<int>((x) => new Client(
+               ClientName.From(this.fixture.Create<string>()),
+               ClientNote.Unspecified))
+           .With(x => x.Id, ClientId.From(this.fixture.Create<int>()))
+           .Create();
+
+        this.repository
+            .GetByIdAsync(client.Id, Arg.Any<CancellationToken>())
+            .Returns(client);
+
+        EditClientStateHandler handler = new(this.repository, this.userService, this.cachedService);
+        EditClientStateRequest request = new(client.Id.Value, this.fixture.Create<bool>());
+
+        _ = await handler.Handle(request, CancellationToken.None);
+
+        string[] tags = ["clients"];
+        await this.cachedService.Received().Set(
+            $"client-{client.Id}",
+            Arg.Any<Client>(),
+            Arg.Is<IEnumerable<string>>(x => x.SequenceEqual(tags)),
+            Arg.Any<CancellationToken>());
     }
 
     [Fact]
@@ -53,7 +84,7 @@ public sealed class EditClientStateHandlerHandle
 
         this.repository.GetByIdAsync(client.Id, Arg.Any<CancellationToken>()).Returns(client);
 
-        EditClientStateHandler handler = new(this.repository, this.userService);
+        EditClientStateHandler handler = new(this.repository, this.userService, this.cachedService);
         EditClientStateRequest request = new(client.Id.Value, false);
         Result result = await handler.Handle(request, CancellationToken.None);
 
@@ -65,7 +96,7 @@ public sealed class EditClientStateHandlerHandle
     [Fact]
     public async Task Should_Return_Unauthorized_When_No_Authenticated()
     {
-        EditClientStateHandler handler = new(this.repository, this.userService);
+        EditClientStateHandler handler = new(this.repository, this.userService, this.cachedService);
         EditClientStateRequest request = new(this.fixture.Create<int>(), this.fixture.Create<bool>());
         Result result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeFalse();
@@ -79,7 +110,7 @@ public sealed class EditClientStateHandlerHandle
             .Returns(this.fixture.Build<User>().With(x => x.Administrator, false)
             .Create());
 
-        EditClientStateHandler handler = new(this.repository, this.userService);
+        EditClientStateHandler handler = new(this.repository, this.userService, this.cachedService);
         EditClientStateRequest request = new(this.fixture.Create<int>(), this.fixture.Create<bool>());
         Result result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeFalse();
@@ -96,7 +127,7 @@ public sealed class EditClientStateHandlerHandle
 
         this.repository.GetByIdAsync(Arg.Any<int>(), Arg.Any<CancellationToken>()).Returns((Client?)null);
 
-        EditClientStateHandler handler = new(this.repository, this.userService);
+        EditClientStateHandler handler = new(this.repository, this.userService, this.cachedService);
         EditClientStateRequest request = new(this.fixture.Create<int>(), this.fixture.Create<bool>());
         Result result = await handler.Handle(request, CancellationToken.None);
         result.IsSuccess.Should().BeFalse();

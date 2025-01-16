@@ -19,6 +19,7 @@ public static class ApplicationServiceExtensions
                 Assembly.GetAssembly(typeof(DomainEventBase))!);
 
             config.AddOpenBehavior(typeof(ValidationBehavior<,>));
+            config.AddOpenBehavior(typeof(RequestCachingBehavior<,>));
         });
 
         services.AddValidatorsFromAssembly(Assembly.GetExecutingAssembly());

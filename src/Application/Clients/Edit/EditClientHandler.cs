@@ -5,7 +5,8 @@ namespace Etn.MyLittleBoard.Application.Clients.Edit;
 
 public sealed class EditClientHandler(
     IRepository<Client> repository,
-    IUserService userService) :
+    IUserService userService,
+    ICachedService cachedService) :
     IRequestHandler<EditClientRequest, Result>
 {
     public async Task<Result> Handle(EditClientRequest request, CancellationToken cancellationToken)
@@ -22,6 +23,13 @@ public sealed class EditClientHandler(
             client.UpdateNote(ClientNote.From(request.Note));
 
             await repository.UpdateAsync(client, cancellationToken);
+
+            await cachedService.Set(
+                $"client-{client.Id}",
+                client,
+                ["clients"],
+                cancellationToken: cancellationToken);
+
             return Result.Success();
         }
         else

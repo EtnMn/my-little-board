@@ -4,7 +4,8 @@ using Etn.MyLittleBoard.Domain.Aggregates.Clients;
 namespace Etn.MyLittleBoard.Application.Clients.EditState;
 public sealed class EditClientStateHandler(
     IRepository<Client> repository,
-    IUserService userService) :
+    IUserService userService,
+    ICachedService cachedService) :
     IRequestHandler<EditClientStateRequest, Result>
 {
     public async Task<Result> Handle(EditClientStateRequest request, CancellationToken cancellationToken)
@@ -27,6 +28,13 @@ public sealed class EditClientStateHandler(
             }
 
             await repository.UpdateAsync(client, cancellationToken);
+
+            await cachedService.Set(
+                $"client-{client.Id}",
+                client,
+                ["clients"],
+                cancellationToken: cancellationToken);
+
             return await Task.FromResult(Result.Success());
         }
         else
