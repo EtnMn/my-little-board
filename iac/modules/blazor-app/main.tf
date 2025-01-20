@@ -30,6 +30,11 @@ resource "azurerm_windows_web_app" "blazor-app" {
     }
     always_on  = var.app-plan-sku-name != "F1" && var.app-plan-sku-name != "D1"
     ftps_state = "FtpsOnly"
+    virtual_application {
+      preload       = false
+      virtual_path  = "/"
+      physical_path = "site\\wwwroot"
+    }
   }
 
   app_settings = {
