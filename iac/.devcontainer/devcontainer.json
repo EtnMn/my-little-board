@@ -1,13 +1,14 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the
 // README at: https://github.com/devcontainers/templates/tree/main/src/debian
 {
-	"name": "MLB IAC on Debian",
-	// Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
-	"image": "mcr.microsoft.com/devcontainers/base:bullseye",
-	"features": {
-		"ghcr.io/devcontainers/features/terraform:1": {},
-		"ghcr.io/dhoeric/features/terraform-docs:1": {}
-	},
+    "name": "MLB IAC on Debian",
+    // Or use a Dockerfile or Docker Compose file. More info: https://containers.dev/guide/dockerfile
+    "image": "mcr.microsoft.com/devcontainers/base:bullseye",
+    "features": {
+        "ghcr.io/devcontainers/features/terraform:1": {},
+        "ghcr.io/dhoeric/features/terraform-docs:1": {},
+        "ghcr.io/devcontainers/features/azure-cli:1": {}
+    },
     "customizations": {
         "vscode": {
             "extensions": [
@@ -27,6 +28,6 @@
         }
     },
     "mounts": [
-        "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/node/.ssh,readonly"
+        "type=bind,source=${localEnv:HOME}${localEnv:USERPROFILE}/.ssh,target=/home/vscode/.ssh,readonly"
     ]
 }
