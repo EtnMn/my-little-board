@@ -51,7 +51,7 @@ az role assignment create \
     --scope /subscriptions/$SUBSCRIPTION_ID/resourceGroups/$RESOURCE_GROUP_NAME \
     --output none
 
-# Display Azure identity properties.
+# Add the following secrets in GitHub environment credentials.
 echo "AZURE_CLIENT_ID: ${IDENTITY_CLIENT_ID}"
 echo "AZURE_TENANT_ID: ${IDENTITY_TENANT_ID}"
 echo "AZURE_SUBSCRIPTION_ID: ${SUBSCRIPTION_ID}"
