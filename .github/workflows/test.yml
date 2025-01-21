@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    name: Build and Test .NET projects
+    name: Test .NET projects and IAC
     runs-on: ubuntu-latest
 
     steps:
