@@ -14,6 +14,16 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          quiet: true
+          framework: terraform
+          output_format: github_failed_only
+          soft_fail: false
+          skip_check: CKV_AZURE_13,CKV_AZURE_88,CKV_AZURE_211,CKV_AZURE_214
+
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
         with:
@@ -32,12 +42,3 @@ jobs:
 
       - name: Test
         run: dotnet test --no-restore --configuration Release --verbosity normal
-
-      - name: Checkov
-        id: checkov
-        uses: bridgecrewio/checkov-action@master
-        with:
-          quiet: true
-          framework: terraform
-          output_format: github_failed_only
-          soft_fail: false

@@ -4,11 +4,13 @@ data "azurerm_resource_group" "resource-group" {
 }
 
 resource "azurerm_service_plan" "blazor-app-service-plan" {
-  name                = "sp-${var.application-name}-${var.environment}"
-  location            = data.azurerm_resource_group.resource-group.location
-  resource_group_name = data.azurerm_resource_group.resource-group.name
-  os_type             = var.app-plan-os-type
-  sku_name            = var.app-plan-sku-name
+  name                   = "sp-${var.application-name}-${var.environment}"
+  location               = data.azurerm_resource_group.resource-group.location
+  resource_group_name    = data.azurerm_resource_group.resource-group.name
+  os_type                = var.app-plan-os-type
+  sku_name               = var.app-plan-sku-name
+  zone_balancing_enabled = false
+  worker_count           = 0
   tags = {
     "environment" = var.environment,
     "application" = var.application-name
@@ -17,19 +19,21 @@ resource "azurerm_service_plan" "blazor-app-service-plan" {
 
 # Web app.
 resource "azurerm_windows_web_app" "blazor-app" {
-  name                = "web-${var.application-name}-${var.environment}"
-  location            = data.azurerm_resource_group.resource-group.location
-  resource_group_name = data.azurerm_resource_group.resource-group.name
-  service_plan_id     = azurerm_service_plan.blazor-app-service-plan.id
-  https_only          = true
+  name                       = "web-${var.application-name}-${var.environment}"
+  location                   = data.azurerm_resource_group.resource-group.location
+  resource_group_name        = data.azurerm_resource_group.resource-group.name
+  service_plan_id            = azurerm_service_plan.blazor-app-service-plan.id
+  https_only                 = true
+  client_certificate_enabled = false
 
   site_config {
     application_stack {
       current_stack  = "dotnet"
       dotnet_version = var.dotnet-version
     }
-    always_on  = var.app-plan-sku-name != "F1" && var.app-plan-sku-name != "D1"
-    ftps_state = "FtpsOnly"
+    http2_enabled = true
+    always_on     = var.app-plan-sku-name != "F1" && var.app-plan-sku-name != "D1"
+    ftps_state    = "FtpsOnly"
     virtual_application {
       preload       = false
       virtual_path  = "/"
