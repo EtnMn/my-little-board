@@ -1,0 +1,109 @@
+name: Terraform
+
+on:
+  workflow_call:
+    inputs:
+      environment:
+        required: true
+        type: string
+      directory:
+        required: true
+        type: string
+
+jobs:
+  terraform:
+    name: Execute IaC
+    runs-on: ubuntu-latest
+    environment:
+      name: ${{ inputs.environment }}
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      pull-requests: write
+    env:
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_USE_OIDC: true
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Checkov
+        id: checkov
+        uses: bridgecrewio/checkov-action@master
+        with:
+          quiet: true
+          framework: terraform
+          output_format: github_failed_only
+          soft_fail: false
+          skip_check: CKV_AZURE_13,CKV_AZURE_17,CKV_AZURE_63,CKV_AZURE_65,CKV_AZURE_66,CKV_AZURE_88,CKV_AZURE_211,CKV_AZURE_212,CKV_AZURE_213,CKV_AZURE_214,CKV_AZURE_222,CKV_AZURE_225
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+        working-directory: ${{ inputs.directory }}
+
+      # - name: Login to Azure
+      #   uses: azure/login@v2
+      #   with:
+      #     client-id: ${{ secrets.AZURE_CLIENT_ID }}
+      #     tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+      #     subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -input=false -no-color
+        working-directory: ${{ inputs.directory }}
+
+      - name: Terraform Validate
+        id: validate
+        run: terraform validate -no-color
+        working-directory: ${{ inputs.directory }}
+
+      - name: Terraform Plan
+        id: plan
+        run: terraform plan -out=tfplan -no-color -input=false
+        working-directory: ${{ inputs.directory }}
+
+      - name: Comment PR with Checkov results and Terraform Plan
+        id: comment
+        uses: actions/github-script@v3
+        if: github.event_name == 'pull_request' && (success() || failure())
+        env:
+          PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"
+        with:
+          github-token: ${{ secrets.GITHUB_TOKEN }}
+          script: |
+            const output =`#### Checkov 🧪\`${{ steps.checkov.outcome }}\`
+            #### Terraform Format and Style 🖌\`${{ steps.fmt.outcome }}\`
+            #### Terraform Initialization ⚙️\`${{ steps.init.outcome }}\`
+            #### Terraform Validation 🤖\`${{ steps.validate.outcome }}\`
+            #### Terraform Plan 📖\`${{ steps.plan.outcome }}\`
+
+            <details><summary>Show Checkov Results</summary>
+
+            \`\`\`\n
+            ${process.env.CHECKOV_RESULTS}
+            \`\`\`
+
+            </details>
+
+            <details><summary>Show Plan</summary>
+
+            \`\`\`\n
+            ${process.env.PLAN}
+            \`\`\`
+
+            </details>
+
+            *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
+
+            github.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: output
+            })
