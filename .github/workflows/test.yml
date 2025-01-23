@@ -9,6 +9,12 @@ jobs:
   build:
     name: Test .NET projects and IAC
     runs-on: ubuntu-latest
+    permissions:
+      id-token: write # This is required for requesting the JWT
+    strategy:
+      matrix:
+        environment: [Production]
+    environment: ${{ matrix.environment }}
 
     steps:
       - name: Checkout repository
@@ -23,6 +29,23 @@ jobs:
           output_format: github_failed_only
           soft_fail: false
           skip_check: CKV_AZURE_13,CKV_AZURE_17,CKV_AZURE_63,CKV_AZURE_65,CKV_AZURE_66,CKV_AZURE_88,CKV_AZURE_211,CKV_AZURE_212,CKV_AZURE_213,CKV_AZURE_214,CKV_AZURE_222,CKV_AZURE_225
+
+      - uses: hashicorp/setup-terraform@v3
+
+      - name: Terraform Format
+        id: fmt
+        run: terraform fmt -check
+
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZURE_CLIENT_ID }}
+          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
+          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+
+      - name: Terraform Init
+        id: init
+        run: terraform init -input=false -no-color
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
