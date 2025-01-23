@@ -16,9 +16,9 @@ jobs:
       environment: ${{ matrix.target }}
       directory: ./iac/environments/production
     secrets: inherit
-    # permissions:
-    #   id-token: write # This is required for requesting the JWT
-    #   pull-requests: write
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      pull-requests: write
 
   build:
     name: Test .NET projects and IAC
