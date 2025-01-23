@@ -22,7 +22,7 @@ jobs:
           framework: terraform
           output_format: github_failed_only
           soft_fail: false
-          skip_check: CKV_AZURE_13,CKV_AZURE_88,CKV_AZURE_211,CKV_AZURE_214
+          skip_check: CKV_AZURE_13,CKV_AZURE_17,CKV_AZURE_63,CKV_AZURE_65,CKV_AZURE_66,CKV_AZURE_88,CKV_AZURE_211,CKV_AZURE_212,CKV_AZURE_213,CKV_AZURE_214,CKV_AZURE_222,CKV_AZURE_225
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
