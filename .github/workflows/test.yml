@@ -15,6 +15,11 @@ jobs:
       matrix:
         environment: [Production]
     environment: ${{ matrix.environment }}
+    env:
+      ARM_SUBSCRIPTION_ID: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+      ARM_CLIENT_ID: ${{ secrets.AZURE_CLIENT_ID }}
+      ARM_TENANT_ID: ${{ secrets.AZURE_TENANT_ID }}
+      ARM_USE_OIDC: true
 
     steps:
       - name: Checkout repository
@@ -35,21 +40,17 @@ jobs:
       - name: Terraform Format
         id: fmt
         run: terraform fmt -check
-
-      - name: Login to Azure
-        uses: azure/login@v2
-        with:
-          client-id: ${{ secrets.AZURE_CLIENT_ID }}
-          tenant-id: ${{ secrets.AZURE_TENANT_ID }}
-          subscription-id: ${{ secrets.AZURE_SUBSCRIPTION_ID }}
+        working-directory: ./iac/environments/production
 
       - name: Terraform Init
         id: init
         run: terraform init -input=false -no-color
+        working-directory: ./iac/environments/production
 
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
+        working-directory: ./iac/environments/production
 
       - name: Set up .NET
         uses: actions/setup-dotnet@v4
