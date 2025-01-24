@@ -49,8 +49,10 @@ dotnet_naming_rule.parameters_must_not_be_capitalized.symbols       = parameter_
 dotnet_naming_rule.parameters_must_not_be_capitalized.style         = lowercase_style
 dotnet_naming_rule.parameters_must_not_be_capitalized.severity      = warning
 
-[*.md]
+[*.{diff,md}]
 trim_trailing_whitespace = false
+insert_final_newline = false
+
 
 [*.{yml,yaml}]
 indent_size = 2

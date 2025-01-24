@@ -8,6 +8,8 @@ on:
       - main
     paths:
       - "src/**"
+      - "iac/**"
+      - "tests/**"
       - "Directory.**.props"
       - "global.json"
   workflow_dispatch:
@@ -40,7 +42,7 @@ jobs:
       - name: Test
         run: dotnet test --no-restore --configuration Release --verbosity normal
 
-      - name: dotnet publish
+      - name: Dotnet publish
         run: dotnet publish -c Release --property:PublishDir=${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
@@ -68,14 +70,28 @@ jobs:
           name: efbundle
           path: ./efbundle
 
+  terraform:
+    strategy:
+      matrix:
+        target: [Production]
+    name: Terraform - ${{ matrix.target }}
+    uses: ./.github/workflows/terraform.yml
+    with:
+      environment: ${{ matrix.target }}
+    secrets: inherit
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      pull-requests: write
+    needs: build
+
   deploy:
     strategy:
       matrix:
         target: [Development]
     name: ${{ matrix.target }}
     permissions:
-      id-token: write #This is required for requesting the JWT
-    needs: build
+      id-token: write # This is required for requesting the JWT
+    needs: [build, terraform]
     uses: ./.github/workflows/deploy.yml
     with:
       environment: ${{ matrix.target }}
