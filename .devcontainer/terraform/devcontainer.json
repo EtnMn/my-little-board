@@ -13,6 +13,7 @@
         "vscode": {
             "extensions": [
                 "hashicorp.terraform",
+                "github.vscode-github-actions",
                 "EditorConfig.EditorConfig"
             ],
             "settings": {

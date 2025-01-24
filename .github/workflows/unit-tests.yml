@@ -1,35 +1,12 @@
-name: Test
+name: Validate unit tests
 
 on:
-  pull_request:
-    branches:
-      - main
+  workflow_call:
 
 jobs:
-  terraform:
-    strategy:
-      matrix:
-        target: [Production]
-    name: Terraform - ${{ matrix.target }}
-    uses: ./.github/workflows/terraform.yml
-    with:
-      environment: ${{ matrix.target }}
-      directory: ./iac/environments/production
-    secrets: inherit
-    permissions:
-      id-token: write # This is required for requesting the JWT
-      pull-requests: write
-
-  build:
-    name: Test .NET projects and IAC
+  unit-test:
+    name: Unit test
     runs-on: ubuntu-latest
-    permissions:
-      id-token: write # This is required for requesting the JWT
-      pull-requests: write
-    strategy:
-      matrix:
-        environment: [Production]
-    environment: ${{ matrix.environment }}
 
     steps:
       - name: Checkout repository

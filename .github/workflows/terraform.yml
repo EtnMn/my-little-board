@@ -63,7 +63,7 @@ jobs:
 
       - name: Comment PR with Checkov results and Terraform Plan
         id: comment
-        uses: actions/github-script@v3
+        uses: actions/github-script@v7
         if: github.event_name == 'pull_request' && (success() || failure())
         env:
           PLAN: "terraform\n${{ steps.plan.outputs.stdout }}"

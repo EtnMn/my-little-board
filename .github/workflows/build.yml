@@ -42,7 +42,7 @@ jobs:
       - name: Test
         run: dotnet test --no-restore --configuration Release --verbosity normal
 
-      - name: dotnet publish
+      - name: Dotnet publish
         run: dotnet publish -c Release --property:PublishDir=${{env.DOTNET_ROOT}}/myapp
 
       - name: Upload artifact for deployment job
