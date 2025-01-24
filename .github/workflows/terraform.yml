@@ -6,13 +6,10 @@ on:
       environment:
         required: true
         type: string
-      directory:
-        required: true
-        type: string
 
 jobs:
   terraform:
-    name: Execute IaC
+    name: IaC
     runs-on: ubuntu-latest
     environment:
       name: ${{ inputs.environment }}
@@ -44,22 +41,22 @@ jobs:
       - name: Terraform Format
         id: fmt
         run: terraform fmt -check
-        working-directory: ${{ inputs.directory }}
+        working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
 
       - name: Terraform Init
         id: init
         run: terraform init -input=false -no-color
-        working-directory: ${{ inputs.directory }}
+        working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
 
       - name: Terraform Validate
         id: validate
         run: terraform validate -no-color
-        working-directory: ${{ inputs.directory }}
+        working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
 
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=tfplan -no-color -input=false
-        working-directory: ${{ inputs.directory }}
+        working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
 
       - name: Comment PR with Checkov results and Terraform Plan
         id: comment
@@ -94,7 +91,7 @@ jobs:
 
             *Pusher: @${{ github.actor }}, Action: \`${{ github.event_name }}\`, Workflow: \`${{ github.workflow }}\`*`;
 
-            github.issues.createComment({
+            github.rest.issues.createComment({
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,

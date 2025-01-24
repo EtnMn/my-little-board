@@ -14,7 +14,6 @@ jobs:
     uses: ./.github/workflows/terraform.yml
     with:
       environment: ${{ matrix.target }}
-      directory: ${{vars.TF_WORKING_DIRECTORY}}
     secrets: inherit
     permissions:
       id-token: write # This is required for requesting the JWT
