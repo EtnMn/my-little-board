@@ -70,6 +70,20 @@ jobs:
           name: efbundle
           path: ./efbundle
 
+  terraform:
+    strategy:
+      matrix:
+        target: [Production]
+    name: Terraform - ${{ matrix.target }}
+    uses: ./.github/workflows/terraform.yml
+    with:
+      environment: ${{ matrix.target }}
+    secrets: inherit
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      pull-requests: write
+    needs: build
+
   deploy:
     strategy:
       matrix:
@@ -77,7 +91,7 @@ jobs:
     name: ${{ matrix.target }}
     permissions:
       id-token: write # This is required for requesting the JWT
-    needs: build
+    needs: [build, terraform]
     uses: ./.github/workflows/deploy.yml
     with:
       environment: ${{ matrix.target }}
