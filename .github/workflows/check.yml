@@ -1,0 +1,24 @@
+name: Check pull request
+
+on:
+  pull_request:
+    branches:
+      - main
+
+jobs:
+  terraform:
+    strategy:
+      matrix:
+        target: [Production]
+    name: Terraform - ${{ matrix.target }}
+    uses: ./.github/workflows/terraform.yml
+    with:
+      environment: ${{ matrix.target }}
+    secrets: inherit
+    permissions:
+      id-token: write # This is required for requesting the JWT
+      pull-requests: write
+
+  test:
+    name: Test .NET projects
+    uses: ./.github/workflows/unit-tests.yml
