@@ -1,8 +1,8 @@
-# Service plan.
 data "azurerm_resource_group" "resource-group" {
   name = var.resource-group-name
 }
 
+# Service plan.
 resource "azurerm_service_plan" "blazor-app-service-plan" {
   name                = "sp-${var.application-name}-${var.environment}"
   location            = data.azurerm_resource_group.resource-group.location
@@ -40,8 +40,10 @@ resource "azurerm_windows_web_app" "blazor-app" {
   }
 
   app_settings = {
-    ASPNETCORE_ENVIRONMENT                = var.asp-environment
-    APPLICATIONINSIGHTS_CONNECTION_STRING = var.application-insights-connection-string
+    APPLICATIONINSIGHTS_CONNECTION_STRING      = var.application-insights-connection-string
+    ApplicationInsightsAgent_EXTENSION_VERSION = "~2"
+    ASPNETCORE_ENVIRONMENT                     = var.asp-environment
+    XDT_MicrosoftApplicationInsights_Mode      = "default"
   }
 
   identity {

@@ -1,4 +1,4 @@
-# Specify the version of the AzureRM Provider to use
+# Specify the version of the AzureRM Provider to use.
 terraform {
   required_version = ">= 1.10.4"
   required_providers {
@@ -15,7 +15,7 @@ terraform {
   }
 }
 
-# Configure the AzureRM Provider
+# Configure the AzureRM Provider.
 provider "azurerm" {
   features {}
   # In version 4.0 of the Azure Provider, the Azure Subscription ID is required.
@@ -26,12 +26,20 @@ locals {
   environment = terraform.workspace == "default" ? var.environment : terraform.workspace
 }
 
-# Get existing resource group
+# Get existing resource group.
 data "azurerm_resource_group" "resource-group" {
   name = "rg-${var.application-name}-${local.environment}"
 }
 
-# Set application
+# Set application insights.
+module "application-insights" {
+  source              = "../../modules/application-insights"
+  environment         = local.environment
+  application-name    = var.application-name
+  resource-group-name = data.azurerm_resource_group.resource-group.name
+}
+
+# Set application.
 module "blazor-app" {
   source                                 = "../../modules/blazor-app"
   environment                            = local.environment
@@ -41,11 +49,14 @@ module "blazor-app" {
   application-insights-connection-string = module.application-insights.connection-string
 }
 
-# Set application insights.
-module "application-insights" {
-  source              = "../../modules/application-insights"
-  environment         = local.environment
-  application-name    = var.application-name
-  resource-group-name = data.azurerm_resource_group.resource-group.name
-
+# Set SQL server database.
+module "sql-server" {
+  source                             = "../../modules/sql-database"
+  environment                        = local.environment
+  resource-group-name                = data.azurerm_resource_group.resource-group.name
+  application-name                   = var.application-name
+  sql-server-administrator-login     = var.sql-server-administrator-login
+  sql-server-administrator-object-id = var.sql-server-administrator-object-id
+  web-app-name                       = module.blazor-app.name
+  web-app-principal-id               = module.blazor-app.principal-id
 }

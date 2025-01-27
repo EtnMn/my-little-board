@@ -1,25 +1,16 @@
 variable "environment" {
-  description = "Name of the environment"
+  description = "The environment to deploy the resources."
   type        = string
-  default     = "prod"
 }
 
-variable "azure-region" {
-  description = "Azure location"
+variable "resource-group-name" {
+  description = "The name of the Resource Group."
   type        = string
-  default     = "westeurope"
 }
 
 variable "application-name" {
-  description = "Application base name"
+  description = "The name of the application."
   type        = string
-  default     = "mlb"
-}
-
-variable "asp-environment" {
-  description = "Name of the asp environment"
-  type        = string
-  default     = "production"
 }
 
 variable "sql-server-administrator-login" {
@@ -29,5 +20,15 @@ variable "sql-server-administrator-login" {
 
 variable "sql-server-administrator-object-id" {
   description = "The object id of the Azure AD Administrator of this SQL Server."
+  type        = string
+}
+
+variable "web-app-name" {
+  description = "The name of the web app."
+  type        = string
+}
+
+variable "web-app-principal-id" {
+  description = "The principal id of the web app."
   type        = string
 }
