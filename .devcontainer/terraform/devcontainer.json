@@ -12,14 +12,14 @@
     "customizations": {
         "vscode": {
             "extensions": [
-                "hashicorp.terraform",
+                "HashiCorp.terraform",
                 "github.vscode-github-actions",
                 "EditorConfig.EditorConfig"
             ],
             "settings": {
                 "editor.formatOnSave": true,
                 "[terraform]": {
-                    "editor.defaultFormatter": "hashicorp.terraform",
+                    "editor.defaultFormatter": "HashiCorp.terraform",
                     "editor.formatOnSave": false,
                     "editor.codeActionsOnSave": {
                         "source.formatAll.terraform": "always"

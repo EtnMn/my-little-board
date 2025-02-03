@@ -7,3 +7,8 @@ output "web-app-name" {
   value       = module.blazor-app.name
   description = "Web application name"
 }
+
+output "sql-db-connection-string" {
+  value       = module.sql-database.sql-db-connection-string
+  description = "Sql database connection string"
+}

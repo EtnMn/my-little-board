@@ -45,14 +45,17 @@ To get started with the My Little Board application, follow these steps:
 | Logging:LogLevel:Default                 | Information                                                                                 |
 | Logging:LogLevel:Microsoft.AspNetCore    | Warning                                                                                     |
 | AllowedHosts                             | *                                                                                           |
-| ConnectionStrings:Default                | Connection string to database                                                               |
+| ConnectionStrings:Default                | Connection string to database                                                               | 
 | ASPNETCORE_ENVIRONMENT                   | Development                                                                                 |
 
 Connection string example:
 Web app
 Server=tcp:<server>.database.windows.net,1433;Initial Catalog=<database>;Authentication=Active Directory Managed Identity
-GitHub
+GitHub (e.g.: deploy action)
 Server=tcp:<server>.database.windows.net,1433;Initial Catalog=<database>;Authentication=Active Directory Default
+Local
+Server=(localdb)\\MSSQLLocalDB;Database=xxx;Trusted_Connection=True;
+
 
 ### Application roles
 
