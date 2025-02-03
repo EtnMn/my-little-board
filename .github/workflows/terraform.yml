@@ -53,6 +53,13 @@ jobs:
         run: terraform validate -no-color
         working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
 
+      - name: Login to Azure
+        uses: azure/login@v2
+        with:
+          client-id: ${{ secrets.AZUREAPPSERVICE_CLIENTID }}
+          tenant-id: ${{ secrets.AZUREAPPSERVICE_TENANTID }}
+          subscription-id: ${{ secrets.AZUREAPPSERVICE_SUBSCRIPTIONID }}
+
       - name: Terraform Plan
         id: plan
         run: terraform plan -out=tfplan -no-color -input=false
