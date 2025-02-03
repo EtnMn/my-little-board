@@ -1,3 +1,12 @@
+terraform {
+  required_providers {
+    mssql = {
+      source  = "betr-io/mssql"
+      version = "=0.3.1"
+    }
+  }
+}
+
 data "azurerm_resource_group" "resource-group" {
   name = var.resource-group-name
 }
@@ -19,26 +28,33 @@ resource "azurerm_mssql_server" "sql-server" {
 
 # SQL database.
 resource "azurerm_mssql_database" "sql-database" {
-  name        = "sqldb-${var.application-name}-${var.environment}"
-  server_id   = azurerm_mssql_server.sql-server.id
-  sku_name    = "GP_S_Gen5_2"
-  max_size_gb = 4
+  name                        = "sqldb-${var.application-name}-${var.environment}"
+  server_id                   = azurerm_mssql_server.sql-server.id
+  sku_name                    = "GP_S_Gen5_2"
+  collation                   = "SQL_Latin1_General_CP1_CI_AS"
+  min_capacity                = 0.5
+  max_size_gb                 = 5
+  zone_redundant              = false
+  auto_pause_delay_in_minutes = 60
+  storage_account_type        = "Local"
 
   # Prevent the possibility of accidental data loss.
   lifecycle {
     prevent_destroy = true
   }
-
-  provisioner "local-exec" {
-    command = <<EOT
-      az sql db execute --name ${self.name} --server ${azurerm_mssql_server.sql-server.name} --resource-group ${data.azurerm_resource_group.resource-group.name} --query "
-      IF NOT EXISTS (SELECT * FROM sys.database_principals WHERE name = '${var.web-app-name}')
-      BEGIN
-        CREATE USER [${var.web-app-name}] FOR LOGIN [${var.web-app-name}]
-        ALTER ROLE db_datareader ADD MEMBER [${var.web-app-name}]
-        ALTER ROLE db_datawriter ADD MEMBER [${var.web-app-name}]
-        GRANT EXECUTE TO [${var.web-app-name}]
-      END"
-    EOT
-  }
 }
+
+resource "mssql_user" "sql-web-app-user" {
+  server {
+    host = azurerm_mssql_server.sql-server.fully_qualified_domain_name
+    azuread_default_chain_auth {}
+  }
+  object_id = var.web-app-principal-id
+  database  = azurerm_mssql_database.sql-database.name
+  username  = var.web-app-name
+  roles     = ["db_datareader", "db_datawriter"]
+  depends_on = [
+    azurerm_mssql_database.sql-database
+  ]
+}
+

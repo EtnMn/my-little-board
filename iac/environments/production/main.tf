@@ -6,6 +6,10 @@ terraform {
       source  = "hashicorp/azurerm"
       version = "=4.16.0"
     }
+    mssql = {
+      source  = "betr-io/mssql"
+      version = "=0.3.1"
+    }
   }
   backend "azurerm" {
     resource_group_name  = "rg-mlb-prod"
@@ -50,7 +54,7 @@ module "blazor-app" {
 }
 
 # Set SQL server database.
-module "sql-server" {
+module "sql-database" {
   source                             = "../../modules/sql-database"
   environment                        = local.environment
   resource-group-name                = data.azurerm_resource_group.resource-group.name

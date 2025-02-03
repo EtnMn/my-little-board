@@ -1,4 +1,4 @@
---- Execute on database
+--- Execute on database (use federated identity name)
 CREATE USER [managed-identity] FROM EXTERNAL PROVIDER
 
 -- Classic application account permissions
