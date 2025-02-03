@@ -85,7 +85,7 @@ jobs:
   deploy:
     strategy:
       matrix:
-        target: [Development]
+        target: [Production]
     name: ${{ matrix.target }}
     permissions:
       id-token: write # This is required for requesting the JWT
