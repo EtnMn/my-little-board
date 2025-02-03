@@ -44,6 +44,16 @@ resource "azurerm_mssql_database" "sql-database" {
   }
 }
 
+resource "azurerm_mssql_firewall_rule" "allow-azure-accessazure" {
+  name             = "AllowAzureAccess"
+  server_id        = azurerm_mssql_server.sql-server.id
+  start_ip_address = "0.0.0.0"
+  end_ip_address   = "0.0.0.0"
+  depends_on = [
+    azurerm_mssql_server.sql-server
+  ]
+}
+
 resource "mssql_user" "sql-web-app-user" {
   server {
     host = azurerm_mssql_server.sql-server.fully_qualified_domain_name
