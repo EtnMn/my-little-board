@@ -57,6 +57,9 @@ jobs:
         id: plan
         run: terraform plan -out=tfplan -no-color -input=false
         working-directory: ${{ vars.TF_WORKING_DIRECTORY }}
+        env:
+          TF_VAR_sql-server-administrator-login: ${{ secrets.SQL_SERVER_ADMINISTRATOR_LOGIN }}
+          TF_VAR_sql-server-administrator-object-id: ${{ secrets.SQL_SERVER_ADMINISTRATOR_OBJECT_ID }}
 
       - name: Comment PR with Checkov results and Terraform Plan
         id: comment
