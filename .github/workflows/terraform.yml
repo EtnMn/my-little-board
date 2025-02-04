@@ -67,6 +67,9 @@ jobs:
         env:
           TF_VAR_sql-server-administrator-login: ${{ secrets.SQL_SERVER_ADMINISTRATOR_LOGIN }}
           TF_VAR_sql-server-administrator-object-id: ${{ secrets.SQL_SERVER_ADMINISTRATOR_OBJECT_ID }}
+          TF_VAR_application-client-id: ${{ secrets.APP_CLIENT_ID }}
+          TF_VAR_application-client-secret: ${{ secrets.APP_CLIENT_SECRET }}
+          TF_VAR_application-tenant-id: ${{ secrets.APP_TENANT_ID }}
 
       - name: Comment PR with Checkov results and Terraform Plan
         id: comment
