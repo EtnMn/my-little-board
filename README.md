@@ -51,7 +51,7 @@ To get started with the My Little Board application, follow these steps:
 Connection string example:
 Web app
 Server=tcp:<server>.database.windows.net,1433;Initial Catalog=<database>;Authentication=Active Directory Managed Identity
-GitHub (e.g.: deploy action)
+GitHub (e.g.: deploy action & github secrets)
 Server=tcp:<server>.database.windows.net,1433;Initial Catalog=<database>;Authentication=Active Directory Default
 Local
 Server=(localdb)\\MSSQLLocalDB;Database=xxx;Trusted_Connection=True;
