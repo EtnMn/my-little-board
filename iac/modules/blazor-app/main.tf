@@ -44,10 +44,12 @@ resource "azurerm_windows_web_app" "blazor-app" {
     ApplicationInsightsAgent_EXTENSION_VERSION = "~2"
     ASPNETCORE_ENVIRONMENT                     = var.asp-environment
     XDT_MicrosoftApplicationInsights_Mode      = "default"
+    "Azure:Entra:TenantId"                     = var.tenant-id
+    "Azure:Entra:ClientId"                     = var.client-id
+    "Azure:Entra:ClientSecret"                 = var.client-secret
   }
 
   identity {
     type = "SystemAssigned"
   }
 }
-

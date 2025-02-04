@@ -16,6 +16,22 @@ variable "application-name" {
   default     = "mlb"
 }
 
+variable "application-client-id" {
+  description = "Application client id"
+  type        = string
+}
+
+variable "application-client-secret" {
+  description = "Application client secret"
+  type        = string
+  sensitive   = true
+}
+
+variable "application-tenant-id" {
+  description = "Application tenant id"
+  type        = string
+}
+
 variable "asp-environment" {
   description = "Name of the asp environment"
   type        = string
@@ -25,9 +41,11 @@ variable "asp-environment" {
 variable "sql-server-administrator-login" {
   description = "The login username of the Azure AD Administrator of this SQL Server."
   type        = string
+  sensitive   = true
 }
 
 variable "sql-server-administrator-object-id" {
   description = "The object id of the Azure AD Administrator of this SQL Server."
   type        = string
+  sensitive   = true
 }

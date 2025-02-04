@@ -9,6 +9,6 @@ output "web-app-name" {
 }
 
 output "sql-db-connection-string" {
-  value       = module.sql-database.sql-db-connection-string
+  value       = module.sql-database.connection-string
   description = "Sql database connection string"
 }
