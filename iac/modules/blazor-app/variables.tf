@@ -39,4 +39,21 @@ variable "dotnet-version" {
 variable "application-insights-connection-string" {
   description = "The connection string for the Application Insights."
   type        = string
+  sensitive   = true
+}
+
+variable "tenant-id" {
+  description = "The Entra tenant id of the application."
+  type        = string
+}
+
+variable "client-id" {
+  description = "The Entra client id of the application."
+  type        = string
+}
+
+variable "client-secret" {
+  description = "The Entral client secret of the application."
+  type        = string
+  sensitive   = true
 }

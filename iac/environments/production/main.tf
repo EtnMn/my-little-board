@@ -51,6 +51,9 @@ module "blazor-app" {
   resource-group-name                    = data.azurerm_resource_group.resource-group.name
   asp-environment                        = var.asp-environment
   application-insights-connection-string = module.application-insights.connection-string
+  client-id                              = var.application-client-id
+  client-secret                          = var.application-client-secret
+  tenant-id                              = var.application-tenant-id
 }
 
 # Set SQL server database.
@@ -63,4 +66,19 @@ module "sql-database" {
   sql-server-administrator-object-id = var.sql-server-administrator-object-id
   web-app-name                       = module.blazor-app.name
   web-app-principal-id               = module.blazor-app.principal-id
+}
+
+# Set database connection string to blazor app.
+resource "null_resource" "update_blazor-app-connection-string" {
+  depends_on = [module.blazor-app, module.sql-database]
+
+  provisioner "local-exec" {
+    command = <<EOT
+      az webapp config connection-string set --only-show-errors \
+        --name ${module.blazor-app.name} \
+        --resource-group ${data.azurerm_resource_group.resource-group.name} \
+        --connection-string-type SQLAzure \
+        --settings Default='${module.sql-database.connection-string}'
+    EOT
+  }
 }

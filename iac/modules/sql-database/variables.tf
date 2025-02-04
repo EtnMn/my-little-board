@@ -16,6 +16,7 @@ variable "application-name" {
 variable "sql-server-administrator-login" {
   description = "The login username of the Azure AD Administrator of this SQL Server."
   type        = string
+  sensitive   = true
 }
 
 variable "sql-server-administrator-object-id" {
