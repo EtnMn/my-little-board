@@ -56,7 +56,6 @@ Server=tcp:<server>.database.windows.net,1433;Initial Catalog=<database>;Authent
 Local
 Server=(localdb)\\MSSQLLocalDB;Database=xxx;Trusted_Connection=True;
 
-
 ### Application roles
 
 Add an App role named _Administrator_ in application registration in Entra Id.
@@ -65,3 +64,13 @@ Then assign role to administrator user in Entra Id Enterprise Application.
 ## License
 
 This project is licensed under the MIT License. See the [LICENSE](LICENSE) file for more information.
+
+## TODO
+
+* Setting access to the database from the web app using Terraform seems not functional. Check the connection string in the database, then drop and recreate the web app user with a SQL script.
+* App insight
+* Aspire
+* Migrate to Mud blazor 8
+* Migrate from fluentassert to shoudly
+* User DbFactory
+	
