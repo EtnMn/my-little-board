@@ -48,6 +48,6 @@ jobs:
         id: deploy-to-webapp
         uses: azure/webapps-deploy@v3
         with:
-          app-name: 'web-mlb-dev'
-          slot-name: 'Production'
+          app-name: ${{ vars.APP_NAME }}
+          slot-name: ${{ inputs.environment }}
           package: ./blazor-server-app
