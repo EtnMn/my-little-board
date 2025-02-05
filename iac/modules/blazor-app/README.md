@@ -30,13 +30,17 @@ No modules.
 | <a name="input_application-insights-connection-string"></a> [application-insights-connection-string](#input\_application-insights-connection-string) | The connection string for the Application Insights. | `string` | n/a | yes |
 | <a name="input_application-name"></a> [application-name](#input\_application-name) | The name of the application. | `string` | n/a | yes |
 | <a name="input_asp-environment"></a> [asp-environment](#input\_asp-environment) | Name of the asp environment | `string` | n/a | yes |
+| <a name="input_client-id"></a> [client-id](#input\_client-id) | The Entra client id of the application. | `string` | n/a | yes |
+| <a name="input_client-secret"></a> [client-secret](#input\_client-secret) | The Entral client secret of the application. | `string` | n/a | yes |
 | <a name="input_dotnet-version"></a> [dotnet-version](#input\_dotnet-version) | The version of .NET to use. | `string` | `"v9.0"` | no |
 | <a name="input_environment"></a> [environment](#input\_environment) | The environment to deploy the resources. | `string` | n/a | yes |
 | <a name="input_resource-group-name"></a> [resource-group-name](#input\_resource-group-name) | The name of the Resource Group. | `string` | n/a | yes |
+| <a name="input_tenant-id"></a> [tenant-id](#input\_tenant-id) | The Entra tenant id of the application. | `string` | n/a | yes |
 
 ## Outputs
 
 | Name | Description |
 |------|-------------|
 | <a name="output_name"></a> [name](#output\_name) | n/a |
+| <a name="output_principal-id"></a> [principal-id](#output\_principal-id) | n/a |
 <!-- END_TF_DOCS -->

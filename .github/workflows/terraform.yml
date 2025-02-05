@@ -25,6 +25,8 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.ref }}
 
       - name: Checkov
         id: checkov
@@ -111,6 +113,21 @@ jobs:
               repo: context.repo.repo,
               body: output
             })
+
+      - name: Set environment variable to lower case
+        id: env_lower
+        run: echo "env_lower=$(echo '${{ inputs.environment }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
+
+      - name: Render terraform docs and push changes back to PR branch
+        uses: terraform-docs/gh-actions@v1.3.0
+        if: github.event_name == 'pull_request' && success()
+        with:
+          working-dir: ./iac/environments/${{ steps.env_lower.outputs.env_lower }}
+          output-file: README.md
+          output-method: inject
+          recursive-path: ../../modules
+          git-commit-message: "docs(terraform): automated action"
+          git-push: "true"
 
       - name: Terraform Apply
         if: github.ref == 'refs/heads/main' && (github.event_name == 'push' || github.event_name == 'pull_request' && github.event.action == 'closed' && github.event.pull_request.merged == true)
