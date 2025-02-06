@@ -116,6 +116,7 @@ jobs:
 
       - name: Set environment variable to lower case
         id: env_lower
+        if: github.event_name == 'pull_request' && success()
         run: echo "env_lower=$(echo '${{ inputs.environment }}' | tr '[:upper:]' '[:lower:]')" >> $GITHUB_OUTPUT
 
       - name: Render terraform docs and push changes back to PR branch

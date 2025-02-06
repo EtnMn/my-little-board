@@ -81,4 +81,8 @@ resource "null_resource" "update_blazor-app-connection-string" {
         --settings Default='${module.sql-database.connection-string}'
     EOT
   }
+
+  triggers = {
+    connection-string = module.sql-database.connection-string
+  }
 }
