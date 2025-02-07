@@ -52,4 +52,10 @@ resource "azurerm_windows_web_app" "blazor-app" {
   identity {
     type = "SystemAssigned"
   }
+
+  lifecycle {
+    ignore_changes = [
+      connection_string
+    ]
+  }
 }
