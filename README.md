@@ -67,7 +67,6 @@ This project is licensed under the MIT License. See the [LICENSE](LICENSE) file 
 
 ## TODO
 
-* Setting access to the database from the web app using Terraform seems not functional. Check the connection string in the database, then drop and recreate the web app user with a SQL script.
 * App insight
 * Aspire
 * Migrate to Mud blazor 8
